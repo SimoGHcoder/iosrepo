@@ -2,7 +2,7 @@
   "name": "La Mia Repo Personale",
   "identifier": "com.simoghcoder.iosrepo",
   "subtitle": "Repository personale",
-  "iconURL": "https://raw.githubusercontent.com/yesnt10/NuvioMobile-Enhanced/main/assets/icon.png",
+  "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
   "apps": [
     {
       "name": "Nuvio Enhanced",
@@ -12,9 +12,21 @@
       "versionDate": "2026-09-13T00:00:00Z",
       "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.3.1build102/Nuvio-Enhanced-v0.3.1-build102-full-unsigned.ipa",
       "localizedDescription": "Media player e streaming app (fork di yesnt10).",
-      "iconURL": "https://raw.githubusercontent.com/yesnt10/NuvioMobile-Enhanced/main/assets/icon.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
       "tintColor": "007AFF",
       "size": 50000000
+    },
+    {
+      "name": "Spotify (AIMods)",
+      "bundleIdentifier": "com.spotify.aimods",
+      "developerName": "AIMods",
+      "version": "9.1.72",
+      "versionDate": "2026-09-13T00:00:00Z",
+      "downloadURL": "INCOLLA_QUI_IL_LINK_DIRECTO_DELL_IPA_DI_SPOTIFY_DA_GITHUB_RELEASES",
+      "localizedDescription": "Spotify modificato da AIMods con funzioni sbloccate.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/spotify.png",
+      "tintColor": "1DB954",
+      "size": 70000000
     }
   ],
   "news": []
