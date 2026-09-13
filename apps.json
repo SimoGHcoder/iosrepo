@@ -2,17 +2,17 @@
   "name": "La Mia Repo Personale",
   "identifier": "com.simoghcoder.iosrepo",
   "subtitle": "Repository personale",
-  "iconURL": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f4ea.png",
+  "iconURL": "https://raw.githubusercontent.com/yesnt10/NuvioMobile-Enhanced/main/assets/icon.png",
   "apps": [
     {
       "name": "Nuvio Enhanced",
-      "bundleIdentifier": "com.nuvio.enhanced",
-      "developerName": "Nuvio Team",
+      "bundleIdentifier": "com.yesnt10.nuviomobile",
+      "developerName": "yesnt10",
       "version": "0.3.1",
       "versionDate": "2026-09-13T00:00:00Z",
       "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.3.1build102/Nuvio-Enhanced-v0.3.1-build102-full-unsigned.ipa",
-      "localizedDescription": "Media player e streaming app.",
-      "iconURL": "https://raw.githubusercontent.com/AKRusso/NuvioMobile-Enhanced/main/assets/images/logo.png",
+      "localizedDescription": "Media player e streaming app (fork di yesnt10).",
+      "iconURL": "https://raw.githubusercontent.com/yesnt10/NuvioMobile-Enhanced/main/assets/icon.png",
       "tintColor": "007AFF",
       "size": 50000000
     }
