@@ -8,13 +8,13 @@
       "name": "Nuvio Enhanced",
       "bundleIdentifier": "com.yesnt10.nuviomobile",
       "developerName": "yesnt10",
-      "version": "0.3.1",
+      "version": "0.4.13",
       "versionDate": "2026-09-13T00:00:00Z",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.3.1build102/Nuvio-Enhanced-v0.3.1-build102-full-unsigned.ipa",
+      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.13/nuvio-0.4.13-full-release.ipa",
       "localizedDescription": "Media player e streaming app (fork di yesnt10).",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
       "tintColor": "007AFF",
-      "size": 50000000
+      "size": 67231486
     },
     {
       "name": "Spotify (AIMods)",
