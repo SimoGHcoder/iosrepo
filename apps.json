@@ -27,6 +27,30 @@
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/spotify.png",
       "tintColor": "1DB954",
       "size": 70000000
+    },
+    {
+      "name": "Calimoto",
+      "bundleIdentifier": "com.calimoto.calimoto",
+      "developerName": "Calimoto",
+      "version": "7.20.0",
+      "versionDate": "2026-09-13T00:00:00Z",
+      "downloadURL": "INCOLLA_QUI_IL_LINK_IPA_CALIMOTO",
+      "localizedDescription": "Navigatore GPS per percorsi e viaggi in moto.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/calimoto.png",
+      "tintColor": "FF5500",
+      "size": 95000000
+    },
+    {
+      "name": "Shapr3D",
+      "bundleIdentifier": "com.shapr3d.shapr",
+      "developerName": "Shapr3D",
+      "version": "5.1015.0",
+      "versionDate": "2026-09-13T00:00:00Z",
+      "downloadURL": "INCOLLA_QUI_IL_LINK_IPA_SHAPR3D",
+      "localizedDescription": "Applicazione di modellazione 3D CAD per iPad e iOS.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/shapr3d.png",
+      "tintColor": "00D2FF",
+      "size": 95000000
     }
   ],
   "news": []
