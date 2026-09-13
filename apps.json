@@ -1,18 +1,22 @@
 {
   "name": "La Mia Repo Personale",
   "identifier": "com.simoghcoder.iosrepo",
+  "subtitle": "Repository personale per app iOS",
+  "iconURL": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f4ea.png",
+  "website": "https://simoghcoder.github.io/iosrepo/",
   "apps": [
     {
       "name": "Nuvio Enhanced",
       "bundleIdentifier": "com.nuvio.app",
       "developerName": "Nuvio Team",
       "version": "0.3.1",
-      "versionDate": "2026-09-13",
+      "versionDate": "2026-09-13T00:00:00Z",
       "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.3.1build102/Nuvio-Enhanced-v0.3.1-build102-full-unsigned.ipa",
       "localizedDescription": "Media player e streaming app.",
       "iconURL": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f4ea.png",
       "tintColor": "007AFF",
       "size": 50000000
     }
-  ]
+  ],
+  "news": []
 }
