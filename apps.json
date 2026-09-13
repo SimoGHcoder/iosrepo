@@ -5,7 +5,7 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
   "apps": [
     {
-      "name": "Nuvio Enhanced",
+      "name": "Nuvio",
       "bundleIdentifier": "com.tapframe.nuvio",
       "developerName": "Tapframe (NuvioMedia)",
       "version": "0.4.18",
