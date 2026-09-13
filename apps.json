@@ -6,11 +6,11 @@
   "apps": [
     {
       "name": "Nuvio Enhanced",
-      "bundleIdentifier": "com.yesnt10.nuviomobile",
-      "developerName": "yesnt10",
-      "version": "0.4.13",
+      "bundleIdentifier": "com.tapframe.nuvio",
+      "developerName": "Tapframe (NuvioMedia)",
+      "version": "0.4.18",
       "versionDate": "2026-09-13T00:00:00Z",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.13/nuvio-0.4.13-full-release.ipa",
+      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.18/nuvio-0.4.18-full-release.ipa",
       "localizedDescription": "Media player e streaming app (fork di yesnt10).",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
       "tintColor": "007AFF",
