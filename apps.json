@@ -18,7 +18,7 @@
     },
     {
       "name": "Spotify",
-      "bundleIdentifier": "com.spotify.clients",
+      "bundleIdentifier": "com.spotify.client",
       "developerName": "AIMods",
       "version": "9.1.76",
       "versionDate": "2026-09-13T00:00:00Z",
