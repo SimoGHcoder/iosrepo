@@ -17,8 +17,8 @@
       "size": 67231486
     },
     {
-      "name": "Spotify (AIMods)",
-      "bundleIdentifier": "com.spotify.aimods",
+      "name": "Spotify",
+      "bundleIdentifier": "com.spotify.clients",
       "developerName": "AIMods",
       "version": "9.1.76",
       "versionDate": "2026-09-13T00:00:00Z",
