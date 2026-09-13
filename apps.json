@@ -1,12 +1,11 @@
 {
-  "name": "Simo Sideloading Hub3",
+  "name": "Simo Sideloading Hub",
   "identifier": "com.simoghcoder.iosrepo",
-  "subtitle": "App moddate e tools personalizzati per iOS",
-  "description": "Sideloading Hub: mod, media player e strumenti CAD per LiveContainer"
+  "subtitle": "Sideloading Hub: mod, media player e strumenti CAD per LiveContainer",
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
-     "name": "Nuvio",
+      "name": "Nuvio",
       "bundleIdentifier": "com.tapframe.nuvio",
       "developerName": "Tapframe (NuvioMedia)",
       "subtitle": "Media player e streaming hub",
@@ -23,6 +22,7 @@
       "name": "Spotify",
       "bundleIdentifier": "com.spotify.client",
       "developerName": "AIMods",
+      "subtitle": "Musica senza pubblicità e skip illimitati",
       "version": "9.1.76",
       "versionDate": "2026-09-13T00:00:00Z",
       "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/9.1.76/_AIMODS__Spotify_v9.1.76.ipa",
@@ -33,7 +33,7 @@
       "size": 130249097
     },
     {
-     "name": "Calimoto",
+      "name": "Calimoto",
       "bundleIdentifier": "com.calimoto.calimoto",
       "developerName": "Calimoto",
       "subtitle": "Navigatore GPS per percorsi in moto",
@@ -47,7 +47,7 @@
       "size": 101202709
     },
     {
-     "name": "Shapr3D",
+      "name": "Shapr3D",
       "bundleIdentifier": "com.shapr3d.shapr",
       "developerName": "Shapr3D",
       "subtitle": "Modellazione 3D CAD per iPad e iOS",
