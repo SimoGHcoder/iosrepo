@@ -6,7 +6,7 @@
   "apps": [
     {
       "name": "Nuvio",
-      "bundleIdentifier": "com.tapframe.nuvio",
+      "bundleIdentifier": "com.nuvio.media",
       "developerName": "Tapframe (NuvioMedia)",
       "subtitle": "Media player e streaming hub",
       "version": "0.4.18",
