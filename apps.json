@@ -2,7 +2,7 @@
   "name": "Simo Sideloading Hub",
   "identifier": "com.simoghcoder.iosrepo",
   "subtitle": "App moddate e tools personalizzati per iOS",
-  "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
+  "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repo_icon.png",
   "apps": [
     {
       "name": "Nuvio",
@@ -26,7 +26,7 @@
       "localizedDescription": "Spotify modificato da AIMods con funzioni sbloccate.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/spotify.png",
       "tintColor": "1DB954",
-      "size": 70000000
+      "size": 130249097
     },
     {
       "name": "Calimoto",
@@ -38,7 +38,7 @@
       "localizedDescription": "Navigatore GPS per percorsi e viaggi in moto.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/calimoto.png",
       "tintColor": "FF5500",
-      "size": 95000000
+      "size": 101202709
     },
     {
       "name": "Shapr3D",
@@ -50,7 +50,7 @@
       "localizedDescription": "Applicazione di modellazione 3D CAD per iPad e iOS.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/shapr3d.png",
       "tintColor": "00D2FF",
-      "size": 95000000
+      "size": 1163167494
     }
   ],
   "news": []
