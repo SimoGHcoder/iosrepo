@@ -14,36 +14,11 @@
       "tintColor": "#1DB954",
       "versions": [
         {
-          "version": "9.1.76",
-          "date": "2026-09-13T12:19:16Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/spotify-9.1.76/_AIMODS__Spotify_v9.1.76.ipa",
-          "localizedDescription": "Versione 9.1.76",
-          "size": 130249097
-        },
-        {
           "version": "9.1.72",
           "date": "2026-09-13T11:05:24Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Spotify-9.1.72/_AIMODS__Spotify_v9.1.72.ipa",
           "localizedDescription": "Versione 9.1.72",
           "size": 127785933
-        }
-      ]
-    },
-    {
-      "name": "Shapr3D",
-      "bundleIdentifier": "com.shapr3d.shapr",
-      "developerName": "Sideloading Hub",
-      "subtitle": "Shapr3D release",
-      "localizedDescription": "Applicazione Shapr3D.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/shapr3d.png",
-      "tintColor": "#00D2FF",
-      "versions": [
-        {
-          "version": "5.1015.0",
-          "date": "2026-09-13T11:33:39Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/shapr3D-5.1015.0/Shapr-Pro-IPAOMTK.com.ipa",
-          "localizedDescription": "Versione 5.1015.0",
-          "size": 1163167494
         }
       ]
     },
@@ -56,13 +31,6 @@
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
       "tintColor": "#007AFF",
       "versions": [
-        {
-          "version": "0.4.21",
-          "date": "2026-09-16T03:48:16Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio-0.4.21/nuvio-0.4.21-full-release.ipa",
-          "localizedDescription": "Versione 0.4.21",
-          "size": 51231186
-        },
         {
           "version": "0.4.18",
           "date": "2026-09-13T12:23:01Z",
