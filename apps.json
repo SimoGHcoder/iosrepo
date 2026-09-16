@@ -14,10 +14,10 @@
       "tintColor": "007AFF",
       "versions": [
         {
-          "version": "0.4.21",
+          "version": "0.4.18",
           "date": "2026-09-13T00:00:00Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.21/nuvio-0.4.21-full-release.ipa",
-          "localizedDescription": "Release ufficiale 0.4.21 con correzioni di bug e miglioramenti prestazionali nella riproduzione video.",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.18/nuvio-0.4.18-full-release.ipa",
+          "localizedDescription": "Release ufficiale 0.4.18 con correzioni di bug e miglioramenti prestazionali nella riproduzione video.",
           "size": 67231486
         }
       ]
