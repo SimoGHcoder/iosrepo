@@ -3,6 +3,151 @@
   "identifier": "com.simoghcoder.iosrepo",
   "subtitle": "Sideloading Hub: mod, media player e strumenti CAD per LiveContainer",
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
-  "apps": [],
+  "apps": [
+    {
+      "name": "Nuvio",
+      "bundleIdentifier": "com.simoghcoder.nuvio",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Nuvio IPA release",
+      "localizedDescription": "Applicazione Nuvio distribuita tramite Sideloading Hub.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
+      "tintColor": "007AFF",
+      "versions": [
+        {
+          "version": "0.4.21",
+          "date": "2026-09-16T03:48:16Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio-0.4.21/nuvio-0.4.21-full-release.ipa",
+          "localizedDescription": "Versione 0.4.21",
+          "size": 51231186
+        }
+      ]
+    },
+    {
+      "name": "Spotify 9.1.76",
+      "bundleIdentifier": "com.simoghcoder.9.1.76",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Spotify 9.1.76 IPA release",
+      "localizedDescription": "Applicazione Spotify 9.1.76 distribuita tramite Sideloading Hub.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/9.1.76.png",
+      "tintColor": "007AFF",
+      "versions": [
+        {
+          "version": "9.1.76",
+          "date": "2026-09-13T12:19:16Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/9.1.76/_AIMODS__Spotify_v9.1.76.ipa",
+          "localizedDescription": "Versione 9.1.76",
+          "size": 130249097
+        }
+      ]
+    },
+    {
+      "name": "Spotify 9.1.72",
+      "bundleIdentifier": "com.simoghcoder.9.1.72",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Spotify 9.1.72 IPA release",
+      "localizedDescription": "Applicazione Spotify 9.1.72 distribuita tramite Sideloading Hub.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/9.1.72.png",
+      "tintColor": "007AFF",
+      "versions": [
+        {
+          "version": "9.1.72",
+          "date": "2026-09-13T11:05:24Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/9.1.72/_AIMODS__Spotify_v9.1.72.ipa",
+          "localizedDescription": "Versione 9.1.72",
+          "size": 127785933
+        }
+      ]
+    },
+    {
+      "name": "Calimoto",
+      "bundleIdentifier": "com.simoghcoder.7.20.0",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Calimoto IPA release",
+      "localizedDescription": "Applicazione Calimoto distribuita tramite Sideloading Hub.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/7.20.0.png",
+      "tintColor": "007AFF",
+      "versions": [
+        {
+          "version": "7.20.0",
+          "date": "2026-09-13T11:30:42Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/7.20.0/calimoto_Motorcycle_Navigation_IPAOMTK.com.ipa",
+          "localizedDescription": "Versione 7.20.0",
+          "size": 101202709
+        }
+      ]
+    },
+    {
+      "name": "Sharpr3D",
+      "bundleIdentifier": "com.simoghcoder.5.1015.0",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Sharpr3D IPA release",
+      "localizedDescription": "Applicazione Sharpr3D distribuita tramite Sideloading Hub.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/5.1015.0.png",
+      "tintColor": "007AFF",
+      "versions": [
+        {
+          "version": "5.1015.0",
+          "date": "2026-09-13T11:33:39Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/5.1015.0/Shapr-Pro-IPAOMTK.com.ipa",
+          "localizedDescription": "Versione 5.1015.0",
+          "size": 1163167494
+        }
+      ]
+    },
+    {
+      "name": "Nuvio",
+      "bundleIdentifier": "com.simoghcoder.0.4.18",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Nuvio IPA release",
+      "localizedDescription": "Applicazione Nuvio distribuita tramite Sideloading Hub.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/0.4.18.png",
+      "tintColor": "007AFF",
+      "versions": [
+        {
+          "version": "0.4.18",
+          "date": "2026-09-13T12:23:01Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.18/nuvio-0.4.18-full-release.ipa",
+          "localizedDescription": "Versione 0.4.18",
+          "size": 51099484
+        }
+      ]
+    },
+    {
+      "name": "Nuvio Enhanced yesnt10",
+      "bundleIdentifier": "com.simoghcoder.0.4.13",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Nuvio Enhanced yesnt10 IPA release",
+      "localizedDescription": "Applicazione Nuvio Enhanced yesnt10 distribuita tramite Sideloading Hub.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/0.4.13.png",
+      "tintColor": "007AFF",
+      "versions": [
+        {
+          "version": "0.4.13",
+          "date": "2026-09-13T12:15:27Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.13/nuvio-0.4.13-full-release.ipa",
+          "localizedDescription": "Versione 0.4.13",
+          "size": 67231486
+        }
+      ]
+    },
+    {
+      "name": "Nuvio Enhanced yesnt10",
+      "bundleIdentifier": "com.simoghcoder.0.3.1build102",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Nuvio Enhanced yesnt10 IPA release",
+      "localizedDescription": "Applicazione Nuvio Enhanced yesnt10 distribuita tramite Sideloading Hub.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/0.3.1build102.png",
+      "tintColor": "007AFF",
+      "versions": [
+        {
+          "version": "0.3.1build102",
+          "date": "2026-09-13T10:46:40Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.3.1build102/Nuvio-Enhanced-v0.3.1-build102-full-unsigned.ipa",
+          "localizedDescription": "Versione 0.3.1build102",
+          "size": 57948412
+        }
+      ]
+    }
+  ],
   "news": []
 }
