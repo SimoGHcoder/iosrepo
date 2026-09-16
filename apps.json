@@ -41,6 +41,24 @@
       ]
     },
     {
+      "name": "Nuvio",
+      "bundleIdentifier": "com.nuvio.media",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Nuvio release",
+      "localizedDescription": "Applicazione Nuvio.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "0.4.21",
+          "date": "2026-09-16T09:45:31Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.21-full-release.ipa",
+          "localizedDescription": "Versione 0.4.21",
+          "size": 51231186
+        }
+      ]
+    },
+    {
       "name": "calimoto",
       "bundleIdentifier": "com.calimoto.calimoto",
       "developerName": "Sideloading Hub",
