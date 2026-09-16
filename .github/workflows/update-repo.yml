@@ -41,19 +41,55 @@ jobs:
           token = os.environ.get('GITHUB_TOKEN')
           headers = {'Authorization': f'token {token}'} if token else {}
 
-          json_file = 'apps.json'
-          if os.path.exists(json_file):
-              with open(json_file, 'r', encoding='utf-8') as f:
-                  data = json.load(f)
-          else:
-              data = {
-                  "name": "Sideloading Hub",
-                  "identifier": "com.simoghcoder.iosrepo",
-                  "subtitle": "Sideloading Hub: mod, media player e strumenti CAD per LiveContainer",
-                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/repoicon.png",
-                  "apps": [],
-                  "news": []
+          # Database dei metadati ufficiali per garantire compatibilità con SideStore
+          APP_PRESETS = {
+              "nuvio": {
+                  "name": "Nuvio",
+                  "bundleIdentifier": "com.nuvio.media",
+                  "developerName": "Tapframe (NuvioMedia)",
+                  "subtitle": "Media player e streaming hub",
+                  "localizedDescription": "Nuvio è un media player moderno e completo sviluppato da Tapframe.",
+                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/nuvio.png",
+                  "tintColor": "#007AFF"
+              },
+              "spotify": {
+                  "name": "Spotify",
+                  "bundleIdentifier": "com.spotify.client",
+                  "developerName": "AIMods",
+                  "subtitle": "Musica senza pubblicità e skip illimitati",
+                  "localizedDescription": "Versione modificata di Spotify curata da AIMods.",
+                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/spotify.png",
+                  "tintColor": "#1DB954"
+              },
+              "calimoto": {
+                  "name": "Calimoto",
+                  "bundleIdentifier": "com.calimoto.calimoto",
+                  "developerName": "Calimoto",
+                  "subtitle": "Navigatore GPS per percorsi in moto",
+                  "localizedDescription": "Il navigatore GPS ideale per motociclisti.",
+                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/calimoto.png",
+                  "tintColor": "#FF5500"
+              },
+              "shapr3d": {
+                  "name": "Shapr3D",
+                  "bundleIdentifier": "com.shapr3d.shapr",
+                  "developerName": "Shapr3D",
+                  "subtitle": "Modellazione 3D CAD per iPad e iOS",
+                  "localizedDescription": "Applicazione di modellazione 3D professionale basata sul motore Parasolid.",
+                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/shapr3d.png",
+                  "tintColor": "#00D2FF"
               }
+          }
+
+          json_file = 'apps.json'
+          data = {
+              "name": "Sideloading Hub",
+              "identifier": "com.simoghcoder.iosrepo",
+              "subtitle": "Sideloading Hub: mod, media player e strumenti CAD per LiveContainer",
+              "iconURL": f"https://raw.githubusercontent.com/{repo}/main/repoicon.png",
+              "apps": [],
+              "news": []
+          }
 
           url = f'https://api.github.com/repos/{repo}/releases'
           response = requests.get(url, headers=headers)
@@ -63,15 +99,8 @@ jobs:
               exit(1)
 
           releases = response.json()
+          apps_dict = {}
 
-          # Mappa esistente delle app per conservare icone, colori e metadati personalizzati
-          apps_dict = {app['name'].lower(): app for app in data.get('apps', [])}
-
-          # Resetta l'array delle versioni mantenendo la struttura base dell'app
-          for app in apps_dict.values():
-              app['versions'] = []
-
-          # Processa le release dalla più recente alla più vecchia
           for rel in releases:
               if rel.get('draft'):
                   continue
@@ -81,33 +110,32 @@ jobs:
               body = rel.get('body', '')
               published_at = rel.get('published_at', '')
 
-              # Estrae il nome dell'app dal tag (es. nuvio-0.4.21 -> nuvio)
               tag_parts = tag.split('-')
-              app_name_from_tag = tag_parts[0] if len(tag_parts) > 1 else tag
+              app_key = tag_parts[0].lower() if len(tag_parts) > 1 else tag.lower()
               version_num = tag_parts[-1].lstrip('v')
 
-              # Nome visualizzato dell'app (usa il Titolo Release se presente, altrimenti il Tag)
-              display_name = release_title if release_title else app_name_from_tag.capitalize()
-              app_key = app_name_from_tag.lower()
-
-              # Cerca asset .ipa
               for asset in rel.get('assets', []):
                   if asset['name'].lower().endswith('.ipa'):
                       download_url = asset['browser_download_url']
                       size = asset['size']
 
-                      # Se l'app non esiste ancora in apps.json, la crea automaticamente
                       if app_key not in apps_dict:
-                          apps_dict[app_key] = {
-                              "name": display_name,
-                              "bundleIdentifier": f"com.simoghcoder.{app_key}",
-                              "developerName": "Sideloading Hub",
-                              "subtitle": f"{display_name} IPA release",
-                              "localizedDescription": f"Applicazione {display_name} distribuita tramite Sideloading Hub.",
-                              "iconURL": f"https://raw.githubusercontent.com/{repo}/main/{app_key}.png",
-                              "tintColor": "007AFF",
-                              "versions": []
-                          }
+                          # Utilizza i metadati predefiniti se disponibili, altrimenti assegna fallback validi
+                          if app_key in APP_PRESETS:
+                              base_app = APP_PRESETS[app_key].copy()
+                          else:
+                              display_name = release_title if release_title else app_key.capitalize()
+                              base_app = {
+                                  "name": display_name,
+                                  "bundleIdentifier": f"com.simoghcoder.{app_key}",
+                                  "developerName": "Sideloading Hub",
+                                  "subtitle": f"{display_name} release",
+                                  "localizedDescription": body if body else f"Applicazione {display_name}.",
+                                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/repoicon.png",
+                                  "tintColor": "#007AFF"
+                              }
+                          base_app['versions'] = []
+                          apps_dict[app_key] = base_app
 
                       target_app = apps_dict[app_key]
 
@@ -119,15 +147,12 @@ jobs:
                           "size": size
                       }
 
-                      # Evita duplicati della stessa versione
                       if not any(v['version'] == version_num for v in target_app['versions']):
                           target_app['versions'].append(version_entry)
                       break
 
-          # Aggiorna l'elenco finale delle app mantenendo solo quelle che hanno almeno 1 versione
           final_apps = [app for app in apps_dict.values() if len(app.get('versions', [])) > 0]
 
-          # Ordina le versioni di ciascuna app per data decrescente
           for app in final_apps:
               app['versions'].sort(key=lambda x: x['date'], reverse=True)
 
@@ -136,7 +161,7 @@ jobs:
           with open(json_file, 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          print("File apps.json aggiornato e rigenerato con successo!")
+          print("File apps.json rigenerato con formato valido per SideStore!")
           EOF
 
       - name: Commit and Push
@@ -144,4 +169,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add apps.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: sincronizzato apps.json dalle release" && git push origin main)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: rigenerato apps.json con sintassi valida per SideStore" && git push origin main)
