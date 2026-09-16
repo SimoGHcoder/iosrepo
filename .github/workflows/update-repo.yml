@@ -1,14 +1,15 @@
-name: Update Multi-App JSON
+name: Dynamic Auto-Update apps.json
 
 on:
   release:
-    types: [published]
+    types: [published, edited, deleted]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  update-json:
+  build-repository:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,86 +18,125 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Switch to main branch
-        run: |
-          git checkout main
-          git pull origin main
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
-      - name: Update apps.json
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Rebuild apps.json
         env:
-          TAG_NAME: ${{ github.event.release.tag_name }}
-          RELEASE_BODY: ${{ github.event.release.body }}
-          ASSETS: ${{ toJson(github.event.release.assets) }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
         run: |
           python - << 'EOF'
           import json
           import os
-          from datetime import datetime
+          import requests
 
-          tag = os.environ.get('TAG_NAME', '')
-          body = os.environ.get('RELEASE_BODY', 'Nuovo aggiornamento rilasciato.')
-          assets = json.loads(os.environ.get('ASSETS', '[]'))
+          repo = os.environ.get('REPOSITORY')
+          token = os.environ.get('GITHUB_TOKEN')
+          headers = {'Authorization': f'token {token}'} if token else {}
 
-          # Trova il link e la dimensione del file .ipa negli asset della Release
-          ipa_url = ""
-          ipa_size = 0
-          for asset in assets:
-              if asset['name'].endswith('.ipa'):
-                  ipa_url = asset['browser_download_url']
-                  ipa_size = asset['size']
-                  break
-
-          if not ipa_url:
-              print("Nessun file .ipa trovato nella release. Operazione annullata.")
-              exit(0)
-
-          # Carica il file JSON esistente
-          with open('apps.json', 'r', encoding='utf-8') as f:
-              data = json.load(f)
-
-          # Estrae il numero di versione pulito dal tag della Release
-          version = tag.split('-')[-1].lstrip('v')
-
-          # Cerca l'app corrispondente nel JSON usando il nome o l'URL dell'IPA
-          target_app = None
-          for app in data.get('apps', []):
-              app_name = app['name'].lower()
-              app_bundle = app['bundleIdentifier'].lower()
-              
-              if app_name in tag.lower() or app_name in ipa_url.lower() or app_bundle in ipa_url.lower():
-                  target_app = app
-                  break
-
-          # Se non trova corrispondenze, aggiorna la prima app del file
-          if not target_app and len(data.get('apps', [])) > 0:
-              target_app = data['apps'][0]
-
-          if target_app:
-              new_version = {
-                  "version": version,
-                  "date": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
-                  "downloadURL": ipa_url,
-                  "localizedDescription": body if body else f"Versione {version}",
-                  "size": ipa_size
+          json_file = 'apps.json'
+          if os.path.exists(json_file):
+              with open(json_file, 'r', encoding='utf-8') as f:
+                  data = json.load(f)
+          else:
+              data = {
+                  "name": "Sideloading Hub",
+                  "identifier": "com.simoghcoder.iosrepo",
+                  "subtitle": "Sideloading Hub: mod, media player e strumenti CAD per LiveContainer",
+                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/repoicon.png",
+                  "apps": [],
+                  "news": []
               }
 
-              if 'versions' not in target_app:
-                  target_app['versions'] = []
+          url = f'https://api.github.com/repos/{repo}/releases'
+          response = requests.get(url, headers=headers)
+          
+          if response.status_code != 200:
+              print(f"Errore API GitHub: {response.status_code}")
+              exit(1)
 
-              # Rimuove la versione se già presente ed inserisce il nuovo blocco in testa
-              target_app['versions'] = [v for v in target_app['versions'] if v.get('version') != version]
-              target_app['versions'].insert(0, new_version)
+          releases = response.json()
 
-              with open('apps.json', 'w', encoding='utf-8') as f:
-                  json.dump(data, f, indent=2, ensure_ascii=False)
-              print(f"Aggiornata app '{target_app['name']}' alla versione {version}")
+          # Mappa esistente delle app per conservare icone, colori e metadati personalizzati
+          apps_dict = {app['name'].lower(): app for app in data.get('apps', [])}
+
+          # Resetta l'array delle versioni mantenendo la struttura base dell'app
+          for app in apps_dict.values():
+              app['versions'] = []
+
+          # Processa le release dalla più recente alla più vecchia
+          for rel in releases:
+              if rel.get('draft'):
+                  continue
+
+              tag = rel.get('tag_name', '')
+              release_title = rel.get('name', '').strip()
+              body = rel.get('body', '')
+              published_at = rel.get('published_at', '')
+
+              # Estrae il nome dell'app dal tag (es. nuvio-0.4.21 -> nuvio)
+              tag_parts = tag.split('-')
+              app_name_from_tag = tag_parts[0] if len(tag_parts) > 1 else tag
+              version_num = tag_parts[-1].lstrip('v')
+
+              # Nome visualizzato dell'app (usa il Titolo Release se presente, altrimenti il Tag)
+              display_name = release_title if release_title else app_name_from_tag.capitalize()
+              app_key = app_name_from_tag.lower()
+
+              # Cerca asset .ipa
+              for asset in rel.get('assets', []):
+                  if asset['name'].lower().endswith('.ipa'):
+                      download_url = asset['browser_download_url']
+                      size = asset['size']
+
+                      # Se l'app non esiste ancora in apps.json, la crea automaticamente
+                      if app_key not in apps_dict:
+                          apps_dict[app_key] = {
+                              "name": display_name,
+                              "bundleIdentifier": f"com.simoghcoder.{app_key}",
+                              "developerName": "Sideloading Hub",
+                              "subtitle": f"{display_name} IPA release",
+                              "localizedDescription": f"Applicazione {display_name} distribuita tramite Sideloading Hub.",
+                              "iconURL": f"https://raw.githubusercontent.com/{repo}/main/{app_key}.png",
+                              "tintColor": "007AFF",
+                              "versions": []
+                          }
+
+                      target_app = apps_dict[app_key]
+
+                      version_entry = {
+                          "version": version_num,
+                          "date": published_at,
+                          "downloadURL": download_url,
+                          "localizedDescription": body if body else f"Versione {version_num}",
+                          "size": size
+                      }
+
+                      # Evita duplicati della stessa versione
+                      if not any(v['version'] == version_num for v in target_app['versions']):
+                          target_app['versions'].append(version_entry)
+                      break
+
+          # Aggiorna l'elenco finale delle app mantenendo solo quelle che hanno almeno 1 versione
+          final_apps = [app for app in apps_dict.values() if len(app.get('versions', [])) > 0]
+
+          # Ordina le versioni di ciascuna app per data decrescente
+          for app in final_apps:
+              app['versions'].sort(key=lambda x: x['date'], reverse=True)
+
+          data['apps'] = final_apps
+
+          with open(json_file, 'w', encoding='utf-8') as f:
+              json.dump(data, f, indent=2, ensure_ascii=False)
+
+          print("File apps.json aggiornato e rigenerato con successo!")
           EOF
 
       - name: Commit and Push
@@ -104,4 +144,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add apps.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: aggiornato apps.json da release ${{ github.event.release.tag_name }}" && git push origin main)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: sincronizzato apps.json dalle release" && git push origin main)
