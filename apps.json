@@ -5,24 +5,6 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
-      "name": "Spotify",
-      "bundleIdentifier": "com.spotify.client",
-      "developerName": "Sideloading Hub",
-      "subtitle": "Spotify release",
-      "localizedDescription": "Applicazione Spotify.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.spotify.client.png",
-      "tintColor": "#007AFF",
-      "versions": [
-        {
-          "version": "9.1.72",
-          "date": "2026-09-16T09:49:23Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/spotify/Spotify_v9.1.72.ipa",
-          "localizedDescription": "Versione 9.1.72",
-          "size": 127785933
-        }
-      ]
-    },
-    {
       "name": "Nuvio",
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "Sideloading Hub",
@@ -41,20 +23,20 @@
       ]
     },
     {
-      "name": "calimoto",
-      "bundleIdentifier": "com.calimoto.calimoto",
+      "name": "Spotify",
+      "bundleIdentifier": "com.spotify.client",
       "developerName": "Sideloading Hub",
-      "subtitle": "calimoto release",
-      "localizedDescription": "Applicazione calimoto.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.calimoto.calimoto.png",
+      "subtitle": "Spotify release",
+      "localizedDescription": "Applicazione Spotify.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.spotify.client.png",
       "tintColor": "#007AFF",
       "versions": [
         {
-          "version": "7.20.0",
-          "date": "2026-09-16T09:48:58Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/calimoto/calimoto_Motorcycle_Navigation.ipa",
-          "localizedDescription": "Versione 7.20.0",
-          "size": 101202709
+          "version": "9.1.72",
+          "date": "2026-09-16T09:49:23Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Spotify/Spotify_v9.1.72.ipa",
+          "localizedDescription": "Versione 9.1.72",
+          "size": 127785933
         }
       ]
     },
@@ -73,6 +55,24 @@
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Shapr3D/Shapr3D-Pro.ipa",
           "localizedDescription": "Versione 5.1015.0",
           "size": 1163167494
+        }
+      ]
+    },
+    {
+      "name": "calimoto",
+      "bundleIdentifier": "com.calimoto.calimoto",
+      "developerName": "Sideloading Hub",
+      "subtitle": "calimoto release",
+      "localizedDescription": "Applicazione calimoto.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.calimoto.calimoto.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "7.20.0",
+          "date": "2026-09-16T09:48:58Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Calimoto/calimoto_Motorcycle_Navigation.ipa",
+          "localizedDescription": "Versione 7.20.0",
+          "size": 101202709
         }
       ]
     }
