@@ -9,56 +9,72 @@
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "Tapframe (NuvioMedia)",
       "subtitle": "Media player e streaming hub",
-      "version": "0.4.21",
-      "versionDate": "2026-09-13T00:00:00Z",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.21/nuvio-0.4.21-full-release.ipa",
       "localizedDescription": "Nuvio è un media player moderno e completo sviluppato da Tapframe. Permette di organizzare, gestire e riprodurre contenuti multimediali con un'interfaccia fluida e nativa per iOS.",
-      "versionDescription": "Release ufficiale 0.4.21 con correzioni di bug e miglioramenti prestazionali nella riproduzione video.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
       "tintColor": "007AFF",
-      "size": 67231486
+      "versions": [
+        {
+          "version": "0.4.21",
+          "date": "2026-09-13T00:00:00Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.21/nuvio-0.4.21-full-release.ipa",
+          "localizedDescription": "Release ufficiale 0.4.21 con correzioni di bug e miglioramenti prestazionali nella riproduzione video.",
+          "size": 67231486
+        }
+      ]
     },
     {
       "name": "Spotify",
       "bundleIdentifier": "com.spotify.client",
       "developerName": "AIMods",
       "subtitle": "Musica senza pubblicità e skip illimitati",
-      "version": "9.1.76",
-      "versionDate": "2026-09-13T00:00:00Z",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/9.1.76/_AIMODS__Spotify_v9.1.76.ipa",
       "localizedDescription": "Versione modificata di Spotify curata da AIMods. Include lo sblocco della riproduzione su richiesta, skip illimitati, rimozione della pubblicità audio e visiva e massima qualità audio selezionabile.",
-      "versionDescription": "Aggiornato alla base Spotify v9.1.76. Stabilità migliorata e fix per il blocco annunci.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/spotify.png",
       "tintColor": "1DB954",
-      "size": 130249097
+      "versions": [
+        {
+          "version": "9.1.76",
+          "date": "2026-09-13T00:00:00Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/9.1.76/_AIMODS__Spotify_v9.1.76.ipa",
+          "localizedDescription": "Aggiornato alla base Spotify v9.1.76. Stabilità migliorata e fix per il blocco annunci.",
+          "size": 130249097
+        }
+      ]
     },
     {
       "name": "Calimoto",
       "bundleIdentifier": "com.calimoto.calimoto",
       "developerName": "Calimoto",
       "subtitle": "Navigatore GPS per percorsi in moto",
-      "version": "7.20.0",
-      "versionDate": "2026-09-13T00:00:00Z",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/7.20.0/calimoto_Motorcycle_Navigation_IPAOMTK.com.ipa",
       "localizedDescription": "Il navigatore GPS ideale per motociclisti. Calcola algoritmi di curve per creare i percorsi più divertenti, traccia i tuoi viaggi, analizza l'angolo di piega e ti permette di pianificare itinerari su mappa.",
-      "versionDescription": "Versione 7.20.0 con mappe aggiornate e calcolo dei percorsi curvosi ottimizzato.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/calimoto.png",
       "tintColor": "FF5500",
-      "size": 101202709
+      "versions": [
+        {
+          "version": "7.20.0",
+          "date": "2026-09-13T00:00:00Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/7.20.0/calimoto_Motorcycle_Navigation_IPAOMTK.com.ipa",
+          "localizedDescription": "Versione 7.20.0 con mappe aggiornate e calcolo dei percorsi curvosi ottimizzato.",
+          "size": 101202709
+        }
+      ]
     },
     {
       "name": "Shapr3D",
       "bundleIdentifier": "com.shapr3d.shapr",
       "developerName": "Shapr3D",
       "subtitle": "Modellazione 3D CAD per iPad e iOS",
-      "version": "5.1015.0",
-      "versionDate": "2026-09-13T00:00:00Z",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/5.1015.0/Shapr-Pro-IPAOMTK.com.ipa",
       "localizedDescription": "Applicazione di modellazione 3D professionale basata sul motore Parasolid. Progettata per Apple Pencil e touch screen, permette di creare modelli CAD complessi pronti per la stampa 3D ed esportazione industriale.",
-      "versionDescription": "Versione 5.1015.0 con strumenti di estrusione migliorati e prestazioni di rendering incrementate.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/shapr3d.png",
       "tintColor": "00D2FF",
-      "size": 1163167494
+      "versions": [
+        {
+          "version": "5.1015.0",
+          "date": "2026-09-13T00:00:00Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/5.1015.0/Shapr-Pro-IPAOMTK.com.ipa",
+          "localizedDescription": "Versione 5.1015.0 con strumenti di estrusione migliorati e prestazioni di rendering incrementate.",
+          "size": 1163167494
+        }
+      ]
     }
   ],
   "news": []
