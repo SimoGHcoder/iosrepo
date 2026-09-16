@@ -23,11 +23,11 @@
       ]
     },
     {
-      "name": "Spotify 9.1.76",
+      "name": "Spotify",
       "bundleIdentifier": "com.simoghcoder.spotify",
       "developerName": "Sideloading Hub",
-      "subtitle": "Spotify 9.1.76 IPA release",
-      "localizedDescription": "Applicazione Spotify 9.1.76 distribuita tramite Sideloading Hub.",
+      "subtitle": "Spotify IPA release",
+      "localizedDescription": "Applicazione Spotify distribuita tramite Sideloading Hub.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/spotify.png",
       "tintColor": "007AFF",
       "versions": [
