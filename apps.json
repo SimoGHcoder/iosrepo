@@ -3,25 +3,6 @@
   "identifier": "com.simoghcoder.iosrepo",
   "subtitle": "Sideloading Hub: mod, media player e strumenti CAD per LiveContainer",
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
-  "apps": [
-    {
-      "name": "calimoto",
-      "bundleIdentifier": "com.calimoto.calimoto",
-      "developerName": "Sideloading Hub",
-      "subtitle": "calimoto release",
-      "localizedDescription": "Applicazione calimoto.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/calimoto.png",
-      "tintColor": "#FF5500",
-      "versions": [
-        {
-          "version": "7.20.0",
-          "date": "2026-09-13T11:30:42Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/calimoto-7.20.0/calimoto_Motorcycle_Navigation_IPAOMTK.com.ipa",
-          "localizedDescription": "Versione 7.20.0",
-          "size": 101202709
-        }
-      ]
-    }
-  ],
+  "apps": [],
   "news": []
 }
