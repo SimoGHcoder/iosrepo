@@ -5,24 +5,6 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
-      "name": "Nuvio",
-      "bundleIdentifier": "com.nuvio.media",
-      "developerName": "Sideloading Hub",
-      "subtitle": "Nuvio release",
-      "localizedDescription": "Applicazione Nuvio.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
-      "tintColor": "#007AFF",
-      "versions": [
-        {
-          "version": "0.4.18",
-          "date": "2026-09-16T09:45:31Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio_app/nuvio-0.4.18-full-release.ipa",
-          "localizedDescription": "Versione 0.4.18",
-          "size": 51099484
-        }
-      ]
-    },
-    {
       "name": "Spotify",
       "bundleIdentifier": "com.spotify.client",
       "developerName": "Sideloading Hub",
@@ -55,6 +37,24 @@
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Shapr3D/Shapr3D-Pro.ipa",
           "localizedDescription": "Versione 5.1015.0",
           "size": 1163167494
+        }
+      ]
+    },
+    {
+      "name": "Nuvio",
+      "bundleIdentifier": "com.nuvio.media",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Nuvio release",
+      "localizedDescription": "Applicazione Nuvio.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "0.4.18",
+          "date": "2026-09-16T09:45:31Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.18-full-release.ipa",
+          "localizedDescription": "Versione 0.4.18",
+          "size": 51099484
         }
       ]
     },
