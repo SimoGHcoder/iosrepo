@@ -5,13 +5,13 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
-      "name": "Spotify 9.1.76",
-      "bundleIdentifier": "com.simoghcoder.spotify",
-      "developerName": "Sideloading Hub",
-      "subtitle": "Spotify 9.1.76 IPA release",
-      "localizedDescription": "Applicazione Spotify 9.1.76 distribuita tramite Sideloading Hub.",
+      "name": "Spotify",
+      "bundleIdentifier": "com.spotify.client",
+      "developerName": "AIMods",
+      "subtitle": "Musica senza pubblicità e skip illimitati",
+      "localizedDescription": "Versione modificata di Spotify curata da AIMods.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/spotify.png",
-      "tintColor": "007AFF",
+      "tintColor": "#1DB954",
       "versions": [
         {
           "version": "9.1.76",
@@ -30,13 +30,13 @@
       ]
     },
     {
-      "name": "Shapr3D 5.1015.0",
-      "bundleIdentifier": "com.simoghcoder.shapr3d",
-      "developerName": "Sideloading Hub",
-      "subtitle": "Shapr3D 5.1015.0 IPA release",
-      "localizedDescription": "Applicazione Shapr3D 5.1015.0 distribuita tramite Sideloading Hub.",
+      "name": "Shapr3D",
+      "bundleIdentifier": "com.shapr3d.shapr",
+      "developerName": "Shapr3D",
+      "subtitle": "Modellazione 3D CAD per iPad e iOS",
+      "localizedDescription": "Applicazione di modellazione 3D professionale basata sul motore Parasolid.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/shapr3d.png",
-      "tintColor": "007AFF",
+      "tintColor": "#00D2FF",
       "versions": [
         {
           "version": "5.1015.0",
@@ -48,13 +48,13 @@
       ]
     },
     {
-      "name": "Nuvio 0.4.21",
-      "bundleIdentifier": "com.simoghcoder.nuvio",
-      "developerName": "Sideloading Hub",
-      "subtitle": "Nuvio 0.4.21 IPA release",
-      "localizedDescription": "Applicazione Nuvio 0.4.21 distribuita tramite Sideloading Hub.",
+      "name": "Nuvio",
+      "bundleIdentifier": "com.nuvio.media",
+      "developerName": "Tapframe (NuvioMedia)",
+      "subtitle": "Media player e streaming hub",
+      "localizedDescription": "Nuvio è un media player moderno e completo sviluppato da Tapframe.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio.png",
-      "tintColor": "007AFF",
+      "tintColor": "#007AFF",
       "versions": [
         {
           "version": "0.4.21",
@@ -73,13 +73,13 @@
       ]
     },
     {
-      "name": "Calimoto 7.20.0",
-      "bundleIdentifier": "com.simoghcoder.calimoto",
-      "developerName": "Sideloading Hub",
-      "subtitle": "Calimoto 7.20.0 IPA release",
-      "localizedDescription": "Applicazione Calimoto 7.20.0 distribuita tramite Sideloading Hub.",
+      "name": "Calimoto",
+      "bundleIdentifier": "com.calimoto.calimoto",
+      "developerName": "Calimoto",
+      "subtitle": "Navigatore GPS per percorsi in moto",
+      "localizedDescription": "Il navigatore GPS ideale per motociclisti.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/calimoto.png",
-      "tintColor": "007AFF",
+      "tintColor": "#FF5500",
       "versions": [
         {
           "version": "7.20.0",
