@@ -11,14 +11,16 @@
       "subtitle": "Spotify release",
       "localizedDescription": "Applicazione Spotify.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.spotify.client.png",
-      "tintColor": "#007AFF",
+      "tintColor": "#1DB954",
       "versions": [
         {
           "version": "9.1.72",
           "date": "2026-09-16T09:49:23Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Spotify/Spotify_v9.1.72.ipa",
           "localizedDescription": "Versione 9.1.72",
-          "size": 127785933
+          "size": 127785933,
+          "bundleIdentifier": "com.spotify.client",
+          "appID": "com.spotify.client"
         }
       ]
     },
@@ -29,14 +31,16 @@
       "subtitle": "Shapr3D release",
       "localizedDescription": "Applicazione Shapr3D.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.shapr3d.shapr.png",
-      "tintColor": "#007AFF",
+      "tintColor": "#00D2FF",
       "versions": [
         {
           "version": "5.1015.0",
           "date": "2026-09-16T09:47:05Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Shapr3D/Shapr3D-Pro.ipa",
           "localizedDescription": "Versione 5.1015.0",
-          "size": 1163167494
+          "size": 1163167494,
+          "bundleIdentifier": "com.shapr3d.shapr",
+          "appID": "com.shapr3d.shapr"
         }
       ]
     },
@@ -54,7 +58,9 @@
           "date": "2026-09-16T09:45:31Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.18-full-release.ipa",
           "localizedDescription": "Versione 0.4.18",
-          "size": 51099484
+          "size": 51099484,
+          "bundleIdentifier": "com.nuvio.media",
+          "appID": "com.nuvio.media"
         }
       ]
     },
@@ -65,14 +71,16 @@
       "subtitle": "calimoto release",
       "localizedDescription": "Applicazione calimoto.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.calimoto.calimoto.png",
-      "tintColor": "#007AFF",
+      "tintColor": "#FF5500",
       "versions": [
         {
           "version": "7.20.0",
           "date": "2026-09-16T09:48:58Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Calimoto/calimoto_Motorcycle_Navigation.ipa",
           "localizedDescription": "Versione 7.20.0",
-          "size": 101202709
+          "size": 101202709,
+          "bundleIdentifier": "com.calimoto.calimoto",
+          "appID": "com.calimoto.calimoto"
         }
       ]
     }
