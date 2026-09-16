@@ -4,18 +4,19 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   update-json:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -96,5 +97,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B main
           git add apps.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: aggiornato apps.json da release ${{ github.event.release.tag_name }}" && git push origin main)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: aggiornato apps.json da release ${{ github.event.release.tag_name }}" && git push origin main --force)
