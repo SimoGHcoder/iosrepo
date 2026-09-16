@@ -30,7 +30,7 @@
       ]
     },
     {
-      "name": "Nuvio Enhanced yesnt10 0.3.1B102",
+      "name": "Nuvio Enhanced yesnt10",
       "bundleIdentifier": "com.simoghcoder.nuvio_enhanced",
       "developerName": "Sideloading Hub",
       "subtitle": "Nuvio Enhanced yesnt10 0.3.1B102 IPA release",
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "name": "Nuvio 0.4.21",
+      "name": "Nuvio",
       "bundleIdentifier": "com.simoghcoder.nuvio",
       "developerName": "Sideloading Hub",
       "subtitle": "Nuvio 0.4.21 IPA release",
@@ -69,11 +69,18 @@
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio-0.4.21/nuvio-0.4.21-full-release.ipa",
           "localizedDescription": "Versione 0.4.21",
           "size": 51231186
+        },
+         {
+          "version": "0.4.18",
+          "date": "2026-09-13T12:23:01Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.18/nuvio-0.4.18-full-release.ipa",
+          "localizedDescription": "Versione 0.4.18",
+          "size": 51099484
         }
       ]
     },
     {
-      "name": "Calimoto 7.20.0",
+      "name": "Calimoto",
       "bundleIdentifier": "com.simoghcoder.7.20.0",
       "developerName": "Sideloading Hub",
       "subtitle": "Calimoto 7.20.0 IPA release",
@@ -91,7 +98,7 @@
       ]
     },
     {
-      "name": "Sharpr3D 5.1015.0",
+      "name": "Sharpr3D",
       "bundleIdentifier": "com.simoghcoder.5.1015.0",
       "developerName": "Sideloading Hub",
       "subtitle": "Sharpr3D 5.1015.0 IPA release",
@@ -107,23 +114,7 @@
           "size": 1163167494
         }
       ]
-    },
-    {
-      "name": "Nuvio 0.4.18",
-      "bundleIdentifier": "com.simoghcoder.0.4.18",
-      "developerName": "Sideloading Hub",
-      "subtitle": "Nuvio 0.4.18 IPA release",
-      "localizedDescription": "Applicazione Nuvio 0.4.18 distribuita tramite Sideloading Hub.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/0.4.18.png",
-      "tintColor": "007AFF",
-      "versions": [
-        {
-          "version": "0.4.18",
-          "date": "2026-09-13T12:23:01Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.18/nuvio-0.4.18-full-release.ipa",
-          "localizedDescription": "Versione 0.4.18",
-          "size": 51099484
-        }
+    }
       ]
     }
   ],
