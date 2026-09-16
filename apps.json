@@ -3,6 +3,25 @@
   "identifier": "com.simoghcoder.iosrepo",
   "subtitle": "Sideloading Hub: mod, media player e strumenti CAD per LiveContainer",
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
-  "apps": [],
+  "apps": [
+    {
+      "name": "Nuvio",
+      "bundleIdentifier": "com.nuvio.media",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Nuvio release",
+      "localizedDescription": "Applicazione Nuvio.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "0.4.18",
+          "date": "2026-09-16T09:45:31Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio_app/nuvio-0.4.18-full-release.ipa",
+          "localizedDescription": "Versione 0.4.18",
+          "size": 51099484
+        }
+      ]
+    }
+  ],
   "news": []
 }
