@@ -1,0 +1,97 @@
+name: Update Multi-App JSON
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Update apps.json
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+          ASSETS: ${{ toJson(github.event.release.assets) }}
+        run: |
+          python - << 'EOF'
+          import json
+          import os
+          from datetime import datetime
+
+          tag = os.environ.get('TAG_NAME', '')
+          body = os.environ.get('RELEASE_BODY', 'Nuovo aggiornamento rilasciato.')
+          assets = json.loads(os.environ.get('ASSETS', '[]'))
+
+          # Trova il link e la dimensione del file .ipa negli asset della Release
+          ipa_url = ""
+          ipa_size = 0
+          for asset in assets:
+              if asset['name'].endswith('.ipa'):
+                  ipa_url = asset['browser_download_url']
+                  ipa_size = asset['size']
+                  break
+
+          if not ipa_url:
+              print("Nessun file .ipa trovato nella release. Operazione annullata.")
+              exit(0)
+
+          # Carica il file JSON esistente
+          with open('apps.json', 'r', encoding='utf-8') as f:
+              data = json.load(f)
+
+          # Estrae il numero di versione pulito dal tag della Release
+          version = tag.split('-')[-1].lstrip('v')
+
+          # Cerca l'app corrispondente nel JSON usando il nome o l'URL dell'IPA
+          target_app = None
+          for app in data.get('apps', []):
+              app_name = app['name'].lower()
+              app_bundle = app['bundleIdentifier'].lower()
+              
+              if app_name in tag.lower() or app_name in ipa_url.lower() or app_bundle in ipa_url.lower():
+                  target_app = app
+                  break
+
+          # Se non trova corrispondenze, aggiorna la prima app del file
+          if not target_app and len(data.get('apps', [])) > 0:
+              target_app = data['apps'][0]
+
+          if target_app:
+              new_version = {
+                  "version": version,
+                  "date": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                  "downloadURL": ipa_url,
+                  "localizedDescription": body if body else f"Versione {version}",
+                  "size": ipa_size
+              }
+
+              if 'versions' not in target_app:
+                  target_app['versions'] = []
+
+              # Rimuove la versione se già presente ed inserisce il nuovo blocco in testa
+              target_app['versions'] = [v for v in target_app['versions'] if v.get('version') != version]
+              target_app['versions'].insert(0, new_version)
+
+              with open('apps.json', 'w', encoding='utf-8') as f:
+                  json.dump(data, f, indent=2, ensure_ascii=False)
+              print(f"Aggiornata app '{target_app['name']}' alla versione {version}")
+          EOF
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: aggiornato apps.json da release ${{ github.event.release.tag_name }}" && git push)
