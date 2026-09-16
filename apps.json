@@ -5,6 +5,24 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
+      "name": "Spotify",
+      "bundleIdentifier": "com.spotify.client",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Spotify release",
+      "localizedDescription": "Applicazione Spotify.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.spotify.client.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "9.1.72",
+          "date": "2026-09-16T09:49:23Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/spotify/Spotify_v9.1.72.ipa",
+          "localizedDescription": "Versione 9.1.72",
+          "size": 127785933
+        }
+      ]
+    },
+    {
       "name": "Nuvio",
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "Sideloading Hub",
