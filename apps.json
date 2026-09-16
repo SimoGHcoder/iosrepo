@@ -21,6 +21,24 @@
           "size": 51099484
         }
       ]
+    },
+    {
+      "name": "calimoto",
+      "bundleIdentifier": "com.calimoto.calimoto",
+      "developerName": "Sideloading Hub",
+      "subtitle": "calimoto release",
+      "localizedDescription": "Applicazione calimoto.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.calimoto.calimoto.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "7.20.0",
+          "date": "2026-09-16T09:48:58Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/calimoto/calimoto_Motorcycle_Navigation.ipa",
+          "localizedDescription": "Versione 7.20.0",
+          "size": 101202709
+        }
+      ]
     }
   ],
   "news": []
