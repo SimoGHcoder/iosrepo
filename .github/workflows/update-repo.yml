@@ -1,4 +1,4 @@
-name: Dynamic Auto-Update apps.json
+name: Full Auto-Extract apps.json from IPA
 
 on:
   release:
@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Rebuild apps.json
+      - name: Rebuild apps.json from IPA Info.plist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
@@ -35,53 +35,44 @@ jobs:
           python - << 'EOF'
           import json
           import os
+          import re
+          import zipfile
+          import plistlib
           import requests
 
           repo = os.environ.get('REPOSITORY')
           token = os.environ.get('GITHUB_TOKEN')
           headers = {'Authorization': f'token {token}'} if token else {}
 
-          # Preset metadati per garantire la compatibilità con SideStore/AltStore
-          APP_PRESETS = {
-              "nuvio": {
-                  "name": "Nuvio",
-                  "bundleIdentifier": "com.nuvio.media",
-                  "developerName": "Tapframe (NuvioMedia)",
-                  "subtitle": "Media player e streaming hub",
-                  "localizedDescription": "Nuvio è un media player moderno e completo sviluppato da Tapframe.",
-                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/nuvio.png",
-                  "tintColor": "#007AFF"
-              },
-              "spotify": {
-                  "name": "Spotify",
-                  "bundleIdentifier": "com.spotify.client",
-                  "developerName": "AIMods",
-                  "subtitle": "Musica senza pubblicità e skip illimitati",
-                  "localizedDescription": "Versione modificata di Spotify curata da AIMods.",
-                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/spotify.png",
-                  "tintColor": "#1DB954"
-              },
-              "calimoto": {
-                  "name": "Calimoto",
-                  "bundleIdentifier": "com.calimoto.calimoto",
-                  "developerName": "Calimoto",
-                  "subtitle": "Navigatore GPS per percorsi in moto",
-                  "localizedDescription": "Il navigatore GPS ideale per motociclisti.",
-                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/calimoto.png",
-                  "tintColor": "#FF5500"
-              },
-              "shapr3d": {
-                  "name": "Shapr3D",
-                  "bundleIdentifier": "com.shapr3d.shapr",
-                  "developerName": "Shapr3D",
-                  "subtitle": "Modellazione 3D CAD per iPad e iOS",
-                  "localizedDescription": "Applicazione di modellazione 3D professionale basata sul motore Parasolid.",
-                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/shapr3d.png",
-                  "tintColor": "#00D2FF"
-              }
+          # Preset opzionali solo per icone e colori (se non presenti nella repo, usa fallback)
+          CUSTOM_METADATA = {
+              "com.nuvio.media": {"tintColor": "#007AFF", "iconURL": f"https://raw.githubusercontent.com/{repo}/main/nuvio.png"},
+              "com.spotify.client": {"tintColor": "#1DB954", "iconURL": f"https://raw.githubusercontent.com/{repo}/main/spotify.png"},
+              "com.calimoto.calimoto": {"tintColor": "#FF5500", "iconURL": f"https://raw.githubusercontent.com/{repo}/main/calimoto.png"},
+              "com.shapr3d.shapr": {"tintColor": "#00D2FF", "iconURL": f"https://raw.githubusercontent.com/{repo}/main/shapr3d.png"}
           }
 
-          # Struttura base rigenerata completamente da zero
+          def extract_ipa_info(ipa_path):
+              """Estrae Bundle ID, Versione e Nome dal file Info.plist dentro l'IPA"""
+              try:
+                  with zipfile.ZipFile(ipa_path, 'r') as ipa:
+                      plist_files = [f for f in ipa.namelist() if re.match(r'^Payload/[^/]+\.app/Info\.plist$', f)]
+                      if not plist_files:
+                          return None
+                      with ipa.open(plist_files[0]) as f:
+                          plist = plistlib.load(f)
+                          bundle_id = plist.get("CFBundleIdentifier")
+                          version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion")
+                          name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
+                          return {
+                              "bundleIdentifier": bundle_id,
+                              "version": version,
+                              "name": name
+                          }
+              except Exception as e:
+                  print(f"Errore nella lettura dell'IPA {ipa_path}: {e}")
+                  return None
+
           data = {
               "name": "Sideloading Hub",
               "identifier": "com.simoghcoder.iosrepo",
@@ -93,7 +84,6 @@ jobs:
 
           url = f'https://api.github.com/repos/{repo}/releases'
           response = requests.get(url, headers=headers)
-          
           if response.status_code != 200:
               print(f"Errore API GitHub: {response.status_code}")
               exit(1)
@@ -105,39 +95,47 @@ jobs:
               if rel.get('draft'):
                   continue
 
-              tag = rel.get('tag_name', '')
-              release_title = rel.get('name', '').strip()
               body = rel.get('body', '')
               published_at = rel.get('published_at', '')
-
-              tag_parts = tag.split('-')
-              app_key = tag_parts[0].lower() if len(tag_parts) > 1 else tag.lower()
-              version_num = tag_parts[-1].lstrip('v')
 
               for asset in rel.get('assets', []):
                   if asset['name'].lower().endswith('.ipa'):
                       download_url = asset['browser_download_url']
                       size = asset['size']
+                      local_filename = "temp_app.ipa"
 
-                      if app_key not in apps_dict:
-                          if app_key in APP_PRESETS:
-                              base_app = APP_PRESETS[app_key].copy()
-                          else:
-                              display_name = release_title if release_title else app_key.capitalize()
-                              base_app = {
-                                  "name": display_name,
-                                  "bundleIdentifier": f"com.simoghcoder.{app_key}",
-                                  "developerName": "Sideloading Hub",
-                                  "subtitle": f"{display_name} release",
-                                  "localizedDescription": body if body else f"Applicazione {display_name}.",
-                                  "iconURL": f"https://raw.githubusercontent.com/{repo}/main/repoicon.png",
-                                  "tintColor": "#007AFF"
-                              }
-                          base_app['versions'] = []
-                          apps_dict[app_key] = base_app
+                      # Scarica l'IPA per analizzare il file Info.plist interno
+                      print(f"Analisi file: {asset['name']}...")
+                      r = requests.get(download_url, headers=headers)
+                      with open(local_filename, 'wb') as f:
+                          f.write(r.content)
 
-                      target_app = apps_dict[app_key]
+                      info = extract_ipa_info(local_filename)
+                      if os.path.exists(local_filename):
+                          os.remove(local_filename)
 
+                      if not info or not info.get("bundleIdentifier"):
+                          print(f"Impossibile estrarre Info.plist da {asset['name']}, salto.")
+                          continue
+
+                      bundle_id = info["bundleIdentifier"]
+                      version_num = info["version"]
+                      app_name = info["name"] or rel.get('name') or "App iOS"
+
+                      if bundle_id not in apps_dict:
+                          meta = CUSTOM_METADATA.get(bundle_id, {})
+                          apps_dict[bundle_id] = {
+                              "name": app_name,
+                              "bundleIdentifier": bundle_id,
+                              "developerName": "Sideloading Hub",
+                              "subtitle": f"{app_name} release",
+                              "localizedDescription": body if body else f"Applicazione {app_name}.",
+                              "iconURL": meta.get("iconURL", f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"),
+                              "tintColor": meta.get("tintColor", "#007AFF"),
+                              "versions": []
+                          }
+
+                      target_app = apps_dict[bundle_id]
                       version_entry = {
                           "version": version_num,
                           "date": published_at,
@@ -157,11 +155,10 @@ jobs:
 
           data['apps'] = final_apps
 
-          # Sovrascrive completamente apps.json in modo pulito
           with open('apps.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          print("File apps.json rigenerato con successo senza errori di parsing!")
+          print("File apps.json generato automaticamente ed estratto direttamente dai pacchetti IPA!")
           EOF
 
       - name: Commit and Push
@@ -169,4 +166,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add apps.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: rigenerato apps.json con sintassi pulita" && git push origin main)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: estratto automaticamente Bundle ID e versione dagli IPA" && git push origin main)
