@@ -1,4 +1,4 @@
-name: Full Auto-Extract apps.json from IPA
+name: Full Auto-Extract apps.json & Icons from IPA
 
 on:
   release:
@@ -25,9 +25,10 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install requests
+        run: |
+          pip install requests Pillow
 
-      - name: Rebuild apps.json from IPA Info.plist
+      - name: Rebuild apps.json and extract icons
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
@@ -39,36 +40,72 @@ jobs:
           import zipfile
           import plistlib
           import requests
+          from PIL import Image
 
           repo = os.environ.get('REPOSITORY')
           token = os.environ.get('GITHUB_TOKEN')
           headers = {'Authorization': f'token {token}'} if token else {}
 
-          # Preset opzionali solo per icone e colori (se non presenti nella repo, usa fallback)
-          CUSTOM_METADATA = {
-              "com.nuvio.media": {"tintColor": "#007AFF", "iconURL": f"https://raw.githubusercontent.com/{repo}/main/nuvio.png"},
-              "com.spotify.client": {"tintColor": "#1DB954", "iconURL": f"https://raw.githubusercontent.com/{repo}/main/spotify.png"},
-              "com.calimoto.calimoto": {"tintColor": "#FF5500", "iconURL": f"https://raw.githubusercontent.com/{repo}/main/calimoto.png"},
-              "com.shapr3d.shapr": {"tintColor": "#00D2FF", "iconURL": f"https://raw.githubusercontent.com/{repo}/main/shapr3d.png"}
-          }
+          os.makedirs('icons', exist_ok=True)
 
-          def extract_ipa_info(ipa_path):
-              """Estrae Bundle ID, Versione e Nome dal file Info.plist dentro l'IPA"""
+          def extract_ipa_data(ipa_path, bundle_out_dir):
               try:
                   with zipfile.ZipFile(ipa_path, 'r') as ipa:
                       plist_files = [f for f in ipa.namelist() if re.match(r'^Payload/[^/]+\.app/Info\.plist$', f)]
                       if not plist_files:
                           return None
-                      with ipa.open(plist_files[0]) as f:
+                      
+                      plist_path = plist_files[0]
+                      app_folder = os.path.dirname(plist_path)
+
+                      with ipa.open(plist_path) as f:
                           plist = plistlib.load(f)
-                          bundle_id = plist.get("CFBundleIdentifier")
-                          version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion")
-                          name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
-                          return {
-                              "bundleIdentifier": bundle_id,
-                              "version": version,
-                              "name": name
-                          }
+
+                      bundle_id = plist.get("CFBundleIdentifier")
+                      version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion")
+                      name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
+
+                      # Cerca la chiave dell'icona in Info.plist
+                      icon_files = []
+                      icons_dict = plist.get("CFBundleIcons", {})
+                      primary_icon = icons_dict.get("CFBundlePrimaryIcon", {})
+                      if "CFBundleIconFiles" in primary_icon:
+                          icon_files.extend(primary_icon["CFBundleIconFiles"])
+                      elif "CFBundleIconName" in primary_icon:
+                          icon_files.append(primary_icon["CFBundleIconName"])
+                      
+                      if not icon_files and "CFBundleIconFiles" in plist:
+                          icon_files.extend(plist["CFBundleIconFiles"])
+
+                      extracted_icon_path = None
+                      
+                      # Cerca ed estrae la prima icona PNG disponibile
+                      if icon_files:
+                          best_icon = icon_files[-1] # Di solito l'ultima è quella a risoluzione più alta
+                          for item in ipa.namelist():
+                              if item.startswith(app_folder) and best_icon in item and item.endswith('.png'):
+                                  icon_filename = f"{bundle_id}.png"
+                                  out_file_path = os.path.join(bundle_out_dir, icon_filename)
+                                  
+                                  with ipa.open(item) as icon_file, open(out_file_path, 'wb') as out_file:
+                                      out_file.write(icon_file.read())
+                                  
+                                  # Converte / normalizza l'immagine PNG se necessario
+                                  try:
+                                      with Image.open(out_file_path) as img:
+                                          img.save(out_file_path, "PNG")
+                                  except Exception:
+                                      pass
+
+                                  extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
+                                  break
+
+                      return {
+                          "bundleIdentifier": bundle_id,
+                          "version": version,
+                          "name": name,
+                          "iconURL": extracted_icon_path
+                      }
               except Exception as e:
                   print(f"Errore nella lettura dell'IPA {ipa_path}: {e}")
                   return None
@@ -104,34 +141,32 @@ jobs:
                       size = asset['size']
                       local_filename = "temp_app.ipa"
 
-                      # Scarica l'IPA per analizzare il file Info.plist interno
-                      print(f"Analisi file: {asset['name']}...")
+                      print(f"Analisi file e estrazione icona: {asset['name']}...")
                       r = requests.get(download_url, headers=headers)
                       with open(local_filename, 'wb') as f:
                           f.write(r.content)
 
-                      info = extract_ipa_info(local_filename)
+                      info = extract_ipa_data(local_filename, 'icons')
                       if os.path.exists(local_filename):
                           os.remove(local_filename)
 
                       if not info or not info.get("bundleIdentifier"):
-                          print(f"Impossibile estrarre Info.plist da {asset['name']}, salto.")
                           continue
 
                       bundle_id = info["bundleIdentifier"]
                       version_num = info["version"]
                       app_name = info["name"] or rel.get('name') or "App iOS"
+                      icon_url = info.get("iconURL") or f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
 
                       if bundle_id not in apps_dict:
-                          meta = CUSTOM_METADATA.get(bundle_id, {})
                           apps_dict[bundle_id] = {
                               "name": app_name,
                               "bundleIdentifier": bundle_id,
                               "developerName": "Sideloading Hub",
                               "subtitle": f"{app_name} release",
                               "localizedDescription": body if body else f"Applicazione {app_name}.",
-                              "iconURL": meta.get("iconURL", f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"),
-                              "tintColor": meta.get("tintColor", "#007AFF"),
+                              "iconURL": icon_url,
+                              "tintColor": "#007AFF",
                               "versions": []
                           }
 
@@ -158,12 +193,12 @@ jobs:
           with open('apps.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          print("File apps.json generato automaticamente ed estratto direttamente dai pacchetti IPA!")
+          print("File apps.json ed icone estratti con successo!")
           EOF
 
       - name: Commit and Push
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add apps.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: estratto automaticamente Bundle ID e versione dagli IPA" && git push origin main)
+          git add apps.json icons/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: estratte icone e dati completi dagli IPA" && git push origin main)
