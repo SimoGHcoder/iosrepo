@@ -47,6 +47,15 @@ jobs:
           headers = {'Authorization': f'token {token}'} if token else {}
 
           os.makedirs('icons', exist_ok=True)
+          with open('icons/.gitkeep', 'a') as f:
+              pass
+
+          CUSTOM_METADATA = {
+              "com.nuvio.media": {"tintColor": "#007AFF"},
+              "com.spotify.client": {"tintColor": "#1DB954"},
+              "com.calimoto.calimoto": {"tintColor": "#FF5500"},
+              "com.shapr3d.shapr": {"tintColor": "#00D2FF"}
+          }
 
           def extract_ipa_data(ipa_path, bundle_out_dir):
               try:
@@ -65,7 +74,6 @@ jobs:
                       version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion")
                       name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
 
-                      # Cerca la chiave dell'icona in Info.plist
                       icon_files = []
                       icons_dict = plist.get("CFBundleIcons", {})
                       primary_icon = icons_dict.get("CFBundlePrimaryIcon", {})
@@ -79,9 +87,8 @@ jobs:
 
                       extracted_icon_path = None
                       
-                      # Cerca ed estrae la prima icona PNG disponibile
                       if icon_files:
-                          best_icon = icon_files[-1] # Di solito l'ultima è quella a risoluzione più alta
+                          best_icon = icon_files[-1]
                           for item in ipa.namelist():
                               if item.startswith(app_folder) and best_icon in item and item.endswith('.png'):
                                   icon_filename = f"{bundle_id}.png"
@@ -90,7 +97,6 @@ jobs:
                                   with ipa.open(item) as icon_file, open(out_file_path, 'wb') as out_file:
                                       out_file.write(icon_file.read())
                                   
-                                  # Converte / normalizza l'immagine PNG se necessario
                                   try:
                                       with Image.open(out_file_path) as img:
                                           img.save(out_file_path, "PNG")
@@ -102,7 +108,7 @@ jobs:
 
                       return {
                           "bundleIdentifier": bundle_id,
-                          "version": version,
+                          "version": str(version),
                           "name": name,
                           "iconURL": extracted_icon_path
                       }
@@ -141,7 +147,7 @@ jobs:
                       size = asset['size']
                       local_filename = "temp_app.ipa"
 
-                      print(f"Analisi file e estrazione icona: {asset['name']}...")
+                      print(f"Analisi file: {asset['name']}...")
                       r = requests.get(download_url, headers=headers)
                       with open(local_filename, 'wb') as f:
                           f.write(r.content)
@@ -158,6 +164,8 @@ jobs:
                       app_name = info["name"] or rel.get('name') or "App iOS"
                       icon_url = info.get("iconURL") or f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
 
+                      meta = CUSTOM_METADATA.get(bundle_id, {})
+
                       if bundle_id not in apps_dict:
                           apps_dict[bundle_id] = {
                               "name": app_name,
@@ -166,7 +174,7 @@ jobs:
                               "subtitle": f"{app_name} release",
                               "localizedDescription": body if body else f"Applicazione {app_name}.",
                               "iconURL": icon_url,
-                              "tintColor": "#007AFF",
+                              "tintColor": meta.get("tintColor", "#007AFF"),
                               "versions": []
                           }
 
@@ -176,7 +184,9 @@ jobs:
                           "date": published_at,
                           "downloadURL": download_url,
                           "localizedDescription": body if body else f"Versione {version_num}",
-                          "size": size
+                          "size": int(size),
+                          "bundleIdentifier": bundle_id,
+                          "appID": bundle_id
                       }
 
                       if not any(v['version'] == version_num for v in target_app['versions']):
@@ -193,7 +203,7 @@ jobs:
           with open('apps.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          print("File apps.json ed icone estratti con successo!")
+          print("File apps.json rigenerato con i campi obbligatori per SideStore!")
           EOF
 
       - name: Commit and Push
@@ -201,4 +211,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add apps.json icons/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: estratte icone e dati completi dagli IPA" && git push origin main)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: fix schema versions SideStore" && git push origin main)
