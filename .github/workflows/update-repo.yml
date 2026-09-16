@@ -41,7 +41,7 @@ jobs:
           token = os.environ.get('GITHUB_TOKEN')
           headers = {'Authorization': f'token {token}'} if token else {}
 
-          # Database dei metadati ufficiali per garantire compatibilità con SideStore
+          # Preset metadati per garantire la compatibilità con SideStore/AltStore
           APP_PRESETS = {
               "nuvio": {
                   "name": "Nuvio",
@@ -81,7 +81,7 @@ jobs:
               }
           }
 
-          json_file = 'apps.json'
+          # Struttura base rigenerata completamente da zero
           data = {
               "name": "Sideloading Hub",
               "identifier": "com.simoghcoder.iosrepo",
@@ -120,7 +120,6 @@ jobs:
                       size = asset['size']
 
                       if app_key not in apps_dict:
-                          # Utilizza i metadati predefiniti se disponibili, altrimenti assegna fallback validi
                           if app_key in APP_PRESETS:
                               base_app = APP_PRESETS[app_key].copy()
                           else:
@@ -158,10 +157,11 @@ jobs:
 
           data['apps'] = final_apps
 
-          with open(json_file, 'w', encoding='utf-8') as f:
+          # Sovrascrive completamente apps.json in modo pulito
+          with open('apps.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          print("File apps.json rigenerato con formato valido per SideStore!")
+          print("File apps.json rigenerato con successo senza errori di parsing!")
           EOF
 
       - name: Commit and Push
@@ -169,4 +169,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add apps.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: rigenerato apps.json con sintassi valida per SideStore" && git push origin main)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: rigenerato apps.json con sintassi pulita" && git push origin main)
