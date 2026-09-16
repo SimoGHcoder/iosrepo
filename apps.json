@@ -48,11 +48,11 @@
       ]
     },
     {
-      "name": "Nuvio Enhanced yesnt10 0.4.13",
+      "name": "Nuvio Enhanced yesnt10 0.3.1B102",
       "bundleIdentifier": "com.simoghcoder.nuvio_enhanced",
       "developerName": "Sideloading Hub",
-      "subtitle": "Nuvio Enhanced yesnt10 0.4.13 IPA release",
-      "localizedDescription": "Applicazione Nuvio Enhanced yesnt10 0.4.13 distribuita tramite Sideloading Hub.",
+      "subtitle": "Nuvio Enhanced yesnt10 0.3.1B102 IPA release",
+      "localizedDescription": "Applicazione Nuvio Enhanced yesnt10 0.3.1B102 distribuita tramite Sideloading Hub.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/nuvio_enhanced.png",
       "tintColor": "007AFF",
       "versions": [
@@ -62,6 +62,13 @@
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_Enhanced-0.4.13/nuvio-0.4.13-full-release.ipa",
           "localizedDescription": "Versione 0.4.13",
           "size": 67231486
+        },
+        {
+          "version": "0.3.1b102",
+          "date": "2026-09-13T10:46:40Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio_enhanced-0.3.1b102/Nuvio-Enhanced-v0.3.1-build102-full-unsigned.ipa",
+          "localizedDescription": "Versione 0.3.1b102",
+          "size": 57948412
         }
       ]
     },
@@ -116,24 +123,6 @@
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.4.18/nuvio-0.4.18-full-release.ipa",
           "localizedDescription": "Versione 0.4.18",
           "size": 51099484
-        }
-      ]
-    },
-    {
-      "name": "Nuvio Enhanced yesnt10",
-      "bundleIdentifier": "com.simoghcoder.0.3.1build102",
-      "developerName": "Sideloading Hub",
-      "subtitle": "Nuvio Enhanced yesnt10 IPA release",
-      "localizedDescription": "Applicazione Nuvio Enhanced yesnt10 distribuita tramite Sideloading Hub.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/0.3.1build102.png",
-      "tintColor": "007AFF",
-      "versions": [
-        {
-          "version": "0.3.1build102",
-          "date": "2026-09-13T10:46:40Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/0.3.1build102/Nuvio-Enhanced-v0.3.1-build102-full-unsigned.ipa",
-          "localizedDescription": "Versione 0.3.1build102",
-          "size": 57948412
         }
       ]
     }
