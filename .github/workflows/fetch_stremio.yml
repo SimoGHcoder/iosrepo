@@ -1,9 +1,9 @@
 name: Fetch Stremio IPA from AltStore Source
 
 on:
-  workflow_dispatch: # Ti permette di avviarlo manualmente dalla scheda Actions
+  workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions
   schedule:
-    - cron: '0 0 * * 0' # Esegue un controllo automatico ogni domenica a mezzanotte
+    - cron: '0 0 * * 0' # Controllo automatico ogni domenica a mezzanotte
 
 jobs:
   update-stremio:
@@ -12,20 +12,28 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Fetch IPA URL from AltStore Source
+      - name: Fetch IPA URL and Version from Stremio AltStore Source
         id: get_ipa
         run: |
-          # Sostituisci URL_ALTSTORE_PAL con il link JSON effettivo della repo AltStore PAL di Stremio
-          ALTSTORE_SOURCE_URL="https://example.com/altstore-source.json"
+          ALTSTORE_SOURCE_URL="https://dl.strem.io/apple/altstore/source.json"
           
-          # Estrae l'URL del file IPA tramite jq
-          IPA_URL=$(curl -s "$ALTSTORE_SOURCE_URL" | jq -r '.apps[] | select(.name=="Stremio") | .downloadURL')
-          VERSION=$(curl -s "$ALTSTORE_SOURCE_URL" | jq -r '.apps[] | select(.name=="Stremio") | .version')
+          # Scarica il JSON della sorgente
+          SOURCE_JSON=$(curl -sL "$ALTSTORE_SOURCE_URL")
+          
+          # Estrae l'URL dell'IPA e la versione dall'array delle app
+          IPA_URL=$(echo "$SOURCE_JSON" | jq -r '.apps[0].downloadURL')
+          VERSION=$(echo "$SOURCE_JSON" | jq -r '.apps[0].version')
+          
+          if [ -z "$IPA_URL" ] || [ "$IPA_URL" == "null" ]; then
+            echo "Errore: Impossibile trovare il downloadURL nel JSON."
+            exit 1
+          fi
           
           echo "IPA_URL=$IPA_URL" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           
-          # Scarica il file IPA
+          # Scarica il file IPA di Stremio
+          echo "Download dell'IPA da $IPA_URL..."
           curl -L -o "Stremio.ipa" "$IPA_URL"
 
       - name: Create Release and Upload IPA
@@ -33,7 +41,7 @@ jobs:
         with:
           tag_name: "stremio-v${{ env.VERSION }}"
           name: "Stremio v${{ env.VERSION }}"
-          body: "Automated download of Stremio IPA from AltStore PAL source."
+          body: "Scaricamento automatico dell'IPA di Stremio dalla sorgente AltStore ufficiale."
           draft: false
           prerelease: false
           files: |
