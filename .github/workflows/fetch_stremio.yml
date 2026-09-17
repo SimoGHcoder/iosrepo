@@ -1,0 +1,42 @@
+name: Fetch Stremio IPA from AltStore Source
+
+on:
+  workflow_dispatch: # Ti permette di avviarlo manualmente dalla scheda Actions
+  schedule:
+    - cron: '0 0 * * 0' # Esegue un controllo automatico ogni domenica a mezzanotte
+
+jobs:
+  update-stremio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Fetch IPA URL from AltStore Source
+        id: get_ipa
+        run: |
+          # Sostituisci URL_ALTSTORE_PAL con il link JSON effettivo della repo AltStore PAL di Stremio
+          ALTSTORE_SOURCE_URL="https://example.com/altstore-source.json"
+          
+          # Estrae l'URL del file IPA tramite jq
+          IPA_URL=$(curl -s "$ALTSTORE_SOURCE_URL" | jq -r '.apps[] | select(.name=="Stremio") | .downloadURL')
+          VERSION=$(curl -s "$ALTSTORE_SOURCE_URL" | jq -r '.apps[] | select(.name=="Stremio") | .version')
+          
+          echo "IPA_URL=$IPA_URL" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
+          # Scarica il file IPA
+          curl -L -o "Stremio.ipa" "$IPA_URL"
+
+      - name: Create Release and Upload IPA
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "stremio-v${{ env.VERSION }}"
+          name: "Stremio v${{ env.VERSION }}"
+          body: "Automated download of Stremio IPA from AltStore PAL source."
+          draft: false
+          prerelease: false
+          files: |
+            Stremio.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
