@@ -3,22 +3,33 @@ name: Fetch Stremio IPA and Replace Release
 on:
   schedule:
     - cron: '0 0 * * *' # Controlla ogni giorno a mezzanotte
-  workflow_dispatch: # Permette l'esecuzione manuale
+  workflow_dispatch: # Permette l'esecuzione manuale dalla scheda Actions
 
 jobs:
   update-stremio:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Necessario per eliminare e creare Release/Tag
+      contents: write # Necessario per eliminare e creare Release e Tag
 
     steps:
       - name: Fetch Latest Stremio Metadata
         id: stremio_info
         run: |
           SOURCE_JSON=$(curl -s https://dl.strem.io/apple/altstore/source.json)
-          VERSION=$(echo "$SOURCE_JSON" | jq -r '.apps[0].version')
-          IPA_URL=$(echo "$SOURCE_JSON" | jq -r '.apps[0].downloadURL')
           
+          # Cerca l'app tramite bundleID o nome per evitare errori se cambia l'indice dell'array
+          VERSION=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.stremio" or .name == "Stremio")) | .version' | head -n 1)
+          IPA_URL=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.stremio" or .name == "Stremio")) | .downloadURL' | head -n 1)
+          
+          # Controllo di sicurezza se l'URL viene estratto vuoto o null
+          if [ -z "$IPA_URL" ] || [ "$IPA_URL" = "null" ]; then
+            echo "Errore: Impossibile estrarre l'URL di download dal JSON di Stremio."
+            exit 1
+          fi
+
+          echo "Found Stremio Version: $VERSION"
+          echo "Found IPA URL: $IPA_URL"
+
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "ipa_url=$IPA_URL" >> $GITHUB_OUTPUT
 
@@ -28,9 +39,9 @@ jobs:
         run: |
           TAG_NAME="stremio-latest"
           
-          # Se la release esiste, la elimina insieme al file allegato
+          # Se la release esiste già, la elimina insieme al vecchio file IPA allegato
           if gh release view "$TAG_NAME" >/dev/null 2>&1; then
-            echo "Eliminazione vecchia release $TAG_NAME..."
+            echo "Eliminazione vecchia release e tag $TAG_NAME..."
             gh release delete "$TAG_NAME" --cleanup-tag --yes
           else
             echo "Nessuna release precedente trovata."
@@ -49,4 +60,4 @@ jobs:
           
           gh release create "$TAG_NAME" "Stremio.ipa" \
             --title "Stremio v${{ steps.stremio_info.outputs.version }}" \
-            --notes "Versione più recente di Stremio (v${{ steps.stremio_info.outputs.version }}). L'IPA precedente è stato rimosso."
+            --notes "Versione più recente di Stremio (v${{ steps.stremio_info.outputs.version }}). L'IPA precedente è stato rimosso e sostituito."
