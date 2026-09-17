@@ -16,23 +16,36 @@ jobs:
       - name: Download Official Stremio IPA
         id: download_stremio
         run: |
-          # 1. Recupera la versione corrente dal manifesto sorgente AltStore
+          # 1. Scarica il manifesto principale di AltStore
           curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
                https://dl.strem.io/apple/altstore/source.json -o source.json
 
-          VERSION=$(jq -r '.apps[0].versions[0].version' source.json)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "Rilevata versione AltStore: $VERSION"
+          # 2. Estrae l'URL del manifesto per ricavare la versione completa di build (es. 2.0.8-23)
+          MANIFEST_URL=$(jq -r '.apps[0].versions[0].downloadURL' source.json)
+          BASE_VERSION=$(jq -r '.apps[0].versions[0].version' source.json)
 
-          # 2. Costruisce l'URL diretto usando il pattern statico della CDN Stremio
-          DIRECT_IPA_URL="https://dl.strem.io/apple/${VERSION}/ios/stremio_iOS.ipa"
-          echo "URL IPA statico: $DIRECT_IPA_URL"
+          # Ricava la stringa di build dal percorso (trasforma '2.0.8-23' in '2.0.8b23')
+          BUILD_TAG=$(echo "$MANIFEST_URL" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+-[0-9]+' | sed 's/-/'b'/')
 
-          # 3. Scarica il file .ipa effettivo
+          # Se la regex non trova il pattern con il trattino, usa la versione base
+          if [ -z "$BUILD_TAG" ]; then
+            BUILD_TAG="$BASE_VERSION"
+          fi
+
+          echo "VERSION=$BASE_VERSION" >> $GITHUB_ENV
+          echo "BUILD_TAG=$BUILD_TAG" >> $GITHUB_ENV
+          echo "Rilevata versione base: $BASE_VERSION"
+          echo "Tag build ricavato per CDN: $BUILD_TAG"
+
+          # 3. Costruisce l'URL statico dinamico
+          DIRECT_IPA_URL="https://dl.strem.io/apple/${BUILD_TAG}/ios/stremio_iOS.ipa"
+          echo "URL IPA generato: $DIRECT_IPA_URL"
+
+          # 4. Scarica il file .ipa reale
           curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
                -o Stremio.ipa "$DIRECT_IPA_URL"
 
-          # 4. Verifica che il file sia valido (> 10 MB)
+          # 5. Verifica che il file sia un IPA valido (> 10 MB)
           FILESIZE=$(stat -c%s "Stremio.ipa" 2>/dev/null || echo 0)
           echo "Dimensione file scaricato: $FILESIZE byte"
 
@@ -61,10 +74,10 @@ jobs:
           tag_name: "v${{ env.VERSION }}"
           name: "Stremio v${{ env.VERSION }}"
           body: |
-            Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN pubblica.
+            Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.
             
-            - **Versione:** ${{ env.VERSION }}
-            - **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/${{ env.VERSION }}/ios/stremio_iOS.ipa)
+            - **Versione:** ${{ env.VERSION }} (${{ env.BUILD_TAG }})
+            - **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/${{ env.BUILD_TAG }}/ios/stremio_iOS.ipa)
           files: Stremio.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
