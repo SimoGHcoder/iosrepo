@@ -1,0 +1,52 @@
+name: Fetch Stremio IPA and Replace Release
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Controlla ogni giorno a mezzanotte
+  workflow_dispatch: # Permette l'esecuzione manuale
+
+jobs:
+  update-stremio:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Necessario per eliminare e creare Release/Tag
+
+    steps:
+      - name: Fetch Latest Stremio Metadata
+        id: stremio_info
+        run: |
+          SOURCE_JSON=$(curl -s https://dl.strem.io/apple/altstore/source.json)
+          VERSION=$(echo "$SOURCE_JSON" | jq -r '.apps[0].version')
+          IPA_URL=$(echo "$SOURCE_JSON" | jq -r '.apps[0].downloadURL')
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "ipa_url=$IPA_URL" >> $GITHUB_OUTPUT
+
+      - name: Delete Old Release and Tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="stremio-latest"
+          
+          # Se la release esiste, la elimina insieme al file allegato
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Eliminazione vecchia release $TAG_NAME..."
+            gh release delete "$TAG_NAME" --cleanup-tag --yes
+          else
+            echo "Nessuna release precedente trovata."
+          fi
+
+      - name: Download New Stremio IPA
+        run: |
+          echo "Download Stremio v${{ steps.stremio_info.outputs.version }}..."
+          curl -L "${{ steps.stremio_info.outputs.ipa_url }}" -o "Stremio.ipa"
+
+      - name: Create New Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="stremio-latest"
+          
+          gh release create "$TAG_NAME" "Stremio.ipa" \
+            --title "Stremio v${{ steps.stremio_info.outputs.version }}" \
+            --notes "Versione più recente di Stremio (v${{ steps.stremio_info.outputs.version }}). L'IPA precedente è stato rimosso."
