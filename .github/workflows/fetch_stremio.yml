@@ -17,23 +17,31 @@ jobs:
         run: |
           ALTSTORE_SOURCE_URL="https://dl.strem.io/apple/altstore/source.json"
           
-          # Scarica il JSON della sorgente
+          # Scarica il JSON della sorgente principale
           SOURCE_JSON=$(curl -sL "$ALTSTORE_SOURCE_URL")
           
-          # Estrae l'URL dell'IPA e la versione dall'array delle app
-          IPA_URL=$(echo "$SOURCE_JSON" | jq -r '.apps[0].downloadURL')
-          VERSION=$(echo "$SOURCE_JSON" | jq -r '.apps[0].version')
+          # Estrae la versione e l'URL del manifest dalla prima versione dell'array apps[0].versions[0]
+          VERSION=$(echo "$SOURCE_JSON" | jq -r '.apps[0].versions[0].version')
+          MANIFEST_URL=$(echo "$SOURCE_JSON" | jq -r '.apps[0].versions[0].downloadURL')
           
+          echo "Versione trovata: $VERSION"
+          echo "Manifest URL: $MANIFEST_URL"
+          
+          # Scarica il manifest.json specifico della versione per trovare il link diretto al file IPA
+          MANIFEST_JSON=$(curl -sL "$MANIFEST_URL")
+          IPA_URL=$(echo "$MANIFEST_JSON" | jq -r '.. | .downloadURL? // empty' | grep '\.ipa' | head -n 1)
+          
+          # Se il manifest non contiene direttamente .ipa, usa una regola di fallback basata sulla struttura degli URL Stremio
           if [ -z "$IPA_URL" ] || [ "$IPA_URL" == "null" ]; then
-            echo "Errore: Impossibile trovare il downloadURL nel JSON."
-            exit 1
+            IPA_URL="${MANIFEST_URL%manifest.json}Stremio.ipa"
           fi
+          
+          echo "URL finale dell'IPA: $IPA_URL"
           
           echo "IPA_URL=$IPA_URL" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           
-          # Scarica il file IPA di Stremio
-          echo "Download dell'IPA da $IPA_URL..."
+          # Scarica il file IPA
           curl -L -o "Stremio.ipa" "$IPA_URL"
 
       - name: Create Release and Upload IPA
@@ -41,7 +49,7 @@ jobs:
         with:
           tag_name: "stremio-v${{ env.VERSION }}"
           name: "Stremio v${{ env.VERSION }}"
-          body: "Scaricamento automatico dell'IPA di Stremio dalla sorgente AltStore ufficiale."
+          body: "Scaricamento automatico dell'IPA di Stremio v${{ env.VERSION }} dalla sorgente AltStore ufficiale."
           draft: false
           prerelease: false
           files: |
