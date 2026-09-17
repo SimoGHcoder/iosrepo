@@ -16,52 +16,66 @@ jobs:
       - name: Download Official Stremio IPA
         id: download_stremio
         run: |
-          # 1. Recupera la versione ufficiale dal feed AltStore
-          curl -sSL -A "AltStore/1.0" \
+          # 1. Recupera la versione dal manifesto principale
+          curl -sSL -A "AltStore/1.6.8 (com.rileytestut.AltStore; build:1; iOS 17.4.0)" \
                https://dl.strem.io/apple/altstore/source.json -o source.json
 
           VERSION=$(jq -r '.apps[0].versions[0].version' source.json)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Rilevata versione: $VERSION"
 
-          # 2. Ottieni l'URL del manifesto della versione specifica
+          # 2. Ottieni l'URL del manifesto di versione
           MANIFEST_URL=$(jq -r '.apps[0].versions[0].downloadURL' source.json)
-          curl -sSL -A "AltStore/1.0" "$MANIFEST_URL" -o manifest.json
+          curl -sSL -A "AltStore/1.6.8 (com.rileytestut.AltStore; build:1; iOS 17.4.0)" "$MANIFEST_URL" -o manifest.json
 
-          # 3. Estrai l'URL di download fornito da AltStore
-          DOWNLOAD_URL=$(jq -r '.downloadURL // .appURL // empty' manifest.json)
+          # 3. Estrazione sicura dell'URL relativo/assoluto senza Broken Pipe
+          RAW_PATH=$(jq -r '.. | strings | select(endswith(".ipa"))' manifest.json 2>/dev/null | { head -n 1; cat >/dev/null; })
 
-          if [ -z "$DOWNLOAD_URL" ]; then
-            DOWNLOAD_URL=$(jq -r '.. | strings | select(endswith(".ipa") or endswith(".zip"))' manifest.json | head -n 1)
+          if [[ "$RAW_PATH" == http* ]]; then
+            IPA_URL="$RAW_PATH"
+          elif [[ "$RAW_PATH" == /* ]]; then
+            IPA_URL="https://dl.strem.io$RAW_PATH"
+          elif [ -n "$RAW_PATH" ]; then
+            IPA_URL="https://dl.strem.io/$RAW_PATH"
           fi
 
-          echo "URL individuato: $DOWNLOAD_URL"
+          echo "URL PAL ricostruito: $IPA_URL"
 
-          # 4. Scarica il file simulando le intestazioni di AltStore
-          curl -sSL \
-               -H "User-Agent: AltStore/1.6.8 (com.rileytestut.AltStore; build:1; iOS 17.4.0)" \
-               -H "Accept: */*" \
-               -o payload_downloaded "$DOWNLOAD_URL"
+          # 4. Prova il download dall'endpoint PAL
+          if [ -n "$IPA_URL" ]; then
+            curl -sSL -A "AltStore/1.6.8 (com.rileytestut.AltStore; build:1; iOS 17.4.0)" \
+                 -o Stremio.ipa "$IPA_URL"
+          fi
 
-          # 5. Verifica se è uno ZIP/IPA o un file compresso
-          FILE_TYPE=$(file payload_downloaded)
-          echo "Tipo file scaricato: $FILE_TYPE"
+          FILESIZE=$(stat -c%s "Stremio.ipa" 2>/dev/null || echo 0)
+          echo "Dimensione scaricata da PAL: $FILESIZE byte"
 
-          if echo "$FILE_TYPE" | grep -iq "Zip archive"; then
-            mv payload_downloaded Stremio.ipa
-          else
-            # Tenta il fallback speculare dai server di rilascio alternativi Stremio
-            echo "Tentativo di fallback su endpoint CDN diretto..."
+          # 5. FALLBACK AUTOMATICO: Se l'endpoint PAL restituisce il blocco (< 10 MB), scarica l'IPA dalla CDN di distribuzione diretta
+          if [ $FILESIZE -lt 10485760 ]; then
+            echo "L'endpoint PAL richiede un token Apple. Avvio download diretto dalla CDN di Stremio..."
+            
+            # URL di distribuzione diretta degli IPA ufficiali
+            DIRECT_URL="https://dl.strem.io/apple/stremio-v${VERSION}.ipa"
+            
             curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X)" \
-                 -o Stremio.ipa "https://dl.strem.io/apple/altstore/stremio/${VERSION}/Stremio.ipa"
+                 -o Stremio.ipa "$DIRECT_URL"
+            
+            # Se la convenzione del nome differisce, tenta la struttura senza prefisso 'v'
+            CHECK_SIZE=$(stat -c%s "Stremio.ipa" 2>/dev/null || echo 0)
+            if [ $CHECK_SIZE -lt 10485760 ]; then
+              FALLBACK_URL="https://dl.strem.io/apple/stremio-${VERSION}.ipa"
+              echo "Tentativo secondo mirror: $FALLBACK_URL"
+              curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X)" \
+                   -o Stremio.ipa "$FALLBACK_URL"
+            fi
           fi
 
-          # 6. Validazione dimensione finale (> 10 MB)
+          # 6. Validazione finale della dimensione del file (> 10 MB)
           FINAL_SIZE=$(stat -c%s "Stremio.ipa" 2>/dev/null || echo 0)
-          echo "Dimensione finale: $FINAL_SIZE byte"
+          echo "Dimensione finale file IPA: $FINAL_SIZE byte"
 
           if [ $FINAL_SIZE -lt 10485760 ]; then
-            echo "::error:: Il file ottenuto non è un IPA valido ($FINAL_SIZE byte)."
+            echo "::error:: Impossibile recuperare un IPA valido. Risposta ottenuta dal server:"
             cat Stremio.ipa | head -n 20
             exit 1
           fi
@@ -85,10 +99,10 @@ jobs:
           tag_name: "v${{ env.VERSION }}"
           name: "Stremio v${{ env.VERSION }}"
           body: |
-            Download automatico dell'IPA ufficiale di Stremio (Versione ${{ env.VERSION }}).
+            Download automatico dell'IPA ufficiale di Stremio.
             
             - **Versione:** ${{ env.VERSION }}
-            - **Sorgente:** Stremio Official Releases
+            - **Sorgente:** Stremio Official Distribution
           files: Stremio.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
