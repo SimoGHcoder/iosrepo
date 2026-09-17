@@ -28,18 +28,34 @@ jobs:
           echo "Rilevata versione: $VERSION"
           echo "URL Manifesto: $MANIFEST_URL"
 
-          # 3. Scarica il manifesto della versione ed estrae il link reale all'IPA
+          # 3. Scarica il manifesto della versione
           curl -s -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
                "$MANIFEST_URL" -o manifest.json
 
-          IPA_URL=$(jq -r '.assets[0].url' manifest.json)
-          echo "URL IPA Reale: $IPA_URL"
+          # Stampa la struttura esatta del manifest nei log per ispezione
+          echo "--- CONTENUTO DI MANIFEST.JSON ---"
+          cat manifest.json
+          echo -e "\n----------------------------------"
 
-          # 4. Scarica il file .ipa effettivo seguendo i reindirizzamenti
+          # 4. Tenta l'estrazione con jq; se fallisce usa regex per trovare il primo URL valido
+          IPA_URL=$(jq -r '.assets[0].url // .downloadURL // .url // empty' manifest.json)
+
+          if [ -z "$IPA_URL" ] || [ "$IPA_URL" == "null" ]; then
+            IPA_URL=$(grep -oE 'https?://[^"]+' manifest.json | head -n 1)
+          fi
+
+          echo "URL IPA Reale estratto: $IPA_URL"
+
+          if [ -z "$IPA_URL" ] || [ "$IPA_URL" == "null" ]; then
+            echo "::error:: Impossibile trovare l'URL dell'IPA all'interno di manifest.json"
+            exit 1
+          fi
+
+          # 5. Scarica il file .ipa effettivo seguendo i reindirizzamenti
           curl -L -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
                -o Stremio.ipa "$IPA_URL"
 
-          # 5. Verifica che il file sia valido (> 10 MB)
+          # 6. Verifica che il file sia valido (> 10 MB)
           FILESIZE=$(stat -c%s "Stremio.ipa" 2>/dev/null || echo 0)
           echo "Dimensione file scaricato: $FILESIZE byte"
 
