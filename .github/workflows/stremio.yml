@@ -15,15 +15,24 @@ jobs:
       - name: Fetch Latest Stremio Metadata
         id: stremio_info
         run: |
-          SOURCE_JSON=$(curl -s https://dl.strem.io/apple/altstore/source.json)
+          # Scarica il JSON simulando un browser per evitare blocchi User-Agent
+          SOURCE_JSON=$(curl -sL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15" https://dl.strem.io/apple/altstore/source.json)
           
-          # Cerca l'app tramite bundleID o nome per evitare errori se cambia l'indice dell'array
-          VERSION=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.stremio" or .name == "Stremio")) | .version' | head -n 1)
-          IPA_URL=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.stremio" or .name == "Stremio")) | .downloadURL' | head -n 1)
+          # Estrae versione e downloadURL cercando nell'array delle app
+          VERSION=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.stremio" or .name == "Stremio" or .identifier == "com.stremio.stremio")) | .version' | head -n 1)
+          RAW_URL=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.stremio" or .name == "Stremio" or .identifier == "com.stremio.stremio")) | .downloadURL' | head -n 1)
           
-          # Controllo di sicurezza se l'URL viene estratto vuoto o null
+          # Se l'URL estratto è relativo, aggiunge la base del dominio
+          if [[ "$RAW_URL" =~ ^http ]]; then
+            IPA_URL="$RAW_URL"
+          elif [ -n "$RAW_URL" ] && [ "$RAW_URL" != "null" ]; then
+            IPA_URL="https://dl.strem.io/apple/altstore/$RAW_URL"
+          fi
+
+          # Controllo di sicurezza
           if [ -z "$IPA_URL" ] || [ "$IPA_URL" = "null" ]; then
-            echo "Errore: Impossibile estrarre l'URL di download dal JSON di Stremio."
+            echo "::error::Impossibile estrarre l'URL dal JSON. Risposta ricevuta dal server:"
+            echo "$SOURCE_JSON" | head -n 20
             exit 1
           fi
 
@@ -50,7 +59,7 @@ jobs:
       - name: Download New Stremio IPA
         run: |
           echo "Download Stremio v${{ steps.stremio_info.outputs.version }}..."
-          curl -L "${{ steps.stremio_info.outputs.ipa_url }}" -o "Stremio.ipa"
+          curl -sL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15" "${{ steps.stremio_info.outputs.ipa_url }}" -o "Stremio.ipa"
 
       - name: Create New Release
         env:
