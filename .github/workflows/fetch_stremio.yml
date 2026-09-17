@@ -35,23 +35,22 @@ jobs:
                  exit 1
                }
 
-          # 4. Estrazione avanzata dell'URL dell'IPA:
-          # Cerca ricorsivamente in tutto il JSON qualsiasi valore di stringa che contenga .ipa o http
-          RAW_IPA_URL=$(jq -r '.. | strings | select(endswith(".ipa") or contains("http"))' manifest.json | head -n 1)
+          # 4. Estrazione corretta del percorso relativo evitando Broken Pipe
+          RAW_PATH=$(jq -r '.. | strings | select(endswith(".ipa"))' manifest.json | { head -n 1; cat >/dev/null; })
 
-          # Se la stringa trovata è un percorso relativo, aggiunge l'origin di Stremio
-          if [[ "$RAW_IPA_URL" == http* ]]; then
-            IPA_URL="$RAW_IPA_URL"
-          elif [ -n "$RAW_IPA_URL" ]; then
-            IPA_URL="https://dl.strem.io$RAW_IPA_URL"
+          # Aggiusta la formattazione dell'URL gestendo lo slash iniziale
+          if [[ "$RAW_PATH" == http* ]]; then
+            IPA_URL="$RAW_PATH"
+          elif [[ "$RAW_PATH" == /* ]]; then
+            IPA_URL="https://dl.strem.io$RAW_PATH"
+          else
+            IPA_URL="https://dl.strem.io/$RAW_PATH"
           fi
 
           echo "URL IPA Reale estratto: $IPA_URL"
 
-          if [ -z "$IPA_URL" ] || [ "$IPA_URL" == "null" ]; then
+          if [ -z "$RAW_PATH" ] || [ "$RAW_PATH" == "null" ]; then
             echo "::error:: Impossibile trovare l'URL dell'IPA all'interno di manifest.json"
-            echo "Prime 10 righe del manifest scaricato:"
-            head -n 10 manifest.json
             exit 1
           fi
 
