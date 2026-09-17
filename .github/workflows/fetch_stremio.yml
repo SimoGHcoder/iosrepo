@@ -30,47 +30,59 @@ jobs:
 
           # 3. Scarica il manifesto della versione
           curl -sSLf -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
-               "$MANIFEST_URL" -o manifest.json || {
-                 echo "::error:: Errore nel download di manifest.json da $MANIFEST_URL"
-                 exit 1
-               }
+               "$MANIFEST_URL" -o manifest.json || true
 
-          # 4. Estrazione corretta del percorso relativo evitando Broken Pipe
-          RAW_PATH=$(jq -r '.. | strings | select(endswith(".ipa"))' manifest.json | { head -n 1; cat >/dev/null; })
+          # 4. Estrazione percorso
+          RAW_PATH=$(jq -r '.. | strings | select(endswith(".ipa"))' manifest.json 2>/dev/null | { head -n 1; cat >/dev/null; })
 
-          # Aggiusta la formattazione dell'URL gestendo lo slash iniziale
           if [[ "$RAW_PATH" == http* ]]; then
             IPA_URL="$RAW_PATH"
           elif [[ "$RAW_PATH" == /* ]]; then
             IPA_URL="https://dl.strem.io$RAW_PATH"
-          else
+          elif [ -n "$RAW_PATH" ]; then
             IPA_URL="https://dl.strem.io/$RAW_PATH"
           fi
 
-          echo "URL IPA Reale estratto: $IPA_URL"
+          echo "Tentativo 1 - URL PAL: $IPA_URL"
 
-          if [ -z "$RAW_PATH" ] || [ "$RAW_PATH" == "null" ]; then
-            echo "::error:: Impossibile trovare l'URL dell'IPA all'interno di manifest.json"
-            exit 1
+          # 5. Tenta il download dall'endpoint AltStore
+          if [ -n "$IPA_URL" ]; then
+            curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
+                 -o Stremio.ipa "$IPA_URL"
           fi
 
-          # 5. Scarica il file .ipa effettivo seguendo i reindirizzamenti
-          curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
-               -o Stremio.ipa "$IPA_URL"
-
-          # 6. Verifica che il file sia valido (> 10 MB)
           FILESIZE=$(stat -c%s "Stremio.ipa" 2>/dev/null || echo 0)
-          echo "Dimensione file scaricato: $FILESIZE byte"
+          echo "Dimensione tentata da PAL: $FILESIZE byte"
 
+          # 6. FALLBACK: Se PAL restituisce un finto file (< 10 MB), scarica la Release ufficiale da GitHub
           if [ $FILESIZE -lt 10485760 ]; then
-            echo "::error:: Il file scaricato non è un IPA valido (dimensione: $FILESIZE byte)."
+            echo "Endpoint PAL protetto da token/CDN. Avvio fallback su Release GitHub ufficiali di Stremio..."
+            
+            GH_IPA_URL=$(curl -s https://api.github.com/repos/Stremio/stremio-shell/releases | jq -r '.[].assets[] | select(.name | endswith(".ipa")) | .browser_download_url' | head -n 1)
+
+            if [ -z "$GH_IPA_URL" ] || [ "$GH_IPA_URL" == "null" ]; then
+              # Secondo fallback se la repo principale è differente
+              GH_IPA_URL="https://dl.strem.io/apple/v${VERSION}/Stremio.ipa"
+            fi
+
+            echo "URL Fallback: $GH_IPA_URL"
+            curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
+                 -o Stremio.ipa "$GH_IPA_URL"
+          fi
+
+          # 7. Verifica finale dimensione file (> 10 MB)
+          FINAL_SIZE=$(stat -c%s "Stremio.ipa" 2>/dev/null || echo 0)
+          echo "Dimensione file finale scaricato: $FINAL_SIZE byte"
+
+          if [ $FINAL_SIZE -lt 10485760 ]; then
+            echo "::error:: Impossibile recuperare un IPA valido. Dimensione ottenuta: $FINAL_SIZE byte."
+            cat Stremio.ipa
             exit 1
           fi
 
       - name: Check if Release Already Exists
         id: check_release
         run: |
-          # Controlla via GitHub CLI se la release per questa versione esiste già
           if gh release view "v${{ env.VERSION }}" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "La release v${{ env.VERSION }} esiste già. Salto la creazione."
@@ -87,10 +99,10 @@ jobs:
           tag_name: "v${{ env.VERSION }}"
           name: "Stremio v${{ env.VERSION }}"
           body: |
-            Download automatico dell'IPA ufficiale di Stremio estratto dalla sorgente AltStore PAL.
+            Download automatico dell'IPA ufficiale di Stremio (Versione ${{ env.VERSION }}).
             
             - **Versione:** ${{ env.VERSION }}
-            - **Sorgente:** [Stremio Official PAL Source](https://dl.strem.io/apple/altstore/source.json)
+            - **Sorgente:** Stremio Official Releases
           files: Stremio.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
