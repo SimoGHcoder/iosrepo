@@ -17,7 +17,7 @@ jobs:
         id: download_stremio
         run: |
           # 1. Scarica il manifesto principale di AltStore
-          curl -s -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
+          curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
                https://dl.strem.io/apple/altstore/source.json -o source.json
 
           # 2. Estrae la versione e l'URL del manifesto secondario
@@ -29,30 +29,30 @@ jobs:
           echo "URL Manifesto: $MANIFEST_URL"
 
           # 3. Scarica il manifesto della versione
-          curl -s -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
-               "$MANIFEST_URL" -o manifest.json
+          curl -sSLf -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
+               "$MANIFEST_URL" -o manifest.json || {
+                 echo "::error:: Errore nel download di manifest.json da $MANIFEST_URL"
+                 exit 1
+               }
 
-          # Stampa la struttura esatta del manifest nei log per ispezione
-          echo "--- CONTENUTO DI MANIFEST.JSON ---"
-          cat manifest.json
-          echo -e "\n----------------------------------"
+          # 4. Estrazione dell'URL IPA:
+          # Cerca prima qualsiasi URL che termina espressamente con .ipa
+          IPA_URL=$(grep -oE 'https?://[^"]+\.ipa' manifest.json | head -n 1)
 
-          # 4. Tenta l'estrazione con jq; se fallisce usa regex per trovare il primo URL valido
-          IPA_URL=$(jq -r '.assets[0].url // .downloadURL // .url // empty' manifest.json)
-
-          if [ -z "$IPA_URL" ] || [ "$IPA_URL" == "null" ]; then
-            IPA_URL=$(grep -oE 'https?://[^"]+' manifest.json | head -n 1)
+          # Fallback: se la stringa non finisce per .ipa, estrae il primo URL HTTPS valido trovato nel manifest
+          if [ -z "$IPA_URL" ]; then
+            IPA_URL=$(grep -oE 'https?://[^\t\n\r" ]+' manifest.json | head -n 1)
           fi
 
           echo "URL IPA Reale estratto: $IPA_URL"
 
-          if [ -z "$IPA_URL" ] || [ "$IPA_URL" == "null" ]; then
-            echo "::error:: Impossibile trovare l'URL dell'IPA all'interno di manifest.json"
+          if [ -z "$IPA_URL" ]; then
+            echo "::error:: Impossibile trovare un URL valido all'interno di manifest.json"
             exit 1
           fi
 
           # 5. Scarica il file .ipa effettivo seguendo i reindirizzamenti
-          curl -L -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
+          curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
                -o Stremio.ipa "$IPA_URL"
 
           # 6. Verifica che il file sia valido (> 10 MB)
@@ -61,7 +61,6 @@ jobs:
 
           if [ $FILESIZE -lt 10485760 ]; then
             echo "::error:: Il file scaricato non è un IPA valido (dimensione: $FILESIZE byte)."
-            cat Stremio.ipa
             exit 1
           fi
 
