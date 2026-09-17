@@ -2,7 +2,7 @@ name: Sync Stremio IPA
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Controlla automaticamente ogni giorno a mezzanotte
+    - cron: '0 0 * * *' # Esegue la verifica ogni giorno a mezzanotte
   workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions di GitHub
 
 jobs:
@@ -16,33 +16,35 @@ jobs:
       - name: Download Official Stremio IPA
         id: download_stremio
         run: |
-          # 1. Scarica il manifesto sorgente di Stremio usando un User-Agent reale
+          # 1. Scarica il manifesto principale di AltStore
           curl -s -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
                https://dl.strem.io/apple/altstore/source.json -o source.json
 
-          # 2. Estrae l'URL dell'IPA e il numero di versione tramite jq
-          IPA_URL=$(jq -r '.apps[0].versions[0].downloadURL' source.json)
+          # 2. Estrae la versione e l'URL del manifesto secondario
+          MANIFEST_URL=$(jq -r '.apps[0].versions[0].downloadURL' source.json)
           VERSION=$(jq -r '.apps[0].versions[0].version' source.json)
 
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "IPA_URL=$IPA_URL" >> $GITHUB_ENV
-
           echo "Rilevata versione: $VERSION"
-          echo "URL di download: $IPA_URL"
+          echo "URL Manifesto: $MANIFEST_URL"
 
-          # 3. Scarica l'IPA reale seguendo i reindirizzamenti CDN (-L) ed evitando blocchi anti-bot
+          # 3. Scarica il manifesto della versione ed estrae il link reale all'IPA
+          curl -s -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
+               "$MANIFEST_URL" -o manifest.json
+
+          IPA_URL=$(jq -r '.assets[0].url' manifest.json)
+          echo "URL IPA Reale: $IPA_URL"
+
+          # 4. Scarica il file .ipa effettivo seguendo i reindirizzamenti
           curl -L -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
-               -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-               -H "Accept-Language: en-US,en;q=0.5" \
-               --compressed \
                -o Stremio.ipa "$IPA_URL"
 
-          # 4. Controllo dimensione: blocca il workflow se il file è inferiore a 10 MB (10485760 byte)
-          FILESIZE=$(stat -c%s "Stremio.ipa")
+          # 5. Verifica che il file sia valido (> 10 MB)
+          FILESIZE=$(stat -c%s "Stremio.ipa" 2>/dev/null || echo 0)
           echo "Dimensione file scaricato: $FILESIZE byte"
 
           if [ $FILESIZE -lt 10485760 ]; then
-            echo "::error:: Il file scaricato non è un IPA valido (dimensione: $FILESIZE byte). Risposta del server:"
+            echo "::error:: Il file scaricato non è un IPA valido (dimensione: $FILESIZE byte)."
             cat Stremio.ipa
             exit 1
           fi
@@ -67,7 +69,7 @@ jobs:
           tag_name: "v${{ env.VERSION }}"
           name: "Stremio v${{ env.VERSION }}"
           body: |
-            Download automatico dell'IPA ufficiale di Stremio estrapolato dalla sorgente AltStore PAL.
+            Download automatico dell'IPA ufficiale di Stremio estratto dalla sorgente AltStore PAL.
             
             - **Versione:** ${{ env.VERSION }}
             - **Sorgente:** [Stremio Official PAL Source](https://dl.strem.io/apple/altstore/source.json)
