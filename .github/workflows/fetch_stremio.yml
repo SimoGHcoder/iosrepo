@@ -2,38 +2,75 @@ name: Sync Stremio IPA
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Controlla ogni giorno a mezzanotte
-  workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions
+    - cron: '0 0 * * *' # Controlla automaticamente ogni giorno a mezzanotte
+  workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions di GitHub
 
 jobs:
-  download-and-release:
+  sync-stremio-release:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Extract IPA URL and Version from Source JSON
-        id: get_stremio
+      - name: Download Official Stremio IPA
+        id: download_stremio
         run: |
-          # Scarica il source.json di Stremio
-          curl -s https://dl.strem.io/apple/altstore/source.json -o source.json
+          # 1. Scarica il manifesto sorgente di Stremio usando un User-Agent reale
+          curl -s -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
+               https://dl.strem.io/apple/altstore/source.json -o source.json
 
-          # Estrae URL e Versione tramite jq
+          # 2. Estrae l'URL dell'IPA e il numero di versione tramite jq
           IPA_URL=$(jq -r '.apps[0].versions[0].downloadURL' source.json)
           VERSION=$(jq -r '.apps[0].versions[0].version' source.json)
 
-          echo "ipa_url=$IPA_URL" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "IPA_URL=$IPA_URL" >> $GITHUB_ENV
 
-          # Scarica il file IPA
-          curl -L -o Stremio.ipa "$IPA_URL"
+          echo "Rilevata versione: $VERSION"
+          echo "URL di download: $IPA_URL"
 
-      - name: Create GitHub Release and Upload IPA
+          # 3. Scarica l'IPA reale seguendo i reindirizzamenti CDN (-L) ed evitando blocchi anti-bot
+          curl -L -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
+               -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+               -H "Accept-Language: en-US,en;q=0.5" \
+               --compressed \
+               -o Stremio.ipa "$IPA_URL"
+
+          # 4. Controllo dimensione: blocca il workflow se il file è inferiore a 10 MB (10485760 byte)
+          FILESIZE=$(stat -c%s "Stremio.ipa")
+          echo "Dimensione file scaricato: $FILESIZE byte"
+
+          if [ $FILESIZE -lt 10485760 ]; then
+            echo "::error:: Il file scaricato non è un IPA valido (dimensione: $FILESIZE byte). Risposta del server:"
+            cat Stremio.ipa
+            exit 1
+          fi
+
+      - name: Check if Release Already Exists
+        id: check_release
+        run: |
+          # Controlla via GitHub CLI se la release per questa versione esiste già
+          if gh release view "v${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "La release v${{ env.VERSION }} esiste già. Salto la creazione."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.check_release.outputs.exists == 'false'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v${{ steps.get_stremio.outputs.version }}"
-          name: "Stremio v${{ steps.get_stremio.outputs.version }}"
-          body: "Automatic download of official Stremio IPA from AltStore PAL source."
+          tag_name: "v${{ env.VERSION }}"
+          name: "Stremio v${{ env.VERSION }}"
+          body: |
+            Download automatico dell'IPA ufficiale di Stremio estrapolato dalla sorgente AltStore PAL.
+            
+            - **Versione:** ${{ env.VERSION }}
+            - **Sorgente:** [Stremio Official PAL Source](https://dl.strem.io/apple/altstore/source.json)
           files: Stremio.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
