@@ -1,58 +1,39 @@
-name: Fetch Stremio IPA from AltStore Source
+name: Sync Stremio IPA
 
 on:
-  workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions
   schedule:
-    - cron: '0 0 * * 0' # Controllo automatico ogni domenica a mezzanotte
+    - cron: '0 0 * * *' # Controlla ogni giorno a mezzanotte
+  workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions
 
 jobs:
-  update-stremio:
+  download-and-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Fetch IPA URL and Version from Stremio AltStore Source
-        id: get_ipa
+      - name: Extract IPA URL and Version from Source JSON
+        id: get_stremio
         run: |
-          ALTSTORE_SOURCE_URL="https://dl.strem.io/apple/altstore/source.json"
-          
-          # Scarica il JSON della sorgente principale
-          SOURCE_JSON=$(curl -sL "$ALTSTORE_SOURCE_URL")
-          
-          # Estrae la versione e l'URL del manifest dalla prima versione dell'array apps[0].versions[0]
-          VERSION=$(echo "$SOURCE_JSON" | jq -r '.apps[0].versions[0].version')
-          MANIFEST_URL=$(echo "$SOURCE_JSON" | jq -r '.apps[0].versions[0].downloadURL')
-          
-          echo "Versione trovata: $VERSION"
-          echo "Manifest URL: $MANIFEST_URL"
-          
-          # Scarica il manifest.json specifico della versione per trovare il link diretto al file IPA
-          MANIFEST_JSON=$(curl -sL "$MANIFEST_URL")
-          IPA_URL=$(echo "$MANIFEST_JSON" | jq -r '.. | .downloadURL? // empty' | grep '\.ipa' | head -n 1)
-          
-          # Se il manifest non contiene direttamente .ipa, usa una regola di fallback basata sulla struttura degli URL Stremio
-          if [ -z "$IPA_URL" ] || [ "$IPA_URL" == "null" ]; then
-            IPA_URL="${MANIFEST_URL%manifest.json}Stremio.ipa"
-          fi
-          
-          echo "URL finale dell'IPA: $IPA_URL"
-          
-          echo "IPA_URL=$IPA_URL" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          
-          # Scarica il file IPA
-          curl -L -o "Stremio.ipa" "$IPA_URL"
+          # Scarica il source.json di Stremio
+          curl -s https://dl.strem.io/apple/altstore/source.json -o source.json
 
-      - name: Create Release and Upload IPA
+          # Estrae URL e Versione tramite jq
+          IPA_URL=$(jq -r '.apps[0].versions[0].downloadURL' source.json)
+          VERSION=$(jq -r '.apps[0].versions[0].version' source.json)
+
+          echo "ipa_url=$IPA_URL" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Scarica il file IPA
+          curl -L -o Stremio.ipa "$IPA_URL"
+
+      - name: Create GitHub Release and Upload IPA
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "stremio-v${{ env.VERSION }}"
-          name: "Stremio v${{ env.VERSION }}"
-          body: "Scaricamento automatico dell'IPA di Stremio v${{ env.VERSION }} dalla sorgente AltStore ufficiale."
-          draft: false
-          prerelease: false
-          files: |
-            Stremio.ipa
+          tag_name: "v${{ steps.get_stremio.outputs.version }}"
+          name: "Stremio v${{ steps.get_stremio.outputs.version }}"
+          body: "Automatic download of official Stremio IPA from AltStore PAL source."
+          files: Stremio.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
