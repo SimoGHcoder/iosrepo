@@ -55,28 +55,15 @@ jobs:
             exit 1
           fi
 
-      - name: Check if Release Already Exists
-        id: check_release
-        run: |
-          if gh release view "v${{ env.VERSION }}" >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "La release v${{ env.VERSION }} esiste già. Salto la creazione."
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create GitHub Release
-        if: steps.check_release.outputs.exists == 'false'
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v${{ env.VERSION }}"
-          name: "Stremio v${{ env.VERSION }}"
+          tag_name: "Stremio"
+          name: "Stremio"
           body: |
             Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.
             
-            - **Versione:** ${{ env.VERSION }} (${{ env.BUILD_TAG }})
+            - **Ultima Versione Sincronizzata:** ${{ env.VERSION }} (${{ env.BUILD_TAG }})
             - **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/${{ env.BUILD_TAG }}/ios/stremio_iOS.ipa)
           files: Stremio.ipa
         env:
