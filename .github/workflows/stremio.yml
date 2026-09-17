@@ -15,12 +15,12 @@ jobs:
       - name: Fetch Latest Stremio Metadata
         id: stremio_info
         run: |
-          # Scarica il JSON simulando un browser per evitare blocchi User-Agent
+          # Scarica il JSON di Stremio
           SOURCE_JSON=$(curl -sL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15" https://dl.strem.io/apple/altstore/source.json)
           
-          # Estrae versione e downloadURL cercando nell'array delle app
-          VERSION=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.stremio" or .name == "Stremio" or .identifier == "com.stremio.stremio")) | .version' | head -n 1)
-          RAW_URL=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.stremio" or .name == "Stremio" or .identifier == "com.stremio.stremio")) | .downloadURL' | head -n 1)
+          # Estrae versione e downloadUrl filtrando per bundleIdentifier com.stremio.pal
+          VERSION=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.pal" or .name == "Stremio")) | .version' | head -n 1)
+          RAW_URL=$(echo "$SOURCE_JSON" | jq -r '(.apps[]? | select(.bundleIdentifier == "com.stremio.pal" or .name == "Stremio")) | .downloadUrl // .downloadURL' | head -n 1)
           
           # Se l'URL estratto è relativo, aggiunge la base del dominio
           if [[ "$RAW_URL" =~ ^http ]]; then
@@ -31,8 +31,7 @@ jobs:
 
           # Controllo di sicurezza
           if [ -z "$IPA_URL" ] || [ "$IPA_URL" = "null" ]; then
-            echo "::error::Impossibile estrarre l'URL dal JSON. Risposta ricevuta dal server:"
-            echo "$SOURCE_JSON" | head -n 20
+            echo "::error::Impossibile estrarre l'URL dal JSON."
             exit 1
           fi
 
