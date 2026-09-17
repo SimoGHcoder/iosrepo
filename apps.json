@@ -5,6 +5,26 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
+      "name": "Stremio",
+      "bundleIdentifier": "com.stremio.pal",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Stremio release",
+      "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Versione:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.stremio.pal.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "2.0.8",
+          "date": "2026-09-17T13:28:18Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/v2.0.8/Stremio.ipa",
+          "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Versione:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n",
+          "size": 78506200,
+          "bundleIdentifier": "com.stremio.pal",
+          "appID": "com.stremio.pal"
+        }
+      ]
+    },
+    {
       "name": "Spotify",
       "bundleIdentifier": "com.spotify.client",
       "developerName": "Sideloading Hub",
