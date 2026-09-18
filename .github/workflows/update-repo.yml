@@ -3,6 +3,9 @@ name: Full Auto-Extract apps.json & Icons from IPA
 on:
   release:
     types: [published, edited, deleted]
+  schedule:
+    # Esegue il workflow automaticamente ogni 5 giorni a mezzanotte
+    - cron: '0 0 */5 * *'
   workflow_dispatch:
 
 permissions:
@@ -203,7 +206,7 @@ jobs:
           with open('apps.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          print("File apps.json rigenerato con i campi obbligatori per SideStore!")
+          print("File apps.json rigenerato con successo!")
           EOF
 
       - name: Commit and Push
@@ -211,4 +214,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add apps.json icons/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: fix schema versions SideStore" && git push origin main)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: rigenerazione automatica apps.json" && git push origin main)
