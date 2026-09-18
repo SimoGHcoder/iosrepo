@@ -2,7 +2,8 @@ name: Sync Stremio IPA
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Esegue la verifica ogni giorno a mezzanotte
+    # Esegue il workflow automaticamente ogni 5 giorni a mezzanotte
+    - cron: '0 0 */5 * *'
   workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions di GitHub
 
 jobs:
