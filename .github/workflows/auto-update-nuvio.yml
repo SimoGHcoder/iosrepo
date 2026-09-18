@@ -1,0 +1,137 @@
+name: Auto Fetch Latest Nuvio IPA
+
+on:
+  schedule:
+    # Controlla ogni 6 ore
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Permette di lanciarlo manualmente quando vuoi
+
+permissions:
+  contents: write
+
+jobs:
+  check-and-update-nuvio:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Check latest Nuvio release and upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MY_REPO: ${{ github.repository }}
+          OFFICIAL_NUVIO_REPO: "nuvio-app/nuvio" # Repository ufficiale di Nuvio
+        run: |
+          python - << 'EOF'
+          import os
+          import requests
+
+          token = os.environ.get('GITHUB_TOKEN')
+          my_repo = os.environ.get('MY_REPO')
+          official_repo = os.environ.get('OFFICIAL_NUVIO_REPO')
+          
+          headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'} if token else {}
+
+          # 1. Recupera l'ultima release ufficiale di Nuvio
+          url_official = f'https://api.github.com/repos/{official_repo}/releases/latest'
+          r_off = requests.get(url_official, headers=headers)
+          if r_off.status_code != 200:
+              print(f"Errore nel recupero della release ufficiale di Nuvio: {r_off.status_code}")
+              exit(0)
+
+          official_release = r_off.json()
+          latest_tag = official_release.get('tag_name')
+          
+          # Cerca l'asset IPA ufficiale
+          ipa_asset = None
+          for asset in official_release.get('assets', []):
+              if asset['name'].lower().endswith('.ipa'):
+                  ipa_asset = asset
+                  break
+
+          if not ipa_asset:
+              print("Nessun file .ipa trovato nell'ultima release ufficiale di Nuvio.")
+              exit(0)
+
+          ipa_download_url = ipa_asset['browser_download_url']
+          ipa_filename = ipa_asset['name']
+
+          print(f"Ultima versione ufficiale Nuvio trovata: {latest_tag} ({ipa_filename})")
+
+          # 2. Controlla la release "Nuvio_iOs" nella tua repo personale
+          url_my_releases = f'https://api.github.com/repos/{my_repo}/releases'
+          r_my = requests.get(url_my_releases, headers=headers)
+          
+          target_release = None
+          if r_my.status_code == 200:
+              for rel in r_my.json():
+                  # Cerca la release esistente dedicata a Nuvio nella tua repo
+                  if rel.get('tag_name') == 'Nuvio_iOs' or 'nuvio' in rel.get('name', '').lower():
+                      target_release = rel
+                      break
+
+          # Verifichiamo se l'IPA presente è già aggiornato
+          need_upload = True
+          if target_release:
+              for asset in target_release.get('assets', []):
+                  if asset['name'] == ipa_filename:
+                      print(f"La tua release contiene già l'ultimo file {ipa_filename}. Nessun aggiornamento necessario.")
+                      need_upload = False
+                      break
+
+          if not need_upload:
+              exit(0)
+
+          print(f"Nuova versione rilevata! Scarico {ipa_filename}...")
+          r_dl = requests.get(ipa_download_url)
+          with open(ipa_filename, 'wb') as f:
+              f.write(r_dl.content)
+
+          # 3. Se la release non esiste, la creiamo, altrimenti usiamo quella esistente
+          if not target_release:
+              print("Creazione nuova release Nuvio_iOs...")
+              create_url = f'https://api.github.com/repos/{my_repo}/releases'
+              payload = {
+                  "tag_name": "Nuvio_iOs",
+                  "name": "Nuvio",
+                  "body": f"Release automatizzata dell'ultima versione di Nuvio ({latest_tag})",
+                  "draft": False,
+                  "prerelease": False
+              }
+              r_create = requests.post(create_url, headers=headers, json=payload)
+              target_release = r_create.json()
+
+          release_id = target_release['id']
+
+          # Rimuoviamo eventuali vecchi file .ipa nella tua release per mantenere pulizia
+          for asset in target_release.get('assets', []):
+              if asset['name'].lower().endswith('.ipa'):
+                  print(f"Rimozione vecchio IPA: {asset['name']}...")
+                  del_url = f"https://api.github.com/repos/{my_repo}/releases/assets/{asset['id']}"
+                  requests.delete(del_url, headers=headers)
+
+          # 4. Carichiamo il nuovo file .ipa nella tua release
+          upload_url = f"https://uploads.github.com/repos/{my_repo}/releases/{release_id}/assets?name={ipa_filename}"
+          headers_upload = headers.copy()
+          headers_upload['Content-Type'] = 'application/octet-stream'
+
+          print(f"Caricamento di {ipa_filename} nella release della tua repo...")
+          with open(ipa_filename, 'rb') as f:
+              r_upload = requests.post(upload_url, headers=headers_upload, data=f)
+
+          if r_upload.status_code in [200, 201]:
+              print("Upload completato con successo! Il workflow principale aggiornerà apps.json.")
+          else:
+              print(f"Errore durante l'upload dell'asset: {r_upload.status_code} {r_upload.text}")
+
+          EOF
