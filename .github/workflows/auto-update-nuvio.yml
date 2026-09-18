@@ -2,9 +2,9 @@ name: Auto Fetch Latest Nuvio IPA
 
 on:
   schedule:
-    # Esegue il controllo ogni 6 ore
-    - cron: '0 */6 * * *'
-  workflow_dispatch: # Permette l'esecuzione manuale dalla scheda Actions
+    # Esegue il workflow automaticamente ogni 5 giorni a mezzanotte
+    - cron: '0 0 */5 * *'
+  workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions di GitHub
 
 permissions:
   contents: write
