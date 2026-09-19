@@ -2,8 +2,8 @@ name: Auto Fetch Latest Nuvio IPA
 
 on:
   schedule:
-    # Esegue il workflow automaticamente ogni 5 giorni a mezzanotte
-    - cron: '0 0 */5 * *'
+    # Esegue il controllo automatico ogni giorno a mezzanotte
+    - cron: '0 0 * * *'
   workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions di GitHub
 
 permissions:
@@ -34,103 +34,136 @@ jobs:
         run: |
           python - << 'EOF'
           import os
+          import sys
           import requests
 
           token = os.environ.get('GITHUB_TOKEN')
           my_repo = os.environ.get('MY_REPO')
           official_repo = os.environ.get('OFFICIAL_NUVIO_REPO')
-          
-          headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'} if token else {}
 
-          # 1. Recupera l'ultima release dal repo ufficiale di Nuvio
-          url_official = f'https://api.github.com/repos/{official_repo}/releases/latest'
-          r_off = requests.get(url_official, headers=headers)
-          if r_off.status_code != 200:
-              print(f"Errore nel recupero della release ufficiale di Nuvio: {r_off.status_code}")
-              exit(0)
+          if not token or not my_repo or not official_repo:
+              print("Errore: Variabili d'ambiente mancanti.")
+              sys.exit(1)
 
-          official_release = r_off.json()
-          latest_tag = official_release.get('tag_name')
-          
-          # Cerca l'allegato con estensione .ipa
-          ipa_asset = None
-          for asset in official_release.get('assets', []):
-              if asset['name'].lower().endswith('.ipa'):
-                  ipa_asset = asset
-                  break
+          headers = {
+              'Authorization': f'token {token}',
+              'Accept': 'application/vnd.github.v3+json'
+          }
 
+          def get_official_release():
+              url = f'https://api.github.com/repos/{official_repo}/releases/latest'
+              r = requests.get(url, headers=headers, timeout=30)
+              if r.status_code != 200:
+                  print(f"Errore API GitHub ({official_repo}): Status {r.status_code}")
+                  sys.exit(1)
+              return r.json()
+
+          def get_my_release():
+              url = f'https://api.github.com/repos/{my_repo}/releases'
+              r = requests.get(url, headers=headers, timeout=30)
+              if r.status_code == 200:
+                  for rel in r.json():
+                      if rel.get('tag_name') == 'Nuvio_iOs' or 'nuvio' in rel.get('name', '').lower():
+                          return rel
+              return None
+
+          # 1. Recupera la release ufficiale
+          official_rel = get_official_release()
+          latest_tag = official_rel.get('tag_name', '')
+          official_body = official_rel.get('body', '')
+
+          ipa_asset = next((a for a in official_rel.get('assets', []) if a['name'].lower().endswith('.ipa')), None)
           if not ipa_asset:
               print("Nessun file .ipa trovato nell'ultima release ufficiale di Nuvio.")
-              exit(0)
+              sys.exit(0)
 
           ipa_download_url = ipa_asset['browser_download_url']
           ipa_filename = ipa_asset['name']
 
           print(f"Ultima versione ufficiale Nuvio trovata: {latest_tag} ({ipa_filename})")
 
-          # 2. Controlla le release nella tua repo personale
-          url_my_releases = f'https://api.github.com/repos/{my_repo}/releases'
-          r_my = requests.get(url_my_releases, headers=headers)
-          
-          target_release = None
-          if r_my.status_code == 200:
-              for rel in r_my.json():
-                  if rel.get('tag_name') == 'Nuvio_iOs' or 'nuvio' in rel.get('name', '').lower():
-                      target_release = rel
-                      break
+          # 2. Controlla la release personale
+          target_release = get_my_release()
 
-          # Verifichiamo se l'IPA presente è già quello aggiornato
-          need_upload = True
           if target_release:
               for asset in target_release.get('assets', []):
                   if asset['name'] == ipa_filename:
-                      print(f"La tua release contiene già l'ultimo file {ipa_filename}. Nessun aggiornamento necessario.")
-                      need_upload = False
-                      break
+                      print(f"La tua release contiene già l'ultimo file '{ipa_filename}'. Nessun aggiornamento necessario.")
+                      sys.exit(0)
 
-          if not need_upload:
-              exit(0)
+          print(f"Nuova versione rilevata ({latest_tag})! Scarico {ipa_filename}...")
+          
+          # 3. Download dello streaming del file .ipa
+          try:
+              with requests.get(ipa_download_url, stream=True, timeout=120) as r_dl:
+                  r_dl.raise_for_status()
+                  with open(ipa_filename, 'wb') as f:
+                      for chunk in r_dl.iter_content(chunk_size=65536):
+                          f.write(chunk)
+          except Exception as e:
+              print(f"Errore durante il download dell'IPA: {e}")
+              sys.exit(1)
 
-          print(f"Nuova versione rilevata! Scarico {ipa_filename}...")
-          r_dl = requests.get(ipa_download_url)
-          with open(ipa_filename, 'wb') as f:
-              f.write(r_dl.content)
+          try:
+              # 4. Gestione Creazione / Aggiornamento Release
+              if not target_release:
+                  print("Creazione nuova release Nuvio_iOs...")
+                  create_url = f'https://api.github.com/repos/{my_repo}/releases'
+                  payload = {
+                      "tag_name": "Nuvio_iOs",
+                      "name": f"Nuvio {latest_tag}",
+                      "body": official_body if official_body else f"Release automatizzata di Nuvio ({latest_tag})",
+                      "draft": False,
+                      "prerelease": False
+                  }
+                  r_create = requests.post(create_url, headers=headers, json=payload, timeout=30)
+                  if r_create.status_code not in [200, 201]:
+                      print(f"Errore creazione release: {r_create.status_code} {r_create.text}")
+                      sys.exit(1)
+                  target_release = r_create.json()
+              else:
+                  print("Aggiornamento metadati release esistente...")
+                  patch_url = f"https://api.github.com/repos/{my_repo}/releases/{target_release['id']}"
+                  payload = {
+                      "name": f"Nuvio {latest_tag}",
+                      "body": official_body if official_body else f"Aggiornamento automatico a Nuvio {latest_tag}"
+                  }
+                  requests.patch(patch_url, headers=headers, json=payload, timeout=30)
 
-          # 3. Se la release "Nuvio_iOs" non esiste nella tua repo, la crea
-          if not target_release:
-              print("Creazione nuova release Nuvio_iOs...")
-              create_url = f'https://api.github.com/repos/{my_repo}/releases'
-              payload = {
-                  "tag_name": "Nuvio_iOs",
-                  "name": "Nuvio",
-                  "body": f"Release automatizzata dell'ultima versione di Nuvio ({latest_tag})",
-                  "draft": False,
-                  "prerelease": False
-              }
-              r_create = requests.post(create_url, headers=headers, json=payload)
-              target_release = r_create.json()
+              release_id = target_release['id']
 
-          release_id = target_release['id']
+              # Rimuove i vecchi IPA per evitare accumulo
+              for asset in target_release.get('assets', []):
+                  if asset['name'].lower().endswith('.ipa'):
+                      print(f"Rimozione vecchio IPA: {asset['name']}...")
+                      del_url = f"https://api.github.com/repos/{my_repo}/releases/assets/{asset['id']}"
+                      requests.delete(del_url, headers=headers, timeout=30)
 
-          # Rimuove i vecchi file .ipa dalla tua release per non accumulare file
-          for asset in target_release.get('assets', []):
-              if asset['name'].lower().endswith('.ipa'):
-                  print(f"Rimozione vecchio IPA: {asset['name']}...")
-                  del_url = f"https://api.github.com/repos/{my_repo}/releases/assets/{asset['id']}"
-                  requests.delete(del_url, headers=headers)
+              # 5. Upload del nuovo IPA
+              upload_url = f"https://uploads.github.com/repos/{my_repo}/releases/{release_id}/assets?name={ipa_filename}"
+              headers_upload = headers.copy()
+              headers_upload['Content-Type'] = 'application/octet-stream'
 
-          # 4. Carica il nuovo .ipa nella tua release
-          upload_url = f"https://uploads.github.com/repos/{my_repo}/releases/{release_id}/assets?name={ipa_filename}"
-          headers_upload = headers.copy()
-          headers_upload['Content-Type'] = 'application/octet-stream'
+              print(f"Caricamento di {ipa_filename} nella release del repository...")
+              with open(ipa_filename, 'rb') as f:
+                  r_upload = requests.post(upload_url, headers=headers_upload, data=f, timeout=300)
 
-          print(f"Caricamento di {ipa_filename} nella release della tua repo...")
-          with open(ipa_filename, 'rb') as f:
-              r_upload = requests.post(upload_url, headers=headers_upload, data=f)
+              if r_upload.status_code in [200, 201]:
+                  print("Upload completato con successo!")
+              else:
+                  print(f"Errore durante l'upload dell'asset: {r_upload.status_code} {r_upload.text}")
+                  sys.exit(1)
 
-          if r_upload.status_code in [200, 201]:
-              print("Upload completato con successo! Il workflow principale aggiornerà apps.json.")
-          else:
-              print(f"Errore durante l'upload dell'asset: {r_upload.status_code} {r_upload.text}")
-
+          finally:
+              # Pulizia file temporaneo scaricato
+              if os.path.exists(ipa_filename):
+                  os.remove(ipa_filename)
           EOF
+
+      # 6. Scatena l'estrazione delle icone e la rigenerazione di apps.json
+      - name: Trigger Full Auto-Extract Workflow
+        if: success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: ipa_updated
