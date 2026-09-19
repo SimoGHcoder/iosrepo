@@ -78,26 +78,30 @@ jobs:
               sys.exit(0)
 
           ipa_download_url = ipa_asset['browser_download_url']
-          ipa_filename = ipa_asset['name']
+          # Usiamo il tag ufficiale per rinominare localmente l'IPA in modo unico (es. nuvio-0.4.25.ipa)
+          clean_tag = latest_tag.lstrip('v')
+          dest_ipa_filename = f"nuvio-{clean_tag}.ipa"
 
-          print(f"Ultima versione ufficiale Nuvio trovata: {latest_tag} ({ipa_filename})")
+          print(f"Ultima versione ufficiale Nuvio trovata: {latest_tag}")
+          print(f"Nome asset originale: {ipa_asset['name']} -> Salveremo come: {dest_ipa_filename}")
 
-          # 2. Controlla la release personale
+          # 2. Controlla la release personale tramite il tag di versione nel titolo
           target_release = get_my_release()
 
           if target_release:
-              for asset in target_release.get('assets', []):
-                  if asset['name'] == ipa_filename:
-                      print(f"La tua release contiene già l'ultimo file '{ipa_filename}'. Nessun aggiornamento necessario.")
-                      sys.exit(0)
+              my_release_name = target_release.get('name', '')
+              # Se il titolo della tua release contiene già il tag ufficiale, la release è aggiornata
+              if latest_tag in my_release_name or clean_tag in my_release_name:
+                  print(f"La tua release è già aggiornata alla versione '{latest_tag}'. Nessun download necessario.")
+                  sys.exit(0)
 
-          print(f"Nuova versione rilevata ({latest_tag})! Scarico {ipa_filename}...")
+          print(f"Nuova versione rilevata ({latest_tag})! Procedo al download...")
           
           # 3. Download dello streaming del file .ipa
           try:
               with requests.get(ipa_download_url, stream=True, timeout=120) as r_dl:
                   r_dl.raise_for_status()
-                  with open(ipa_filename, 'wb') as f:
+                  with open(dest_ipa_filename, 'wb') as f:
                       for chunk in r_dl.iter_content(chunk_size=65536):
                           f.write(chunk)
           except Exception as e:
@@ -132,20 +136,20 @@ jobs:
 
               release_id = target_release['id']
 
-              # Rimuove i vecchi IPA per evitare accumulo
+              # Rimuove TUTTI i vecchi IPA presenti nella release personale per evitare accumulo
               for asset in target_release.get('assets', []):
                   if asset['name'].lower().endswith('.ipa'):
                       print(f"Rimozione vecchio IPA: {asset['name']}...")
                       del_url = f"https://api.github.com/repos/{my_repo}/releases/assets/{asset['id']}"
                       requests.delete(del_url, headers=headers, timeout=30)
 
-              # 5. Upload del nuovo IPA
-              upload_url = f"https://uploads.github.com/repos/{my_repo}/releases/{release_id}/assets?name={ipa_filename}"
+              # 5. Upload del nuovo IPA rinominato con la versione corretta
+              upload_url = f"https://uploads.github.com/repos/{my_repo}/releases/{release_id}/assets?name={dest_ipa_filename}"
               headers_upload = headers.copy()
               headers_upload['Content-Type'] = 'application/octet-stream'
 
-              print(f"Caricamento di {ipa_filename} nella release del repository...")
-              with open(ipa_filename, 'rb') as f:
+              print(f"Caricamento di {dest_ipa_filename} nella release personale...")
+              with open(dest_ipa_filename, 'rb') as f:
                   r_upload = requests.post(upload_url, headers=headers_upload, data=f, timeout=300)
 
               if r_upload.status_code in [200, 201]:
@@ -155,15 +159,17 @@ jobs:
                   sys.exit(1)
 
           finally:
-              # Pulizia file temporaneo scaricato
-              if os.path.exists(ipa_filename):
-                  os.remove(ipa_filename)
+              # Pulizia file temporaneo
+              if os.path.exists(dest_ipa_filename):
+                  os.remove(dest_ipa_filename)
           EOF
 
       # 6. Scatena l'estrazione delle icone e la rigenerazione di apps.json
       - name: Trigger Full Auto-Extract Workflow
         if: success()
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: ipa_updated
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/dispatches \
+            -d '{"event_type": "ipa_updated"}'
