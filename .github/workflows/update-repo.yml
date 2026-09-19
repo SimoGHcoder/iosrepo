@@ -1,6 +1,5 @@
 name: iOS Repository Sync & Build
 
-
 on:
   release:
     types: [published, edited, deleted, released, created]
