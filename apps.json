@@ -10,7 +10,7 @@
       "developerName": "Sideloading Hub",
       "subtitle": "Stremio release",
       "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.stremio.pal.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#007AFF",
       "versions": [
         {
@@ -30,7 +30,7 @@
       "developerName": "Sideloading Hub",
       "subtitle": "Spotify release",
       "localizedDescription": "### 📌 Informazioni sul Pacchetto\r\nQuesto pacchetto `.ipa` è stato caricato e verificato per l'installazione tramite sideloading.\r\n\r\n---\r\n\r\n### 📲 Come Installare\r\n1. Scarica il file **`.ipa`** dagli allegati qui sotto (Assets).\r\n2. Importa il file tramite il tuo gestore preferito:\r\n   * **SideStore / AltStore:** Apri l'app $\\rightarrow$ scheda *My Apps* $\\rightarrow$ premi **`+`** e seleziona il file.\r\n   * **LiveContainer:** Apri LiveContainer $\\rightarrow$ premi **`+`** in alto a destra e seleziona l'IPA.\r\n   * **TrollStore:** Condividi il file IPA direttamente su TrollStore e premi *Install*.\r\n\r\n---\r\n\r\n### ⚠️ Note & Compatibilità\r\n* **Compatibilità:** iOS / iPadOS 15.0 o superiore.\r\n* **Jailbreak:** Non richiesto.\r\n* **ID App & Certificati:** Se usi AltStore/SideStore, assicurati di avere almeno uno slot App ID libero prima di procedere all'installazione.\r\n\r\n---\r\n*Gestito e mantenuto tramite repository personale.*",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.spotify.client.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#1DB954",
       "versions": [
         {
@@ -50,7 +50,7 @@
       "developerName": "Sideloading Hub",
       "subtitle": "Shapr3D release",
       "localizedDescription": "### 📌 Informazioni sul Pacchetto\r\nQuesto pacchetto `.ipa` è stato caricato e verificato per l'installazione tramite sideloading.\r\n\r\n---\r\n\r\n### 📲 Come Installare\r\n1. Scarica il file **`.ipa`** dagli allegati qui sotto (Assets).\r\n2. Importa il file tramite il tuo gestore preferito:\r\n   * **SideStore / AltStore:** Apri l'app $\\rightarrow$ scheda *My Apps* $\\rightarrow$ premi **`+`** e seleziona il file.\r\n   * **LiveContainer:** Apri LiveContainer $\\rightarrow$ premi **`+`** in alto a destra e seleziona l'IPA.\r\n   * **TrollStore:** Condividi il file IPA direttamente su TrollStore e premi *Install*.\r\n\r\n---\r\n\r\n### ⚠️ Note & Compatibilità\r\n* **Compatibilità:** iOS / iPadOS 15.0 o superiore.\r\n* **Jailbreak:** Non richiesto.\r\n* **ID App & Certificati:** Se usi AltStore/SideStore, assicurati di avere almeno uno slot App ID libero prima di procedere all'installazione.\r\n\r\n---\r\n*Gestito e mantenuto tramite repository personale.*",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.shapr3d.shapr.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#00D2FF",
       "versions": [
         {
@@ -69,16 +69,16 @@
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "Sideloading Hub",
       "subtitle": "Nuvio release",
-      "localizedDescription": "### 📌 Informazioni sul Pacchetto\r\nQuesto pacchetto `.ipa` è stato caricato e verificato per l'installazione tramite sideloading.\r\n\r\n---\r\n\r\n### 📲 Come Installare\r\n1. Scarica il file **`.ipa`** dagli allegati qui sotto (Assets).\r\n2. Importa il file tramite il tuo gestore preferito:\r\n   * **SideStore / AltStore:** Apri l'app $\\rightarrow$ scheda *My Apps* $\\rightarrow$ premi **`+`** e seleziona il file.\r\n   * **LiveContainer:** Apri LiveContainer $\\rightarrow$ premi **`+`** in alto a destra e seleziona l'IPA.\r\n   * **TrollStore:** Condividi il file IPA direttamente su TrollStore e premi *Install*.\r\n\r\n---\r\n\r\n### ⚠️ Note & Compatibilità\r\n* **Compatibilità:** iOS / iPadOS 15.0 o superiore.\r\n* **Jailbreak:** Non richiesto.\r\n* **ID App & Certificati:** Se usi AltStore/SideStore, assicurati di avere almeno uno slot App ID libero prima di procedere all'installazione.\r\n\r\n---\r\n*Gestito e mantenuto tramite repository personale.*",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
+      "localizedDescription": "- b5163558 fix(home): prevent hero flash when cycling @tapframe  \r\n- 656f368c fix(pr): update workflow @tapframe  \r\n- [i18n(el): sync Greek translations with the current English strings (#1991)](https://github.com/NuvioMedia/NuvioMobile/pull/1991) @nosvasedis  \r\n- 98be8514 revert(ui): restore previous surface and chip styles @tapframe  \r\n- [i18n(vi): update latest Vietnamese strings (#1990)](https://github.com/NuvioMedia/NuvioMobile/pull/1990) @blueocean2308  \r\n- [fix(simkl): three bugs in the shared Simkl read and write paths (#1988)](https://github.com/NuvioMedia/NuvioMobile/pull/1988) @Judzim  \r\n- 99ced26a feat(player): add Infuse playback callbacks @tapframe  \r\n- [fix(ios): bundle CJK font for subtitles (#1833)](https://github.com/NuvioMedia/NuvioMobile/pull/1833) @tinyKyuu  \r\n",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#007AFF",
       "versions": [
         {
-          "version": "0.4.24",
+          "version": "0.4.25-beta",
           "date": "2026-09-16T09:45:31Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.24-full-release.ipa",
-          "localizedDescription": "### 📌 Informazioni sul Pacchetto\r\nQuesto pacchetto `.ipa` è stato caricato e verificato per l'installazione tramite sideloading.\r\n\r\n---\r\n\r\n### 📲 Come Installare\r\n1. Scarica il file **`.ipa`** dagli allegati qui sotto (Assets).\r\n2. Importa il file tramite il tuo gestore preferito:\r\n   * **SideStore / AltStore:** Apri l'app $\\rightarrow$ scheda *My Apps* $\\rightarrow$ premi **`+`** e seleziona il file.\r\n   * **LiveContainer:** Apri LiveContainer $\\rightarrow$ premi **`+`** in alto a destra e seleziona l'IPA.\r\n   * **TrollStore:** Condividi il file IPA direttamente su TrollStore e premi *Install*.\r\n\r\n---\r\n\r\n### ⚠️ Note & Compatibilità\r\n* **Compatibilità:** iOS / iPadOS 15.0 o superiore.\r\n* **Jailbreak:** Non richiesto.\r\n* **ID App & Certificati:** Se usi AltStore/SideStore, assicurati di avere almeno uno slot App ID libero prima di procedere all'installazione.\r\n\r\n---\r\n*Gestito e mantenuto tramite repository personale.*",
-          "size": 51517735,
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.25-full-release.ipa",
+          "localizedDescription": "- b5163558 fix(home): prevent hero flash when cycling @tapframe  \r\n- 656f368c fix(pr): update workflow @tapframe  \r\n- [i18n(el): sync Greek translations with the current English strings (#1991)](https://github.com/NuvioMedia/NuvioMobile/pull/1991) @nosvasedis  \r\n- 98be8514 revert(ui): restore previous surface and chip styles @tapframe  \r\n- [i18n(vi): update latest Vietnamese strings (#1990)](https://github.com/NuvioMedia/NuvioMobile/pull/1990) @blueocean2308  \r\n- [fix(simkl): three bugs in the shared Simkl read and write paths (#1988)](https://github.com/NuvioMedia/NuvioMobile/pull/1988) @Judzim  \r\n- 99ced26a feat(player): add Infuse playback callbacks @tapframe  \r\n- [fix(ios): bundle CJK font for subtitles (#1833)](https://github.com/NuvioMedia/NuvioMobile/pull/1833) @tinyKyuu  \r\n",
+          "size": 65152407,
           "bundleIdentifier": "com.nuvio.media",
           "appID": "com.nuvio.media"
         }
@@ -90,7 +90,7 @@
       "developerName": "Sideloading Hub",
       "subtitle": "calimoto release",
       "localizedDescription": "### 📌 Informazioni sul Pacchetto\r\nQuesto pacchetto `.ipa` è stato caricato e verificato per l'installazione tramite sideloading.\r\n\r\n---\r\n\r\n### 📲 Come Installare\r\n1. Scarica il file **`.ipa`** dagli allegati qui sotto (Assets).\r\n2. Importa il file tramite il tuo gestore preferito:\r\n   * **SideStore / AltStore:** Apri l'app $\\rightarrow$ scheda *My Apps* $\\rightarrow$ premi **`+`** e seleziona il file.\r\n   * **LiveContainer:** Apri LiveContainer $\\rightarrow$ premi **`+`** in alto a destra e seleziona l'IPA.\r\n   * **TrollStore:** Condividi il file IPA direttamente su TrollStore e premi *Install*.\r\n\r\n---\r\n\r\n### ⚠️ Note & Compatibilità\r\n* **Compatibilità:** iOS / iPadOS 15.0 o superiore.\r\n* **Jailbreak:** Non richiesto.\r\n* **ID App & Certificati:** Se usi AltStore/SideStore, assicurati di avere almeno uno slot App ID libero prima di procedere all'installazione.\r\n\r\n---\r\n*Gestito e mantenuto tramite repository personale.*",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.calimoto.calimoto.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#FF5500",
       "versions": [
         {
