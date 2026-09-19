@@ -1,4 +1,4 @@
-name: Full Auto-Extract apps.json & Icons from IPA
+Name: Full Auto-Extract apps.json & Icons from IPA
 
 on:
   release:
@@ -37,11 +37,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.12'
 
       - name: Install Python dependencies
         run: |
-          pip install requests Pillow pngdefry
+          pip install requests Pillow
 
       - name: Rebuild apps.json and extract icons
         env:
@@ -74,6 +74,7 @@ jobs:
           }
 
           def fix_cgbi_png(raw_path, out_path):
+              # Tenta prima con la CLI di sistema pngdefry installata via apt
               try:
                   res = subprocess.run(["pngdefry", "-o", out_path, raw_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                   if res.returncode == 0 and os.path.exists(out_path):
@@ -81,14 +82,7 @@ jobs:
               except Exception:
                   pass
 
-              try:
-                  import pngdefry
-                  pngdefry.defry(raw_path, out_path)
-                  if os.path.exists(out_path):
-                      return True
-              except Exception:
-                  pass
-
+              # Fallback con Pillow
               try:
                   with Image.open(raw_path) as img:
                       img.save(out_path, "PNG")
@@ -214,11 +208,9 @@ jobs:
 
                       bundle_id = info["bundleIdentifier"]
                       
-                      # Se la release ha un titolo specifico come "Nuvio v0.4.25-beta", estraiamo la versione dal titolo o dall'IPA
                       version_num = info["version"]
                       rel_name = rel.get('name', '')
                       
-                      # Tenta di estrarre la versione dal titolo della release se presente (es. 0.4.25-beta)
                       match_ver = re.search(r'v?(\d+\.\d+\.\d+(?:-[a-zA-Z0-9\.]+)?)', rel_name)
                       if match_ver:
                           version_num = match_ver.group(1)
@@ -238,7 +230,6 @@ jobs:
                           "appID": bundle_id
                       }
 
-                      # FIX: Aggiorna sempre se la versione o il link di download sono cambiati, ignorando il controllo data
                       if bundle_id in apps_dict:
                           existing_app = apps_dict[bundle_id]
                           curr_version = existing_app['versions'][0]['version'] if existing_app['versions'] else ""
