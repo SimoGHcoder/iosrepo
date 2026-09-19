@@ -1,4 +1,5 @@
-name: Auto Fetch Latest Nuvio IPA
+name: Nuvio IPA Sync
+
 
 on:
   schedule:
