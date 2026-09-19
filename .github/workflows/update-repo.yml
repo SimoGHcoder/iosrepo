@@ -1,4 +1,4 @@
-Name: Full Auto-Extract apps.json & Icons from IPA
+name: Full Auto-Extract apps.json & Icons from IPA
 
 on:
   release:
