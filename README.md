@@ -2,7 +2,7 @@
 
 Repository personale per la gestione e la distribuzione di applicazioni iOS, media player e strumenti avanzati per **SideStore**, **AltStore** e **LiveContainer**.
 
-[![Auto-Extract & Build](https://github.com/SimoGHcoder/iosrepo/actions/workflows/auto_extract.yml/badge.svg)](https://github.com/SimoGHcoder/iosrepo/actions/workflows/auto_extract.yml)
+[![Auto-Extract & Build](https://github.com/SimoGHcoder/iosrepo/actions/workflows/update-repo.yml/badge.svg)](https://github.com/SimoGHcoder/iosrepo/actions/workflows/auto_extract.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
