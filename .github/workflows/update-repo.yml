@@ -1,22 +1,13 @@
 name: Full Auto-Extract apps.json & Icons from IPA
 
 on:
-  # 1. Scatta su azioni sulle Release
   release:
     types: [published, edited, deleted, released, created]
-
-  # 2. Scatta automaticamente quando finiscono ALTRI workflow che aggiornano gli IPA
-  # Sostituisci 'Build IPA' o 'Upload Release' con i nomi esatti dei tuoi altri workflow
   workflow_run:
-    workflows: ["Build IPA", "Upload IPA", "Update Release"]
-    types:
-      - completed
-
-  # 3. Permette il richiamo diretto via API/Webhook da altri workflow o script
+    workflows: ["Auto Fetch Latest Nuvio IPA", "Sync Stremio IPA"]
+    types: [completed]
   repository_dispatch:
     types: [ipa_updated]
-
-  # 4. Permette l'avvio manuale
   workflow_dispatch:
 
 permissions:
@@ -24,7 +15,6 @@ permissions:
 
 jobs:
   build-repository:
-    # Se attivato da workflow_run, esegui solo se il workflow precedente ha avuto successo
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
@@ -202,7 +192,23 @@ jobs:
 
                       meta = CUSTOM_METADATA.get(bundle_id, {})
 
-                      if bundle_id not in apps_dict:
+                      # Gestione sovrascrittura: mantiene sempre e solo la release più recente
+                      if bundle_id in apps_dict:
+                          existing_app = apps_dict[bundle_id]
+                          if not existing_app['versions'] or published_at > existing_app['versions'][0]['date']:
+                              existing_app['name'] = app_name
+                              existing_app['iconURL'] = icon_url
+                              existing_app['localizedDescription'] = body if body else f"Applicazione {app_name}."
+                              existing_app['versions'] = [{
+                                  "version": version_num,
+                                  "date": published_at,
+                                  "downloadURL": download_url,
+                                  "localizedDescription": body if body else f"Versione {version_num}",
+                                  "size": int(size),
+                                  "bundleIdentifier": bundle_id,
+                                  "appID": bundle_id
+                              }]
+                      else:
                           apps_dict[bundle_id] = {
                               "name": app_name,
                               "bundleIdentifier": bundle_id,
@@ -211,28 +217,18 @@ jobs:
                               "localizedDescription": body if body else f"Applicazione {app_name}.",
                               "iconURL": icon_url,
                               "tintColor": meta.get("tintColor", "#007AFF"),
-                              "versions": []
+                              "versions": [{
+                                  "version": version_num,
+                                  "date": published_at,
+                                  "downloadURL": download_url,
+                                  "localizedDescription": body if body else f"Versione {version_num}",
+                                  "size": int(size),
+                                  "bundleIdentifier": bundle_id,
+                                  "appID": bundle_id
+                              }]
                           }
 
-                      target_app = apps_dict[bundle_id]
-                      version_entry = {
-                          "version": version_num,
-                          "date": published_at,
-                          "downloadURL": download_url,
-                          "localizedDescription": body if body else f"Versione {version_num}",
-                          "size": int(size),
-                          "bundleIdentifier": bundle_id,
-                          "appID": bundle_id
-                      }
-
-                      if not any(v['version'] == version_num for v in target_app['versions']):
-                          target_app['versions'].append(version_entry)
-
           final_apps = [app for app in apps_dict.values() if len(app.get('versions', [])) > 0]
-
-          for app in final_apps:
-              app['versions'].sort(key=lambda x: x['date'], reverse=True)
-
           data['apps'] = final_apps
 
           with open('apps.json', 'w', encoding='utf-8') as f:
@@ -244,7 +240,7 @@ jobs:
       - name: Commit and Push
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "github-actions[bot]"
           git add apps.json icons/
           git diff --quiet && git diff --staged --quiet || (
             git commit -m "auto: rigenerazione automatica apps.json e icone" &&
