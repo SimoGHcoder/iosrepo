@@ -2,13 +2,9 @@
 
 Repository personale per la gestione e la distribuzione di applicazioni iOS, media player e strumenti avanzati per **SideStore**, **AltStore** e **LiveContainer**.
 
-[![Auto-Extract & Build](# 📱 Sideloading Hub
-
-Repository personale per la gestione e la distribuzione di applicazioni iOS, media player e strumenti avanzati per **SideStore**, **AltStore** e **LiveContainer**.
-
 [![iOS Repository Sync & Build](https://github.com/SimoGHcoder/iosrepo/actions/workflows/update-repo.yml/badge.svg)](https://github.com/SimoGHcoder/iosrepo/actions/workflows/update-repo.yml)
 [![Stremio IPA Sync](https://github.com/SimoGHcoder/iosrepo/actions/workflows/fetch_stremio.yml/badge.svg)](https://github.com/SimoGHcoder/iosrepo/actions/workflows/fetch_stremio.yml)
-[![Nuvio IPA Sync](https://github.com/SimoGHcoder/iosrepo/actions/workflows/auto-update-nuvio.ymlbadge.svg)](https://github.com/SimoGHcoder/iosrepo/actions/workflows/auto-uodate-nuvio.yml)
+[![Nuvio IPA Sync](https://github.com/SimoGHcoder/iosrepo/actions/workflows/auto-update-nuvio.yml/badge.svg)](https://github.com/SimoGHcoder/iosrepo/actions/workflows/auto-uodate-nuvio.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 
