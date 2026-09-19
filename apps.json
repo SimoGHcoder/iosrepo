@@ -74,11 +74,11 @@
       "tintColor": "#007AFF",
       "versions": [
         {
-          "version": "0.4.23",
+          "version": "0.4.24",
           "date": "2026-09-16T09:45:31Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.23-full-release.ipa",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.24-full-release.ipa",
           "localizedDescription": "### 📌 Informazioni sul Pacchetto\r\nQuesto pacchetto `.ipa` è stato caricato e verificato per l'installazione tramite sideloading.\r\n\r\n---\r\n\r\n### 📲 Come Installare\r\n1. Scarica il file **`.ipa`** dagli allegati qui sotto (Assets).\r\n2. Importa il file tramite il tuo gestore preferito:\r\n   * **SideStore / AltStore:** Apri l'app $\\rightarrow$ scheda *My Apps* $\\rightarrow$ premi **`+`** e seleziona il file.\r\n   * **LiveContainer:** Apri LiveContainer $\\rightarrow$ premi **`+`** in alto a destra e seleziona l'IPA.\r\n   * **TrollStore:** Condividi il file IPA direttamente su TrollStore e premi *Install*.\r\n\r\n---\r\n\r\n### ⚠️ Note & Compatibilità\r\n* **Compatibilità:** iOS / iPadOS 15.0 o superiore.\r\n* **Jailbreak:** Non richiesto.\r\n* **ID App & Certificati:** Se usi AltStore/SideStore, assicurati di avere almeno uno slot App ID libero prima di procedere all'installazione.\r\n\r\n---\r\n*Gestito e mantenuto tramite repository personale.*",
-          "size": 51420909,
+          "size": 51517735,
           "bundleIdentifier": "com.nuvio.media",
           "appID": "com.nuvio.media"
         }
