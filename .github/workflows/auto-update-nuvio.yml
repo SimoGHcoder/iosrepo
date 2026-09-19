@@ -69,7 +69,7 @@ jobs:
 
           # 1. Recupera la release ufficiale
           official_rel = get_official_release()
-          latest_tag = official_rel.get('tag_name', '')
+          latest_tag = official_rel.get('tag_name', '').strip()
           official_body = official_rel.get('body', '')
 
           ipa_asset = next((a for a in official_rel.get('assets', []) if a['name'].lower().endswith('.ipa')), None)
@@ -78,20 +78,19 @@ jobs:
               sys.exit(0)
 
           ipa_download_url = ipa_asset['browser_download_url']
-          # Usiamo il tag ufficiale per rinominare localmente l'IPA in modo unico (es. nuvio-0.4.25.ipa)
           clean_tag = latest_tag.lstrip('v')
           dest_ipa_filename = f"nuvio-{clean_tag}.ipa"
 
           print(f"Ultima versione ufficiale Nuvio trovata: {latest_tag}")
           print(f"Nome asset originale: {ipa_asset['name']} -> Salveremo come: {dest_ipa_filename}")
 
-          # 2. Controlla la release personale tramite il tag di versione nel titolo
+          # 2. Controlla la release personale
           target_release = get_my_release()
 
           if target_release:
               my_release_name = target_release.get('name', '')
-              # Se il titolo della tua release contiene già il tag ufficiale, la release è aggiornata
-              if latest_tag in my_release_name or clean_tag in my_release_name:
+              # Controlla se la versione corrente è già presente nel nome della release
+              if f"Nuvio {latest_tag}" in my_release_name or f"Nuvio {clean_tag}" in my_release_name:
                   print(f"La tua release è già aggiornata alla versione '{latest_tag}'. Nessun download necessario.")
                   sys.exit(0)
 
@@ -136,15 +135,22 @@ jobs:
 
               release_id = target_release['id']
 
-              # Rimuove TUTTI i vecchi IPA presenti nella release personale per evitare accumulo
+              # Rimuove i vecchi IPA presenti nella release personale
               for asset in target_release.get('assets', []):
                   if asset['name'].lower().endswith('.ipa'):
                       print(f"Rimozione vecchio IPA: {asset['name']}...")
                       del_url = f"https://api.github.com/repos/{my_repo}/releases/assets/{asset['id']}"
-                      requests.delete(del_url, headers=headers, timeout=30)
+                      r_del = requests.delete(del_url, headers=headers, timeout=30)
+                      if r_del.status_code in [200, 204]:
+                          print(f"Vecchio asset {asset['name']} rimosso.")
 
-              # 5. Upload del nuovo IPA rinominato con la versione corretta
-              upload_url = f"https://uploads.github.com/repos/{my_repo}/releases/{release_id}/assets?name={dest_ipa_filename}"
+              # 5. Upload del nuovo IPA usando l'endpoint di upload restituito dall'API
+              raw_upload_url = target_release.get('upload_url', '')
+              if '{' in raw_upload_url:
+                  upload_url = raw_upload_url.split('{')[0] + f"?name={dest_ipa_filename}"
+              else:
+                  upload_url = f"https://uploads.github.com/repos/{my_repo}/releases/{release_id}/assets?name={dest_ipa_filename}"
+
               headers_upload = headers.copy()
               headers_upload['Content-Type'] = 'application/octet-stream'
 
@@ -159,7 +165,6 @@ jobs:
                   sys.exit(1)
 
           finally:
-              # Pulizia file temporaneo
               if os.path.exists(dest_ipa_filename):
                   os.remove(dest_ipa_filename)
           EOF
