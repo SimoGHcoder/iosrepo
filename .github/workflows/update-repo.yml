@@ -1,4 +1,5 @@
-name: Full Auto-Extract apps.json & Icons from IPA
+name: iOS Repository Sync & Build
+
 
 on:
   release:
