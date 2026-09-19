@@ -5,7 +5,7 @@ on:
   release:
     types: [published, edited, deleted, released, created]
   workflow_run:
-    workflows: ["Auto Fetch Latest Nuvio IPA",  "Stremio IPA Sync"]
+    workflows: ["Nuvio IPA Sync",  "Stremio IPA Sync"]
     types: [completed]
   repository_dispatch:
     types: [ipa_updated]
