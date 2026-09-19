@@ -2,9 +2,12 @@ name: Sync Stremio IPA
 
 on:
   schedule:
-    # Esegue il workflow automaticamente ogni 5 giorni a mezzanotte
-    - cron: '0 0 */5 * *'
+    # Esegue il controllo automatico ogni giorno a mezzanotte
+    - cron: '0 0 * * *'
   workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions di GitHub
+
+permissions:
+  contents: write
 
 jobs:
   sync-stremio-release:
@@ -14,36 +17,57 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Download Official Stremio IPA
+      - name: Check and Download Official Stremio IPA
         id: download_stremio
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MY_REPO: ${{ github.repository }}
         run: |
+          set -e
+
           # 1. Scarica il manifesto principale di AltStore
+          echo "Recupero manifesto Stremio AltStore..."
           curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
                https://dl.strem.io/apple/altstore/source.json -o source.json
 
-          # 2. Estrae l'URL del manifesto per ricavare la versione completa di build (es. 2.0.8-23)
-          MANIFEST_URL=$(jq -r '.apps[0].versions[0].downloadURL' source.json)
-          BASE_VERSION=$(jq -r '.apps[0].versions[0].version' source.json)
+          # 2. Estrae la versione e l'URL
+          MANIFEST_URL=$(jq -r '.apps[0].versions[0].downloadURL // empty' source.json)
+          BASE_VERSION=$(jq -r '.apps[0].versions[0].version // empty' source.json)
+
+          if [ -z "$BASE_VERSION" ] || [ -z "$MANIFEST_URL" ]; then
+            echo "::error:: Impossibile leggere i dati dal manifesto di Stremio."
+            exit 1
+          fi
 
           # Ricava la stringa di build dal percorso (trasforma '2.0.8-23' in '2.0.8b23')
           BUILD_TAG=$(echo "$MANIFEST_URL" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+-[0-9]+' | sed 's/-/'b'/')
 
-          # Se la regex non trova il pattern con il trattino, usa la versione base
           if [ -z "$BUILD_TAG" ]; then
             BUILD_TAG="$BASE_VERSION"
           fi
 
           echo "VERSION=$BASE_VERSION" >> $GITHUB_ENV
           echo "BUILD_TAG=$BUILD_TAG" >> $GITHUB_ENV
-          echo "Rilevata versione base: $BASE_VERSION"
-          echo "Tag build ricavato per CDN: $BUILD_TAG"
+          echo "Rilevata versione ufficiale: $BASE_VERSION ($BUILD_TAG)"
 
-          # 3. Costruisce l'URL statico dinamico
+          # 3. Controlla se la release attuale ha già questa versione
+          CURRENT_RELEASE_BODY=$(curl -sSL -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$MY_REPO/releases/tags/Stremio" | jq -r '.body // empty')
+
+          if echo "$CURRENT_RELEASE_BODY" | grep -q "$BUILD_TAG"; then
+            echo "La tua release contiene già la versione $BUILD_TAG. Nessun aggiornamento necessario."
+            echo "SHOULD_UPDATE=false" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          echo "Nuova versione rilevata ($BUILD_TAG)! Procedo al download..."
+          echo "SHOULD_UPDATE=true" >> $GITHUB_ENV
+
+          # 4. Costruisce l'URL statico dinamico e scarica l'IPA
           DIRECT_IPA_URL="https://dl.strem.io/apple/${BUILD_TAG}/ios/stremio_iOS.ipa"
           echo "URL IPA generato: $DIRECT_IPA_URL"
 
-          # 4. Scarica il file .ipa reale
-          curl -sSL -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
+          curl -sSL --fail -A "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)" \
                -o Stremio.ipa "$DIRECT_IPA_URL"
 
           # 5. Verifica che il file sia un IPA valido (> 10 MB)
@@ -52,15 +76,15 @@ jobs:
 
           if [ $FILESIZE -lt 10485760 ]; then
             echo "::error:: Il file scaricato non è un IPA valido ($FILESIZE byte)."
-            cat Stremio.ipa | head -n 20
             exit 1
           fi
 
       - name: Create or Update GitHub Release
-        uses: softprops/action-gh-release@v1
+        if: env.SHOULD_UPDATE == 'true'
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: "Stremio"
-          name: "Stremio"
+          name: "Stremio ${{ env.BUILD_TAG }}"
           body: |
             Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.
             
@@ -69,3 +93,11 @@ jobs:
           files: Stremio.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 6. Scatena l'estrazione delle icone e la rigenerazione automatica di apps.json
+      - name: Trigger Full Auto-Extract Workflow
+        if: env.SHOULD_UPDATE == 'true' && success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: ipa_updated
