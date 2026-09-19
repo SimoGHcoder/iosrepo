@@ -1,4 +1,4 @@
-name: Sync Stremio IPA
+name: Stremio IPA Sync
 
 on:
   schedule:
