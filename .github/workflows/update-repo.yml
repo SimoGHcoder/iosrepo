@@ -74,7 +74,6 @@ jobs:
           }
 
           def fix_cgbi_png(raw_path, out_path):
-              # Tenta prima con il binario di sistema pngdefry se installato
               try:
                   res = subprocess.run(["pngdefry", "-o", out_path, raw_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                   if res.returncode == 0 and os.path.exists(out_path):
@@ -82,7 +81,6 @@ jobs:
               except Exception:
                   pass
 
-              # Tenta con il pacchetto python pngdefry
               try:
                   import pngdefry
                   pngdefry.defry(raw_path, out_path)
@@ -91,7 +89,6 @@ jobs:
               except Exception:
                   pass
 
-              # Fallback standard PIL
               try:
                   with Image.open(raw_path) as img:
                       img.save(out_path, "PNG")
@@ -198,7 +195,6 @@ jobs:
 
                       print(f"Analisi file: {asset['name']}...")
                       
-                      # Scarichiamo gli asset senza header di autorizzazione per evitare conflitti con Amazon S3
                       try:
                           with requests.get(download_url, stream=True, timeout=120) as r_dl:
                               r_dl.raise_for_status()
@@ -217,27 +213,43 @@ jobs:
                           continue
 
                       bundle_id = info["bundleIdentifier"]
+                      
+                      # Se la release ha un titolo specifico come "Nuvio v0.4.25-beta", estraiamo la versione dal titolo o dall'IPA
                       version_num = info["version"]
-                      app_name = info["name"] or rel.get('name') or "App iOS"
+                      rel_name = rel.get('name', '')
+                      
+                      # Tenta di estrarre la versione dal titolo della release se presente (es. 0.4.25-beta)
+                      match_ver = re.search(r'v?(\d+\.\d+\.\d+(?:-[a-zA-Z0-9\.]+)?)', rel_name)
+                      if match_ver:
+                          version_num = match_ver.group(1)
+
+                      app_name = info["name"] or rel_name or "App iOS"
                       icon_url = info.get("iconURL") or f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
 
                       meta = CUSTOM_METADATA.get(bundle_id, {})
 
+                      new_version_entry = {
+                          "version": version_num,
+                          "date": published_at,
+                          "downloadURL": download_url,
+                          "localizedDescription": body if body else f"Versione {version_num}",
+                          "size": int(size),
+                          "bundleIdentifier": bundle_id,
+                          "appID": bundle_id
+                      }
+
+                      # FIX: Aggiorna sempre se la versione o il link di download sono cambiati, ignorando il controllo data
                       if bundle_id in apps_dict:
                           existing_app = apps_dict[bundle_id]
-                          if not existing_app['versions'] or published_at > existing_app['versions'][0]['date']:
+                          curr_version = existing_app['versions'][0]['version'] if existing_app['versions'] else ""
+                          curr_url = existing_app['versions'][0]['downloadURL'] if existing_app['versions'] else ""
+                          
+                          if version_num != curr_version or download_url != curr_url or published_at > existing_app['versions'][0]['date']:
+                              print(f"Aggiornamento rilevato per {bundle_id}: {curr_version} -> {version_num}")
                               existing_app['name'] = app_name
                               existing_app['iconURL'] = icon_url
                               existing_app['localizedDescription'] = body if body else f"Applicazione {app_name}."
-                              existing_app['versions'] = [{
-                                  "version": version_num,
-                                  "date": published_at,
-                                  "downloadURL": download_url,
-                                  "localizedDescription": body if body else f"Versione {version_num}",
-                                  "size": int(size),
-                                  "bundleIdentifier": bundle_id,
-                                  "appID": bundle_id
-                              }]
+                              existing_app['versions'] = [new_version_entry]
                       else:
                           apps_dict[bundle_id] = {
                               "name": app_name,
@@ -247,15 +259,7 @@ jobs:
                               "localizedDescription": body if body else f"Applicazione {app_name}.",
                               "iconURL": icon_url,
                               "tintColor": meta.get("tintColor", "#007AFF"),
-                              "versions": [{
-                                  "version": version_num,
-                                  "date": published_at,
-                                  "downloadURL": download_url,
-                                  "localizedDescription": body if body else f"Versione {version_num}",
-                                  "size": int(size),
-                                  "bundleIdentifier": bundle_id,
-                                  "appID": bundle_id
-                              }]
+                              "versions": [new_version_entry]
                           }
 
           final_apps = [app for app in apps_dict.values() if len(app.get('versions', [])) > 0]
@@ -277,5 +281,5 @@ jobs:
             git pull --rebase origin main
             git push origin main
           else
-            print("Nessun cambiamento rilevato in apps.json o nelle icone.")
+            echo "Nessun cambiamento rilevato in apps.json o nelle icone."
           fi
