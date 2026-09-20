@@ -1,46 +1,28 @@
 name: iOS Repository Sync & Build
 
 on:
-  release:
-    types: [published, edited, deleted, released, created]
-  workflow_run:
-    workflows: ["Nuvio IPA Sync", "Stremio IPA Sync"]
-    types: [completed]
-  repository_dispatch:
-    types: [ipa_updated]
   workflow_dispatch:
-
-concurrency:
-  group: auto-extract-${{ github.ref }}
-  cancel-in-progress: true
+  schedule:
+    - cron: '0 0 * * *' # Esegue l'aggiornamento ogni giorno alle 00:00
 
 permissions:
   contents: write
 
 jobs:
-  build-repository:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+  update:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-
-      - name: Install system dependencies for CGBitmap PNGs
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pngdefry || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.10'
 
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install requests Pillow
 
       - name: Rebuild apps.json and extract icons
@@ -75,7 +57,6 @@ jobs:
           }
 
           def fix_cgbi_png(raw_path, out_path):
-              # 1. Prova con pngdefry CLI
               try:
                   res = subprocess.run(["pngdefry", "-o", out_path, raw_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                   if res.returncode == 0 and os.path.exists(out_path):
@@ -83,7 +64,6 @@ jobs:
               except Exception:
                   pass
 
-              # 2. Fallback con Pillow
               try:
                   with Image.open(raw_path) as img:
                       img.save(out_path, "PNG")
@@ -92,11 +72,12 @@ jobs:
                   print(f"Errore conversione icona {raw_path}: {e}")
                   return False
 
-          def extract_ipa_data(ipa_path, bundle_out_dir):
+          def extract_ipa_data(ipa_path, bundle_out_dir, repo_name):
               try:
                   with zipfile.ZipFile(ipa_path, 'r') as ipa:
                       plist_files = [f for f in ipa.namelist() if re.match(r'^Payload/[^/]+\.app/Info\.plist$', f)]
                       if not plist_files:
+                          print(" -> Nessun Info.plist trovato nell'IPA.")
                           return None
                       
                       plist_path = plist_files[0]
@@ -109,53 +90,43 @@ jobs:
                       version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion") or "1.0"
                       name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
 
-                      # Ricerca flessibile delle icone
-                      icon_files = []
-                      icons_dict = plist.get("CFBundleIcons", {})
-                      primary_icon = icons_dict.get("CFBundlePrimaryIcon", {})
+                      if not bundle_id:
+                          return None
+
+                      print(f" -> Trovato Bundle ID: {bundle_id} ({name})")
+
+                      matched_icon_item = None
+                      png_candidates = [f for f in ipa.namelist() if f.startswith(app_folder) and f.endswith('.png')]
                       
-                      if "CFBundleIconFiles" in primary_icon:
-                          icon_files.extend(primary_icon["CFBundleIconFiles"])
-                      elif "CFBundleIconName" in primary_icon:
-                          icon_files.append(primary_icon["CFBundleIconName"])
+                      for keyword in ['appicon', 'icon', 'logo']:
+                          matches = [f for f in png_candidates if keyword in f.lower()]
+                          if matches:
+                              matched_icon_item = matches[-1]
+                              break
                       
-                      if not icon_files and "CFBundleIconFiles" in plist:
-                          icon_files.extend(plist["CFBundleIconFiles"])
+                      if not matched_icon_item and png_candidates:
+                          matched_icon_item = png_candidates[-1]
 
                       extracted_icon_path = None
-                      
-                      if bundle_id:
-                          matched_icon_item = None
+                      if matched_icon_item:
+                          safe_bundle_id = re.sub(r'[^a-zA-Z0-9_.-]', '_', bundle_id)
+                          icon_filename = f"{safe_bundle_id}.png"
+                          out_file_path = os.path.join(bundle_out_dir, icon_filename)
+                          temp_raw_icon = os.path.join(bundle_out_dir, f"raw_{icon_filename}")
                           
-                          # Se Info.plist specifica dei nomi icona
-                          if icon_files:
-                              for base_icon_name in reversed(icon_files):
-                                  for item in ipa.namelist():
-                                      if item.startswith(app_folder) and base_icon_name in item and item.endswith('.png'):
-                                          matched_icon_item = item
-                                          break
-                                  if matched_icon_item:
-                                      break
+                          with ipa.open(matched_icon_item) as icon_file, open(temp_raw_icon, 'wb') as out_file:
+                              out_file.write(icon_file.read())
+                          
+                          if fix_cgbi_png(temp_raw_icon, out_file_path):
+                              extracted_icon_path = f"https://raw.githubusercontent.com/{repo_name}/main/icons/{icon_filename}"
+                              print(f" -> Icona estratta con successo: {icon_filename}")
+                          else:
+                              print(f" -> Fallito fix CgBI per l'icona di {bundle_id}")
 
-                          # Fallback: cerca qualsiasi file PNG chiamato *AppIcon* nella cartella .app
-                          if not matched_icon_item:
-                              png_candidates = [f for f in ipa.namelist() if f.startswith(app_folder) and 'AppIcon' in f and f.endswith('.png')]
-                              if png_candidates:
-                                  matched_icon_item = png_candidates[-1]
-
-                          if matched_icon_item:
-                              icon_filename = f"{bundle_id}.png"
-                              out_file_path = os.path.join(bundle_out_dir, icon_filename)
-                              temp_raw_icon = os.path.join(bundle_out_dir, f"raw_{icon_filename}")
-                              
-                              with ipa.open(matched_icon_item) as icon_file, open(temp_raw_icon, 'wb') as out_file:
-                                  out_file.write(icon_file.read())
-                              
-                              if fix_cgbi_png(temp_raw_icon, out_file_path):
-                                  extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
-                              
-                              if os.path.exists(temp_raw_icon):
-                                  os.remove(temp_raw_icon)
+                          if os.path.exists(temp_raw_icon):
+                              os.remove(temp_raw_icon)
+                      else:
+                          print(f" -> Nessun file icona PNG trovato per {bundle_id}")
 
                       return {
                           "bundleIdentifier": bundle_id,
@@ -164,7 +135,7 @@ jobs:
                           "iconURL": extracted_icon_path
                       }
               except Exception as e:
-                  print(f"Errore nella lettura dell'IPA {ipa_path}: {e}")
+                  print(f"Errore lettura IPA: {e}")
                   return None
 
           data = {
@@ -176,14 +147,12 @@ jobs:
               "news": []
           }
 
-          # Recupera tutte le release del repository personale
           releases = []
           page = 1
           while True:
               url = f'https://api.github.com/repos/{repo}/releases?per_page=100&page={page}'
               response = requests.get(url, headers=api_headers, timeout=30)
               if response.status_code != 200:
-                  print(f"Errore API GitHub: {response.status_code}")
                   break
               page_releases = response.json()
               if not page_releases:
@@ -204,9 +173,10 @@ jobs:
                   if asset['name'].lower().endswith('.ipa'):
                       download_url = asset['browser_download_url']
                       size = asset['size']
-                      local_filename = "temp_app.ipa"
+                      safe_asset_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', asset['name'])
+                      local_filename = f"temp_{safe_asset_name}"
 
-                      print(f"Analisi file asset: {asset['name']} (Release: {rel.get('name')})...")
+                      print(f"Analisi asset: {asset['name']} (Release: {rel.get('name')})...")
                       
                       try:
                           with requests.get(download_url, stream=True, timeout=120) as r_dl:
@@ -215,10 +185,10 @@ jobs:
                                   for chunk in r_dl.iter_content(chunk_size=65536):
                                       f.write(chunk)
                       except Exception as e:
-                          print(f"Errore durante il download dell'asset {asset['name']}: {e}")
+                          print(f"Errore download {asset['name']}: {e}")
                           continue
 
-                      info = extract_ipa_data(local_filename, 'icons')
+                      info = extract_ipa_data(local_filename, 'icons', repo)
                       if os.path.exists(local_filename):
                           os.remove(local_filename)
 
@@ -229,14 +199,20 @@ jobs:
                       version_num = info["version"]
                       rel_name = rel.get('name', '')
                       
-                      # Estrazione versione dal nome della release o dal file IPA
                       match_ver = re.search(r'v?(\d+\.\d+\.\d+(?:-[a-zA-Z0-9\.]+)?)', rel_name)
                       if match_ver:
                           version_num = match_ver.group(1)
 
                       meta = CUSTOM_METADATA.get(bundle_id, {})
                       app_name = meta.get("name") or info["name"] or rel_name or "App iOS"
-                      icon_url = info.get("iconURL") or f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
+                      
+                      extracted_icon = info.get("iconURL")
+                      if not extracted_icon and bundle_id in apps_dict:
+                          extracted_icon = apps_dict[bundle_id].get("iconURL")
+
+                      icon_url = extracted_icon if extracted_icon and "repoicon.png" not in extracted_icon else f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
+                      if extracted_icon:
+                          icon_url = extracted_icon
 
                       new_version_entry = {
                           "version": version_num,
@@ -264,6 +240,8 @@ jobs:
                           }
                       else:
                           apps_dict[bundle_id]["versions"].append(new_version_entry)
+                          if extracted_icon and "repoicon.png" in apps_dict[bundle_id]["iconURL"]:
+                              apps_dict[bundle_id]["iconURL"] = extracted_icon
 
           data["apps"] = list(apps_dict.values())
 
