@@ -4,7 +4,7 @@ on:
   release:
     types: [published, edited, deleted, released, created]
   workflow_run:
-    workflows: ["Nuvio IPA Sync",  "Stremio IPA Sync"]
+    workflows: ["Nuvio IPA Sync", "Stremio IPA Sync"]
     types: [completed]
   repository_dispatch:
     types: [ipa_updated]
@@ -242,53 +242,40 @@ jobs:
                           "version": version_num,
                           "date": published_at,
                           "downloadURL": download_url,
-                          "localizedDescription": body if body else f"Versione {version_num}",
-                          "size": int(size),
-                          "bundleIdentifier": bundle_id,
-                          "appID": bundle_id
+                          "size": size,
+                          "localizedDescription": body
                       }
 
-                      if bundle_id in apps_dict:
-                          existing_app = apps_dict[bundle_id]
-                          prev_date = existing_app['versions'][0]['date'] if existing_app['versions'] else ""
-                          
-                          # Mantiene sempre la release con la data di pubblicazione più recente
-                          if published_at >= prev_date:
-                              existing_app['name'] = app_name
-                              if info.get("iconURL"):
-                                  existing_app['iconURL'] = icon_url
-                              existing_app['localizedDescription'] = body if body else f"Applicazione {app_name}."
-                              existing_app['versions'] = [new_version_entry]
-                      else:
+                      if bundle_id not in apps_dict:
                           apps_dict[bundle_id] = {
                               "name": app_name,
                               "bundleIdentifier": bundle_id,
-                              "developerName": "Sideloading Hub",
-                              "subtitle": f"{app_name} release",
-                              "localizedDescription": body if body else f"Applicazione {app_name}.",
+                              "developerName": repo.split('/')[0] if repo else "Developer",
+                              "subtitle": meta.get("subtitle", ""),
+                              "version": version_num,
+                              "versionDate": published_at,
+                              "versionDescription": body,
+                              "downloadURL": download_url,
+                              "localizedDescription": body,
                               "iconURL": icon_url,
                               "tintColor": meta.get("tintColor", "#007AFF"),
+                              "size": size,
                               "versions": [new_version_entry]
                           }
+                      else:
+                          apps_dict[bundle_id]["versions"].append(new_version_entry)
 
-          final_apps = [app for app in apps_dict.values() if len(app.get('versions', [])) > 0]
-          data['apps'] = final_apps
+          data["apps"] = list(apps_dict.values())
 
           with open('apps.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          print("File apps.json rigenerato con successo!")
+          print("Generazione apps.json completata con successo.")
           EOF
 
-      - name: Commit and Push Changes
+      - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "41898280+github-actions[bot]@users.noreply.github.com"
           git add apps.json icons/
-          if ! git diff --staged --quiet; then
-            git commit -m "auto: rigenerazione automatica apps.json e icone"
-            git pull --rebase origin main
-            git push origin main
-          else
-            echo "Nessun cambiamento rilevato in apps.json o nelle icone."
-          fi
+          git diff --staged --quiet || (git commit -m "auto: update apps.json and extracted icons" && git push)
