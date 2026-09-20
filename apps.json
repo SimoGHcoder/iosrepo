@@ -5,6 +5,26 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
+      "name": "GitHub",
+      "bundleIdentifier": "com.github.stormbreaker.prod",
+      "developerName": "Sideloading Hub",
+      "subtitle": "GitHub release",
+      "localizedDescription": "Applicazione GitHub.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "1.224.0",
+          "date": "2026-09-20T10:05:22Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/github/GithubMod.ipa",
+          "localizedDescription": "Versione 1.224.0",
+          "size": 65308773,
+          "bundleIdentifier": "com.github.stormbreaker.prod",
+          "appID": "com.github.stormbreaker.prod"
+        }
+      ]
+    },
+    {
       "name": "Stremio",
       "bundleIdentifier": "com.stremio.pal",
       "developerName": "Sideloading Hub",
