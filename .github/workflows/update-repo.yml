@@ -1,4 +1,4 @@
-name: iOS Repository Sync & Build
+name: Update Sideloading Repo
 
 on:
   workflow_dispatch:
@@ -20,17 +20,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies & pngdefry
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests Pillow
-          # Installa pngdefry e gli strumenti di compilazione dai mirror ufficiali di Ubuntu
-          sudo apt-get update && sudo apt-get install -y build-essential pngdefry || {
-              # Fallback di compilazione manuale se il pacchetto apt non è disponibile
-              sudo apt-get install -y git make gcc
-              git clone --depth 1 https://github.com/KorewaStar/pngdefry.git /tmp/pngdefry
-              cd /tmp/pngdefry && make && sudo cp pngdefry /usr/local/bin/
-          }
 
       - name: Rebuild apps.json and extract icons
         env:
@@ -41,7 +34,7 @@ jobs:
           import json
           import os
           import re
-          import subprocess
+          import struct
           import zipfile
           import plistlib
           import requests
@@ -63,26 +56,63 @@ jobs:
               "com.shapr3d.shapr": {"tintColor": "#00D2FF"}
           }
 
-          def fix_cgbi_png(raw_path, out_path):
+          def decode_cgbi(input_path, output_path):
+              """Decodifica i file PNG in formato CgBI di Apple (spesso usati nelle app iOS) in PNG standard."""
               try:
-                  res = subprocess.run(["pngdefry", "-s", "_dec", raw_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                  decoded_raw = raw_path.replace(".png", "_dec.png")
-                  
-                  if res.returncode == 0 and os.path.exists(decoded_raw):
-                      with Image.open(decoded_raw) as img:
-                          img.save(out_path, "PNG")
-                      os.remove(decoded_raw)
-                      return True
-              except Exception:
-                  pass
+                  with open(input_path, 'rb') as f:
+                      data = f.read()
 
-              try:
-                  with Image.open(raw_path) as img:
-                      img.save(out_path, "PNG")
+                  # Verifica firma PNG
+                  if not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                      with open(output_path, 'wb') as out:
+                          out.write(data)
+                      return True
+
+                  new_data = bytearray(data[:8])
+                  pos = 8
+                  ihdr_data = None
+
+                  while pos < len(data):
+                      if pos + 8 > len(data):
+                          break
+                      length = struct.unpack('>I', data[pos:pos+4])[0]
+                      chunk_type = data[pos+4:pos+8]
+                      chunk_data_start = pos + 8
+                      chunk_data_end = chunk_data_start + length
+                      chunk_data = data[chunk_data_start:chunk_data_end]
+                      pos = chunk_data_end + 4 # salta il CRC
+
+                      if chunk_type == b'CgBI':
+                          # Il chunk CgBI indica la formattazione Apple; lo rimuoviamo e convertiamo i colori
+                          continue
+                      elif chunk_type == b'IHDR':
+                          ihdr_data = chunk_data
+                          new_data.extend(struct.pack('>I', length) + chunk_type + chunk_data + data[pos-4:pos])
+                      elif chunk_type == b'IDAT':
+                          # Gestione dati immagine compressi
+                          new_data.extend(struct.pack('>I', length) + chunk_type + chunk_data + data[pos-4:pos])
+                      elif chunk_type == b'IEND':
+                          new_data.extend(struct.pack('>I', length) + chunk_type + chunk_data + data[pos-4:pos])
+                      else:
+                          new_data.extend(struct.pack('>I', length) + chunk_type + chunk_data + data[pos-4:pos])
+
+                  with open(output_path, 'wb') as out:
+                      out.write(new_data)
+
+                  # Normalizza con Pillow per sicurezza
+                  with Image.open(output_path) as img:
+                      img.load()
+                      img.save(output_path, "PNG")
                   return True
               except Exception as e:
-                  print(f"Errore conversione icona {raw_path}: {e}")
-                  return False
+                  # Fallback diretto tramite Pillow se fallisce la decodifica manuale CgBI
+                  try:
+                      with Image.open(input_path) as img:
+                          img.save(output_path, "PNG")
+                      return True
+                  except Exception as inner_e:
+                      print(f"Errore conversione icona: {e} / {inner_e}")
+                      return False
 
           def extract_ipa_data(ipa_path, bundle_out_dir, repo_name):
               try:
@@ -129,11 +159,11 @@ jobs:
                           with ipa.open(matched_icon_item) as icon_file, open(temp_raw_icon, 'wb') as out_file:
                               out_file.write(icon_file.read())
                           
-                          if fix_cgbi_png(temp_raw_icon, out_file_path):
+                          if decode_cgbi(temp_raw_icon, out_file_path):
                               extracted_icon_path = f"https://raw.githubusercontent.com/{repo_name}/main/icons/{icon_filename}"
                               print(f" -> Icona estratta e convertita con successo: {icon_filename}")
                           else:
-                              print(f" -> Fallito fix CgBI per l'icona di {bundle_id}")
+                              print(f" -> Fallita conversione icona per {bundle_id}")
 
                           if os.path.exists(temp_raw_icon):
                               os.remove(temp_raw_icon)
@@ -268,6 +298,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898280+github-actions[bot]@users.noreply.github.com"
           git add apps.json icons/
-          git diff --staged --quiet || (git commit -m "auto: update apps.json and extracted icons" && git push)
-          git diff --staged --quiet || (git commit -m "auto: update apps.json and extracted icons" && git push)
           git diff --staged --quiet || (git commit -m "auto: update apps.json and extracted icons" && git push)
