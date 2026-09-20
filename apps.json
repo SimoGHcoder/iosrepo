@@ -25,6 +25,26 @@
       ]
     },
     {
+      "name": "AI Code Editor",
+      "bundleIdentifier": "com.coddykit.aicodeeditor",
+      "developerName": "Sideloading Hub",
+      "subtitle": "AI Code Editor release",
+      "localizedDescription": "Applicazione AI Code Editor.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "71.0.0",
+          "date": "2026-09-20T10:15:50Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/AIcE/ai-code-editor-compiler.ipa",
+          "localizedDescription": "Versione 71.0.0",
+          "size": 27856137,
+          "bundleIdentifier": "com.coddykit.aicodeeditor",
+          "appID": "com.coddykit.aicodeeditor"
+        }
+      ]
+    },
+    {
       "name": "Stremio",
       "bundleIdentifier": "com.stremio.pal",
       "developerName": "Sideloading Hub",
