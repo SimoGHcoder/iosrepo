@@ -3,7 +3,7 @@ name: iOS Repository Sync & Build
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # Esegue l'aggiornamento ogni giorno alle 00:00
+    - cron: '0 0 * * *'
 
 permissions:
   contents: write
@@ -20,10 +20,14 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install dependencies & pngdefry
         run: |
           python -m pip install --upgrade pip
           pip install requests Pillow
+          # Compila pngdefry per la decodifica corretta delle icone iOS (formato CgBI)
+          sudo apt-get update && sudo apt-get install -y build-essential git
+          git clone https://github.com/aishforaj/pngdefry.git /tmp/pngdefry
+          cd /tmp/pngdefry && make && sudo cp pngdefry /usr/local/bin/
 
       - name: Rebuild apps.json and extract icons
         env:
@@ -58,8 +62,14 @@ jobs:
 
           def fix_cgbi_png(raw_path, out_path):
               try:
-                  res = subprocess.run(["pngdefry", "-o", out_path, raw_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                  if res.returncode == 0 and os.path.exists(out_path):
+                  # Usa pngdefry per convertire le immagini CgBI di Apple in PNG standard
+                  res = subprocess.run(["pngdefry", "-s", "_dec", raw_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                  decoded_raw = raw_path.replace(".png", "_dec.png")
+                  
+                  if res.returncode == 0 and os.path.exists(decoded_raw):
+                      with Image.open(decoded_raw) as img:
+                          img.save(out_path, "PNG")
+                      os.remove(decoded_raw)
                       return True
               except Exception:
                   pass
@@ -119,7 +129,7 @@ jobs:
                           
                           if fix_cgbi_png(temp_raw_icon, out_file_path):
                               extracted_icon_path = f"https://raw.githubusercontent.com/{repo_name}/main/icons/{icon_filename}"
-                              print(f" -> Icona estratta con successo: {icon_filename}")
+                              print(f" -> Icona estratta e convertita con successo: {icon_filename}")
                           else:
                               print(f" -> Fallito fix CgBI per l'icona di {bundle_id}")
 
@@ -256,4 +266,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898280+github-actions[bot]@users.noreply.github.com"
           git add apps.json icons/
+          git diff --staged --quiet || (git commit -m "auto: update apps.json and extracted icons" && git push)
           git diff --staged --quiet || (git commit -m "auto: update apps.json and extracted icons" && git push)
