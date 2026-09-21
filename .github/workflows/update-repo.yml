@@ -122,26 +122,52 @@ jobs:
                       version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion") or "1.0"
                       name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
 
+                      # Estrae i nomi base delle icone definiti nel plist
+                      icon_base_names = []
+                      icons_dict = plist.get("CFBundleIcons", {})
+                      primary_icon = icons_dict.get("CFBundlePrimaryIcon", {})
+                      if "CFBundleIconFiles" in primary_icon:
+                          icon_base_names.extend(primary_icon["CFBundleIconFiles"])
+                      elif "CFBundleIconName" in primary_icon:
+                          icon_base_names.append(primary_icon["CFBundleIconName"])
+                      
+                      if not icon_base_names and "CFBundleIconFiles" in plist:
+                          icon_base_names.extend(plist["CFBundleIconFiles"])
+
                       extracted_icon_path = None
                       
                       if bundle_id:
                           matched_icon_item = None
                           namelist = ipa.namelist()
                           
-                          # Strategia 1: Cerca file PNG che contengono "icon" o "appicon" nella cartella dell'app
-                          candidates = [
-                              f for f in namelist 
-                              if f.startswith(app_folder) and f.endswith('.png') and ('icon' in f.lower() or 'appicon' in f.lower())
-                          ]
+                          candidates = []
+                          # Strategia 1: Cerca i file basati sui nomi ufficiali del plist
+                          if icon_base_names:
+                              for base_name in icon_base_names:
+                                  for item in namelist:
+                                      if item.startswith(app_folder) and item.endswith('.png') and base_name in item:
+                                          candidates.append(item)
                           
+                          # Strategia 2 (Fallback): Se il plist non ha i nomi, cerca file che contengono AppIcon
+                          if not candidates:
+                              candidates = [
+                                  f for f in namelist 
+                                  if f.startswith(app_folder) and f.endswith('.png') and 'appicon' in f.lower()
+                              ]
+
                           if candidates:
-                              matched_icon_item = sorted(candidates, key=len)[-1]
-                          
-                          # Strategia 2 (Fallback): Prendi qualsiasi PNG presente se non trova corrispondenze con "icon"
-                          if not matched_icon_item:
-                              all_pngs = [f for f in namelist if f.startswith(app_folder) and f.endswith('.png')]
-                              if all_pngs:
-                                  matched_icon_item = all_pngs[0]
+                              # Punteggio per preferire l'alta risoluzione (@3x, @2x, 60x60)
+                              scored_candidates = []
+                              for c in candidates:
+                                  score = 0
+                                  if '@3x' in c: score += 30
+                                  elif '@2x' in c: score += 20
+                                  if '60x60' in c: score += 15
+                                  score += len(c)
+                                  scored_candidates.append((score, c))
+                              
+                              scored_candidates.sort(key=lambda x: x[0], reverse=True)
+                              matched_icon_item = scored_candidates[0][1]
 
                           if matched_icon_item:
                               icon_filename = f"{bundle_id}.png"
