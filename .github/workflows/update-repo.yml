@@ -122,36 +122,26 @@ jobs:
                       version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion") or "1.0"
                       name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
 
-                      icon_files = []
-                      icons_dict = plist.get("CFBundleIcons", {})
-                      primary_icon = icons_dict.get("CFBundlePrimaryIcon", {})
-                      
-                      if "CFBundleIconFiles" in primary_icon:
-                          icon_files.extend(primary_icon["CFBundleIconFiles"])
-                      elif "CFBundleIconName" in primary_icon:
-                          icon_files.append(primary_icon["CFBundleIconName"])
-                      
-                      if not icon_files and "CFBundleIconFiles" in plist:
-                          icon_files.extend(plist["CFBundleIconFiles"])
-
                       extracted_icon_path = None
                       
                       if bundle_id:
                           matched_icon_item = None
+                          namelist = ipa.namelist()
                           
-                          if icon_files:
-                              for base_icon_name in reversed(icon_files):
-                                  for item in ipa.namelist():
-                                      if item.startswith(app_folder) and base_icon_name in item and item.endswith('.png'):
-                                          matched_icon_item = item
-                                          break
-                                  if matched_icon_item:
-                                      break
-
+                          # Strategia 1: Cerca file PNG che contengono "icon" o "appicon" nella cartella dell'app
+                          candidates = [
+                              f for f in namelist 
+                              if f.startswith(app_folder) and f.endswith('.png') and ('icon' in f.lower() or 'appicon' in f.lower())
+                          ]
+                          
+                          if candidates:
+                              matched_icon_item = sorted(candidates, key=len)[-1]
+                          
+                          # Strategia 2 (Fallback): Prendi qualsiasi PNG presente se non trova corrispondenze con "icon"
                           if not matched_icon_item:
-                              png_candidates = [f for f in ipa.namelist() if f.startswith(app_folder) and 'AppIcon' in f and f.endswith('.png')]
-                              if png_candidates:
-                                  matched_icon_item = png_candidates[-1]
+                              all_pngs = [f for f in namelist if f.startswith(app_folder) and f.endswith('.png')]
+                              if all_pngs:
+                                  matched_icon_item = all_pngs[0]
 
                           if matched_icon_item:
                               icon_filename = f"{bundle_id}.png"
@@ -264,7 +254,7 @@ jobs:
                           
                           if published_at >= prev_date:
                               existing_app['name'] = app_name
-                              if info.get("iconURL"):
+                              if info.get("iconURL") and info.get("iconURL") != f"https://raw.githubusercontent.com/{repo}/main/repoicon.png":
                                   existing_app['iconURL'] = icon_url
                               existing_app['localizedDescription'] = body if body else f"Applicazione {app_name}."
                           
@@ -276,7 +266,7 @@ jobs:
                               "bundleIdentifier": bundle_id,
                               "developerName": repo.split('/')[0] if repo else "Developer",
                               "subtitle": f"{app_name} release",
-                          "localizedDescription": body if body else f"Applicazione {app_name}.",
+                              "localizedDescription": body if body else f"Applicazione {app_name}.",
                               "iconURL": icon_url,
                               "tintColor": meta.get("tintColor", "#007AFF"),
                               "versions": [new_version_entry]
