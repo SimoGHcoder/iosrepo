@@ -10,7 +10,7 @@
       "developerName": "SimoGHcoder",
       "subtitle": "GitHub release",
       "localizedDescription": "Applicazione GitHub.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.github.stormbreaker.prod.png",
       "tintColor": "#007AFF",
       "versions": [
         {
@@ -90,7 +90,7 @@
       "developerName": "SimoGHcoder",
       "subtitle": "Shapr3D release",
       "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.shapr3d.shapr.png",
       "tintColor": "#00D2FF",
       "versions": [
         {
@@ -110,7 +110,7 @@
       "developerName": "SimoGHcoder",
       "subtitle": "Nuvio release",
       "localizedDescription": "- 458f810b fix(streams): share addon filtering across pickers @tapframe  \n- [i18n(nb): complete missing Norwegian Bokmål strings (#2005)](https://github.com/NuvioMedia/NuvioMobile/pull/2005) @SimSalabimse  \n",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#007AFF",
       "versions": [
         {
@@ -130,7 +130,7 @@
       "developerName": "SimoGHcoder",
       "subtitle": "calimoto release",
       "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.calimoto.calimoto.png",
       "tintColor": "#FF5500",
       "versions": [
         {
