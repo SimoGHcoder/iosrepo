@@ -79,30 +79,23 @@ jobs:
               "com.shapr3d.shapr": {"tintColor": "#00D2FF"}
           }
 
-          def fix_cgbi_png(raw_path, out_path):
-              # Tentativo 1: Conversione con pngdefry
+          def fetch_appstore_icon(bundle_id, out_file_path):
               try:
-                  base_dir = os.path.dirname(out_path)
-                  file_name = os.path.basename(out_path)
-                  res = subprocess.run(["pngdefry", "-s", "", "-o", file_name, raw_path], cwd=base_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                  decoded_file = os.path.join(base_dir, file_name)
-                  if res.returncode == 0 and os.path.exists(decoded_file):
-                      with Image.open(decoded_file) as img:
-                          img.load()
-                          img.save(out_path, "PNG")
-                      return True
+                  url = f"https://itunes.apple.com/lookup?bundleId={bundle_id}"
+                  resp = requests.get(url, timeout=10)
+                  if resp.status_code == 200:
+                      data = resp.json()
+                      if data.get("resultCount", 0) > 0:
+                          result = data["results"][0]
+                          artwork_url = result.get("artworkUrl512") or result.get("artworkUrl100")
+                          if artwork_url:
+                              img_resp = requests.get(artwork_url, timeout=15)
+                              if img_resp.status_code == 200:
+                                  with open(out_file_path, 'wb') as f:
+                                      f.write(img_resp.content)
+                                  return True
               except Exception:
                   pass
-
-              # Tentativo 2: Apertura diretta con Pillow (se non è un CGBitmap)
-              try:
-                  with Image.open(raw_path) as img:
-                      img.load()
-                      img.save(out_path, "PNG")
-                  return True
-              except Exception:
-                  pass
-
               return False
 
           def extract_ipa_data(ipa_path, bundle_out_dir):
@@ -113,8 +106,6 @@ jobs:
                           return None
                       
                       plist_path = plist_files[0]
-                      app_folder = os.path.dirname(plist_path)
-
                       with ipa.open(plist_path) as f:
                           plist = plistlib.load(f)
 
@@ -122,68 +113,17 @@ jobs:
                       version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion") or "1.0"
                       name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
 
-                      # Estrae i nomi base delle icone definiti nel plist
-                      icon_base_names = []
-                      icons_dict = plist.get("CFBundleIcons", {})
-                      primary_icon = icons_dict.get("CFBundlePrimaryIcon", {})
-                      if "CFBundleIconFiles" in primary_icon:
-                          icon_base_names.extend(primary_icon["CFBundleIconFiles"])
-                      elif "CFBundleIconName" in primary_icon:
-                          icon_base_names.append(primary_icon["CFBundleIconName"])
-                      
-                      if not icon_base_names and "CFBundleIconFiles" in plist:
-                          icon_base_names.extend(plist["CFBundleIconFiles"])
-
                       extracted_icon_path = None
                       
                       if bundle_id:
-                          matched_icon_item = None
-                          namelist = ipa.namelist()
+                          icon_filename = f"{bundle_id}.png"
+                          out_file_path = os.path.join(bundle_out_dir, icon_filename)
                           
-                          candidates = []
-                          # Strategia 1: Cerca i file basati sui nomi ufficiali del plist
-                          if icon_base_names:
-                              for base_name in icon_base_names:
-                                  for item in namelist:
-                                      if item.startswith(app_folder) and item.endswith('.png') and base_name in item:
-                                          candidates.append(item)
-                          
-                          # Strategia 2 (Fallback): Se il plist non ha i nomi, cerca file che contengono AppIcon
-                          if not candidates:
-                              candidates = [
-                                  f for f in namelist 
-                                  if f.startswith(app_folder) and f.endswith('.png') and 'appicon' in f.lower()
-                              ]
-
-                          if candidates:
-                              # Punteggio per preferire l'alta risoluzione (@3x, @2x, 60x60)
-                              scored_candidates = []
-                              for c in candidates:
-                                  score = 0
-                                  if '@3x' in c: score += 30
-                                  elif '@2x' in c: score += 20
-                                  if '60x60' in c: score += 15
-                                  score += len(c)
-                                  scored_candidates.append((score, c))
-                              
-                              scored_candidates.sort(key=lambda x: x[0], reverse=True)
-                              matched_icon_item = scored_candidates[0][1]
-
-                          if matched_icon_item:
-                              icon_filename = f"{bundle_id}.png"
-                              out_file_path = os.path.join(bundle_out_dir, icon_filename)
-                              temp_raw_icon = os.path.join(bundle_out_dir, f"raw_{icon_filename}")
-                              
-                              with ipa.open(matched_icon_item) as icon_file, open(temp_raw_icon, 'wb') as out_file:
-                                  out_file.write(icon_file.read())
-                              
-                              if fix_cgbi_png(temp_raw_icon, out_file_path):
-                                  extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
-                              else:
-                                  extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
-                              
-                              if os.path.exists(temp_raw_icon):
-                                  os.remove(temp_raw_icon)
+                          # Recupero automatico dell'icona ufficiale tramite API dello store
+                          if fetch_appstore_icon(bundle_id, out_file_path):
+                              extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
+                          else:
+                              extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
 
                       return {
                           "bundleIdentifier": bundle_id,
