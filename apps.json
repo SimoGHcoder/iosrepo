@@ -105,6 +105,26 @@
       ]
     },
     {
+      "name": "Nuvio",
+      "bundleIdentifier": "com.nuvio.media",
+      "developerName": "SimoGHcoder",
+      "subtitle": "Nuvio release",
+      "localizedDescription": "- 458f810b fix(streams): share addon filtering across pickers @tapframe  \n- [i18n(nb): complete missing Norwegian Bokmål strings (#2005)](https://github.com/NuvioMedia/NuvioMobile/pull/2005) @SimSalabimse  \n",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
+      "tintColor": "#007AFF",
+      "versions": [
+        {
+          "version": "0.4.26-beta",
+          "date": "2026-09-16T09:45:31Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.26-beta.ipa",
+          "localizedDescription": "- 458f810b fix(streams): share addon filtering across pickers @tapframe  \n- [i18n(nb): complete missing Norwegian Bokmål strings (#2005)](https://github.com/NuvioMedia/NuvioMobile/pull/2005) @SimSalabimse  \n",
+          "size": 65234840,
+          "bundleIdentifier": "com.nuvio.media",
+          "appID": "com.nuvio.media"
+        }
+      ]
+    },
+    {
       "name": "calimoto",
       "bundleIdentifier": "com.calimoto.calimoto",
       "developerName": "SimoGHcoder",
