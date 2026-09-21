@@ -21,13 +21,11 @@ Per aggiungere questa sorgente alla tua applicazione di sideloading preferita, u
 
 La repository ospita e aggiorna automaticamente le seguenti categorie di applicazioni:
 
+<!-- APPS_TABLE_START -->
 | Applicazione | Categoria | Descrizione |
 | :--- | :--- | :--- |
 | **Nuvio** | Media Player | Streaming e riproduzione multimediale avanzata. |
-| **Stremio** | Media Player | Centro multimediale e gestione cataloghi streaming. |
-| **Tool / Mod** | Utilità | Strumenti di sistema, CAD e applicazioni modificate. |
-
-*Nota: La lista si aggiorna dinamicamente a seconda dei pacchetti IPA rilasciati o sincronizzati nella repository.*
+<!-- APPS_TABLE_END -->
 
 ---
 
