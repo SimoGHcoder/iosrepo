@@ -24,6 +24,13 @@ La repository ospita e aggiorna automaticamente le seguenti categorie di applica
 <!-- APPS_TABLE_START -->
 | Applicazione | Categoria | Descrizione |
 | :--- | :--- | :--- |
+| **GitHub** | Utilità / Mod | Applicazione GitHub. |
+| **AI Code Editor** | Utilità / Mod | Applicazione AI Code Editor. |
+| **Stremio** | Media Player | Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN dir... |
+| **Spotify** | Musica & Audio | 🚀 **Aggiornamento Disponibile** |
+| **Shapr3D** | Strumento CAD | 🚀 **Aggiornamento Disponibile** |
+| **Nuvio** | Media Player | - 458f810b fix(streams): share addon filtering across pickers @tapframe   |
+| **calimoto** | Navigazione GPS | 🚀 **Aggiornamento Disponibile** |
 <!-- APPS_TABLE_END -->
 
 ---

@@ -48,10 +48,10 @@
       "name": "Stremio",
       "bundleIdentifier": "com.stremio.pal",
       "developerName": "SimoGHcoder",
-      "subtitle": "Utilità / Mod",
+      "subtitle": "Media Player",
       "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
-      "tintColor": "#007AFF",
+      "tintColor": "#8A52F5",
       "versions": [
         {
           "version": "2.0.8",
