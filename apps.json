@@ -105,26 +105,6 @@
       ]
     },
     {
-      "name": "Nuvio",
-      "bundleIdentifier": "com.nuvio.media",
-      "developerName": "SimoGHcoder",
-      "subtitle": "Nuvio release",
-      "localizedDescription": "- b5163558 fix(home): prevent hero flash when cycling @tapframe  \r\n- 656f368c fix(pr): update workflow @tapframe  \r\n- [i18n(el): sync Greek translations with the current English strings (#1991)](https://github.com/NuvioMedia/NuvioMobile/pull/1991) @nosvasedis  \r\n- 98be8514 revert(ui): restore previous surface and chip styles @tapframe  \r\n- [i18n(vi): update latest Vietnamese strings (#1990)](https://github.com/NuvioMedia/NuvioMobile/pull/1990) @blueocean2308  \r\n- [fix(simkl): three bugs in the shared Simkl read and write paths (#1988)](https://github.com/NuvioMedia/NuvioMobile/pull/1988) @Judzim  \r\n- 99ced26a feat(player): add Infuse playback callbacks @tapframe  \r\n- [fix(ios): bundle CJK font for subtitles (#1833)](https://github.com/NuvioMedia/NuvioMobile/pull/1833) @tinyKyuu  \r\n",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
-      "tintColor": "#007AFF",
-      "versions": [
-        {
-          "version": "0.4.25-beta",
-          "date": "2026-09-16T09:45:31Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.25-full-release.ipa",
-          "localizedDescription": "- b5163558 fix(home): prevent hero flash when cycling @tapframe  \r\n- 656f368c fix(pr): update workflow @tapframe  \r\n- [i18n(el): sync Greek translations with the current English strings (#1991)](https://github.com/NuvioMedia/NuvioMobile/pull/1991) @nosvasedis  \r\n- 98be8514 revert(ui): restore previous surface and chip styles @tapframe  \r\n- [i18n(vi): update latest Vietnamese strings (#1990)](https://github.com/NuvioMedia/NuvioMobile/pull/1990) @blueocean2308  \r\n- [fix(simkl): three bugs in the shared Simkl read and write paths (#1988)](https://github.com/NuvioMedia/NuvioMobile/pull/1988) @Judzim  \r\n- 99ced26a feat(player): add Infuse playback callbacks @tapframe  \r\n- [fix(ios): bundle CJK font for subtitles (#1833)](https://github.com/NuvioMedia/NuvioMobile/pull/1833) @tinyKyuu  \r\n",
-          "size": 65152407,
-          "bundleIdentifier": "com.nuvio.media",
-          "appID": "com.nuvio.media"
-        }
-      ]
-    },
-    {
       "name": "calimoto",
       "bundleIdentifier": "com.calimoto.calimoto",
       "developerName": "SimoGHcoder",
