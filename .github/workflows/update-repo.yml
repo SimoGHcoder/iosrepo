@@ -1,36 +1,58 @@
-name: Sideloading Hub Update
+name: iOS Repository Sync & Build
 
 on:
-  push:
+  release:
+    types: [published, edited, deleted, released, created]
+  workflow_run:
+    workflows: ["Nuvio IPA Sync", "Stremio IPA Sync"]
+    types: [completed]
+  repository_dispatch:
+    types: [ipa_updated]
   workflow_dispatch:
 
+concurrency:
+  group: auto-extract-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
 jobs:
-  update-hub:
+  build-repository:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install system dependencies for CGBitmap PNGs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pngdefry || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install Pillow requests
+          pip install requests Pillow
 
-      - name: Run update script
+      - name: Rebuild apps.json and extract icons
         env:
-          REPOSITORY: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
         run: |
           python - << 'EOF'
           import json
           import os
           import re
-          import struct
+          import subprocess
           import zipfile
           import plistlib
           import requests
@@ -52,60 +74,29 @@ jobs:
               "com.shapr3d.shapr": {"tintColor": "#00D2FF"}
           }
 
-          def decode_cgbi(input_path, output_path):
+          def fix_cgbi_png(raw_path, out_path):
+              # 1. Prova con pngdefry CLI (specifico per le icone iOS in formato CGBitmap)
               try:
-                  with open(input_path, 'rb') as f:
-                      data = f.read()
-
-                  if not data.startswith(b'\x89PNG\r\n\x1a\n'):
-                      with open(output_path, 'wb') as out:
-                          out.write(data)
+                  res = subprocess.run(["pngdefry", "-o", out_path, raw_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                  if res.returncode == 0 and os.path.exists(out_path):
                       return True
+              except Exception:
+                  pass
 
-                  new_data = bytearray(data[:8])
-                  pos = 8
-                  has_cgbi = False
-
-                  while pos < len(data):
-                      if pos + 8 > len(data):
-                          break
-                      length = struct.unpack('>I', data[pos:pos+4])[0]
-                      chunk_type = data[pos+4:pos+8]
-                      chunk_data_start = pos + 8
-                      chunk_data_end = chunk_data_start + length
-                      chunk_data = data[chunk_data_start:chunk_data_end]
-                      pos = chunk_data_end + 4
-
-                      if chunk_type == b'CgBI':
-                          has_cgbi = True
-                          continue
-                      
-                      new_data.extend(struct.pack('>I', length) + chunk_type + chunk_data + data[pos-4:pos])
-
-                  with open(output_path, 'wb') as out:
-                      out.write(new_data)
-
-                  with Image.open(output_path) as img:
-                      if has_cgbi and img.mode == 'RGBA':
-                          r, g, b, a = img.split()
-                          img = Image.merge('RGBA', (b, g, r, a))
-                      img.save(output_path, "PNG")
+              # 2. Fallback standard con Pillow se pngdefry fallisce
+              try:
+                  with Image.open(raw_path) as img:
+                      img.save(out_path, "PNG")
                   return True
               except Exception as e:
-                  try:
-                      im = Image.open(input_path)
-                      im.convert('RGBA').save(output_path, 'PNG')
-                      return True
-                  except Exception as inner_e:
-                      print(f"Errore conversione icona: {e} / {inner_e}")
-                      return False
+                  print(f"Errore conversione icona {raw_path}: {e}")
+                  return False
 
-          def extract_ipa_data(ipa_path, bundle_out_dir, repo_name):
+          def extract_ipa_data(ipa_path, bundle_out_dir):
               try:
                   with zipfile.ZipFile(ipa_path, 'r') as ipa:
                       plist_files = [f for f in ipa.namelist() if re.match(r'^Payload/[^/]+\.app/Info\.plist$', f)]
                       if not plist_files:
-                          print(" -> Nessun Info.plist trovato nell'IPA.")
                           return None
                       
                       plist_path = plist_files[0]
@@ -118,45 +109,52 @@ jobs:
                       version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion") or "1.0"
                       name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
 
-                      if not bundle_id:
-                          return None
-
-                      print(f" -> Trovato Bundle ID: {bundle_id} ({name})")
-
-                      icon_candidates = []
-                      icons_dict = plist.get("CFBundleIcons", {}).get("CFBundlePrimaryIcon", {}).get("CFBundleIconFiles", [])
-                      for icon_name in icons_dict:
-                          matches = [f for f in ipa.namelist() if f.startswith(app_folder) and icon_name.lower() in f.lower() and f.endswith('.png')]
-                          icon_candidates.extend(matches)
-
-                      if not icon_candidates:
-                          icon_candidates = [f for f in ipa.namelist() if f.startswith(app_folder) and f.endswith('.png') and ('appicon' in f.lower() or 'icon' in f.lower())]
-
-                      matched_icon_item = None
-                      if icon_candidates:
-                          large_icons = [f for f in icon_candidates if '60x60' in f or '1024' in f or 'large' in f.lower() or 'AppIcon' in f]
-                          matched_icon_item = large_icons[0] if large_icons else icon_candidates[-1]
+                      # Ricerca flessibile delle icone definite nel plist
+                      icon_files = []
+                      icons_dict = plist.get("CFBundleIcons", {})
+                      primary_icon = icons_dict.get("CFBundlePrimaryIcon", {})
                       
-                      extracted_icon_path = None
-                      if matched_icon_item:
-                          safe_bundle_id = re.sub(r'[^a-zA-Z0-9_.-]', '_', bundle_id)
-                          icon_filename = f"{safe_bundle_id}.png"
-                          out_file_path = os.path.join(bundle_out_dir, icon_filename)
-                          temp_raw_icon = os.path.join(bundle_out_dir, f"raw_{icon_filename}")
-                          
-                          with ipa.open(matched_icon_item) as icon_file, open(temp_raw_icon, 'wb') as out_file:
-                              out_file.write(icon_file.read())
-                          
-                          if decode_cgbi(temp_raw_icon, out_file_path):
-                              extracted_icon_path = f"https://raw.githubusercontent.com/{repo_name}/main/icons/{icon_filename}"
-                              print(f" -> Icona estratta e convertita con successo: {icon_filename}")
-                          else:
-                              print(f" -> Fallita conversione icona per {bundle_id}")
+                      if "CFBundleIconFiles" in primary_icon:
+                          icon_files.extend(primary_icon["CFBundleIconFiles"])
+                      elif "CFBundleIconName" in primary_icon:
+                          icon_files.append(primary_icon["CFBundleIconName"])
+                      
+                      if not icon_files and "CFBundleIconFiles" in plist:
+                          icon_files.extend(plist["CFBundleIconFiles"])
 
-                          if os.path.exists(temp_raw_icon):
-                              os.remove(temp_raw_icon)
-                      else:
-                          print(f" -> Nessun file icona PNG trovato per {bundle_id}")
+                      extracted_icon_path = None
+                      
+                      if bundle_id:
+                          matched_icon_item = None
+                          
+                          if icon_files:
+                              for base_icon_name in reversed(icon_files):
+                                  for item in ipa.namelist():
+                                      if item.startswith(app_folder) and base_icon_name in item and item.endswith('.png'):
+                                          matched_icon_item = item
+                                          break
+                                  if matched_icon_item:
+                                      break
+
+                          # Fallback: cerca qualsiasi file PNG con 'AppIcon' dentro la cartella .app
+                          if not matched_icon_item:
+                              png_candidates = [f for f in ipa.namelist() if f.startswith(app_folder) and 'AppIcon' in f and f.endswith('.png')]
+                              if png_candidates:
+                                  matched_icon_item = png_candidates[-1]
+
+                          if matched_icon_item:
+                              icon_filename = f"{bundle_id}.png"
+                              out_file_path = os.path.join(bundle_out_dir, icon_filename)
+                              temp_raw_icon = os.path.join(bundle_out_dir, f"raw_{icon_filename}")
+                              
+                              with ipa.open(matched_icon_item) as icon_file, open(temp_raw_icon, 'wb') as out_file:
+                                  out_file.write(icon_file.read())
+                              
+                              if fix_cgbi_png(temp_raw_icon, out_file_path):
+                                  extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
+                              
+                              if os.path.exists(temp_raw_icon):
+                                  os.remove(temp_raw_icon)
 
                       return {
                           "bundleIdentifier": bundle_id,
@@ -165,7 +163,7 @@ jobs:
                           "iconURL": extracted_icon_path
                       }
               except Exception as e:
-                  print(f"Errore lettura IPA: {e}")
+                  print(f"Errore nella lettura dell'IPA {ipa_path}: {e}")
                   return None
 
           data = {
@@ -183,6 +181,7 @@ jobs:
               url = f'https://api.github.com/repos/{repo}/releases?per_page=100&page={page}'
               response = requests.get(url, headers=api_headers, timeout=30)
               if response.status_code != 200:
+                  print(f"Errore API GitHub: {response.status_code}")
                   break
               page_releases = response.json()
               if not page_releases:
@@ -203,10 +202,9 @@ jobs:
                   if asset['name'].lower().endswith('.ipa'):
                       download_url = asset['browser_download_url']
                       size = asset['size']
-                      safe_asset_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', asset['name'])
-                      local_filename = f"temp_{safe_asset_name}"
+                      local_filename = "temp_app.ipa"
 
-                      print(f"Analisi asset: {asset['name']} (Release: {rel.get('name')})...")
+                      print(f"Analisi file asset: {asset['name']} (Release: {rel.get('name')})...")
                       
                       try:
                           with requests.get(download_url, stream=True, timeout=120) as r_dl:
@@ -215,10 +213,10 @@ jobs:
                                   for chunk in r_dl.iter_content(chunk_size=65536):
                                       f.write(chunk)
                       except Exception as e:
-                          print(f"Errore download {asset['name']}: {e}")
+                          print(f"Errore durante il download dell'asset {asset['name']}: {e}")
                           continue
 
-                      info = extract_ipa_data(local_filename, 'icons', repo)
+                      info = extract_ipa_data(local_filename, 'icons')
                       if os.path.exists(local_filename):
                           os.remove(local_filename)
 
@@ -235,46 +233,62 @@ jobs:
 
                       meta = CUSTOM_METADATA.get(bundle_id, {})
                       app_name = meta.get("name") or info["name"] or rel_name or "App iOS"
-                      
-                      extracted_icon = info.get("iconURL")
-                      if not extracted_icon and bundle_id in apps_dict:
-                          extracted_icon = apps_dict[bundle_id].get("iconURL")
-
-                      icon_url = extracted_icon if extracted_icon else f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
+                      icon_url = info.get("iconURL") or f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
 
                       new_version_entry = {
                           "version": version_num,
                           "date": published_at,
                           "downloadURL": download_url,
-                          "size": size,
-                          "localizedDescription": body
+                          "localizedDescription": body if body else f"Versione {version_num}",
+                          "size": int(size),
+                          "bundleIdentifier": bundle_id,
+                          "appID": bundle_id
                       }
 
-                      if bundle_id not in apps_dict:
+                      if bundle_id in apps_dict:
+                          existing_app = apps_dict[bundle_id]
+                          prev_date = existing_app['versions'][0]['date'] if existing_app['versions'] else ""
+                          
+                          # Aggiorna i metadati principali se la release è più recente
+                          if published_at >= prev_date:
+                              existing_app['name'] = app_name
+                              if info.get("iconURL"):
+                                  existing_app['iconURL'] = icon_url
+                              existing_app['localizedDescription'] = body if body else f"Applicazione {app_name}."
+                          
+                          # Evita di duplicare la stessa versione esatta
+                          if not any(v['version'] == version_num for v in existing_app['versions']):
+                              existing_app['versions'].append(new_version_entry)
+                      else:
                           apps_dict[bundle_id] = {
                               "name": app_name,
                               "bundleIdentifier": bundle_id,
                               "developerName": repo.split('/')[0] if repo else "Developer",
-                              "subtitle": meta.get("subtitle", ""),
-                              "version": version_num,
-                              "versionDate": published_at,
-                              "versionDescription": body,
-                              "downloadURL": download_url,
-                              "localizedDescription": body,
+                              "subtitle": f"{app_name} release",
+                              "localizedDescription": body if body else f"Applicazione {app_name}.",
                               "iconURL": icon_url,
                               "tintColor": meta.get("tintColor", "#007AFF"),
-                              "size": size,
                               "versions": [new_version_entry]
                           }
-                      else:
-                          apps_dict[bundle_id]["versions"].append(new_version_entry)
-                          if extracted_icon:
-                              apps_dict[bundle_id]["iconURL"] = extracted_icon
 
-          data["apps"] = list(apps_dict.values())
+          final_apps = [app for app in apps_dict.values() if len(app.get('versions', [])) > 0]
+          data['apps'] = final_apps
 
           with open('apps.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          print("Generazione apps.json completata con successo.")
+          print("File apps.json rigenerato con successo!")
           EOF
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps.json icons/
+          if ! git diff --staged --quiet; then
+            git commit -m "auto: rigenerazione automatica apps.json e icone"
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "Nessun cambiamento rilevato in apps.json o nelle icone."
+          fi
