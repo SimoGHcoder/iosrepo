@@ -50,7 +50,7 @@
       "developerName": "SimoGHcoder",
       "subtitle": "Stremio release",
       "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.stremio.pa.png",
       "tintColor": "#007AFF",
       "versions": [
         {
@@ -110,7 +110,7 @@
       "developerName": "SimoGHcoder",
       "subtitle": "Nuvio release",
       "localizedDescription": "- 458f810b fix(streams): share addon filtering across pickers @tapframe  \n- [i18n(nb): complete missing Norwegian Bokmål strings (#2005)](https://github.com/NuvioMedia/NuvioMobile/pull/2005) @SimSalabimse  \n",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/con.nuvio.media.png",
       "tintColor": "#007AFF",
       "versions": [
         {
