@@ -85,6 +85,26 @@
       ]
     },
     {
+      "name": "Shapr3D",
+      "bundleIdentifier": "com.shapr3d.shapr",
+      "developerName": "SimoGHcoder",
+      "subtitle": "Shapr3D release",
+      "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
+      "tintColor": "#00D2FF",
+      "versions": [
+        {
+          "version": "5.1015.0",
+          "date": "2026-09-16T09:47:05Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Shapr3D/Shapr3D-Pro.ipa",
+          "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
+          "size": 1163167494,
+          "bundleIdentifier": "com.shapr3d.shapr",
+          "appID": "com.shapr3d.shapr"
+        }
+      ]
+    },
+    {
       "name": "Nuvio",
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "SimoGHcoder",
