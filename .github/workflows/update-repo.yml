@@ -48,7 +48,7 @@ jobs:
         run: |
           pip install requests Pillow
 
-      - name: Rebuild apps.json and extract icons
+      - name: Rebuild apps.json, README table and extract icons
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
@@ -57,7 +57,6 @@ jobs:
           import json
           import os
           import re
-          import subprocess
           import zipfile
           import plistlib
           import requests
@@ -72,11 +71,11 @@ jobs:
               pass
 
           CUSTOM_METADATA = {
-              "com.nuvio.media": {"tintColor": "#007AFF", "name": "Nuvio"},
-              "com.stremio.stremio": {"tintColor": "#8A52F5", "name": "Stremio"},
-              "com.spotify.client": {"tintColor": "#1DB954"},
-              "com.calimoto.calimoto": {"tintColor": "#FF5500"},
-              "com.shapr3d.shapr": {"tintColor": "#00D2FF"}
+              "com.nuvio.media": {"tintColor": "#007AFF", "name": "Nuvio", "subtitle": "Media Player"},
+              "com.stremio.stremio": {"tintColor": "#8A52F5", "name": "Stremio", "subtitle": "Media Player"},
+              "com.spotify.client": {"tintColor": "#1DB954", "subtitle": "Musica & Audio"},
+              "com.calimoto.calimoto": {"tintColor": "#FF5500", "subtitle": "Navigazione GPS"},
+              "com.shapr3d.shapr": {"tintColor": "#00D2FF", "subtitle": "Strumento CAD"}
           }
 
           def fetch_appstore_icon(bundle_id, out_file_path):
@@ -119,7 +118,6 @@ jobs:
                           icon_filename = f"{bundle_id}.png"
                           out_file_path = os.path.join(bundle_out_dir, icon_filename)
                           
-                          # Recupero automatico dell'icona ufficiale tramite API dello store
                           if fetch_appstore_icon(bundle_id, out_file_path):
                               extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
                           else:
@@ -202,6 +200,7 @@ jobs:
 
                       meta = CUSTOM_METADATA.get(bundle_id, {})
                       app_name = meta.get("name") or info["name"] or rel_name or "App iOS"
+                      subtitle = meta.get("subtitle", "Utilità / Mod")
                       icon_url = info.get("iconURL") or f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
 
                       new_version_entry = {
@@ -220,6 +219,7 @@ jobs:
                           
                           if published_at >= prev_date:
                               existing_app['name'] = app_name
+                              existing_app['subtitle'] = subtitle
                               if info.get("iconURL") and info.get("iconURL") != f"https://raw.githubusercontent.com/{repo}/main/repoicon.png":
                                   existing_app['iconURL'] = icon_url
                               existing_app['localizedDescription'] = body if body else f"Applicazione {app_name}."
@@ -231,7 +231,7 @@ jobs:
                               "name": app_name,
                               "bundleIdentifier": bundle_id,
                               "developerName": repo.split('/')[0] if repo else "Developer",
-                              "subtitle": f"{app_name} release",
+                              "subtitle": subtitle,
                               "localizedDescription": body if body else f"Applicazione {app_name}.",
                               "iconURL": icon_url,
                               "tintColor": meta.get("tintColor", "#007AFF"),
@@ -239,23 +239,64 @@ jobs:
                           }
 
           final_apps = [app for app in apps_dict.values() if len(app.get('versions', [])) > 0]
+          
+          # Fallback di sicurezza: se per qualche motivo non legge app dalle release, prova a mantenere quelle esistenti nel vecchio apps.json
+          if not final_apps and os.path.exists('apps.json'):
+              try:
+                  with open('apps.json', 'r', encoding='utf-8') as f:
+                      old_data = json.load(f)
+                      final_apps = old_data.get('apps', [])
+              except Exception:
+                  pass
+
           data['apps'] = final_apps
 
           with open('apps.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          print("File apps.json rigenerato con successo!")
+          # Aggiornamento automatico della tabella nel README.md
+          if final_apps:
+              table_rows = [
+                  "| Applicazione | Categoria | Descrizione |",
+                  "| :--- | :--- | :--- |"
+              ]
+              for app in final_apps:
+                  app_name = app['name']
+                  subtitle = app.get('subtitle', 'Utilità')
+                  desc = app.get('localizedDescription', '').split('\n')[0]
+                  if len(desc) > 75:
+                      desc = desc[:72] + "..."
+                  table_rows.append(f"| **{app_name}** | {subtitle} | {desc} |")
+              
+              new_table_content = "\n".join(table_rows)
+
+              if os.path.exists('README.md'):
+                  with open('README.md', 'r', encoding='utf-8') as f:
+                      readme_text = f.read()
+                  
+                  start_marker = "<!-- APPS_TABLE_START -->"
+                  end_marker = "<!-- APPS_TABLE_END -->"
+                  
+                  if start_marker in readme_text and end_marker in readme_text:
+                      pattern = re.escape(start_marker) + r".*?" + re.escape(end_marker)
+                      replacement = f"{start_marker}\n{new_table_content}\n{end_marker}"
+                      new_readme_text = re.sub(pattern, replacement, readme_text, flags=re.DOTALL)
+                      
+                      with open('README.md', 'w', encoding='utf-8') as f:
+                          f.write(new_readme_text)
+                      print("Tabella del README.md aggiornata con successo!")
+
           EOF
 
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add apps.json icons/
+          git add apps.json icons/ README.md
           if ! git diff --staged --quiet; then
-            git commit -m "auto: rigenerazione automatica apps.json e icone"
+            git commit -m "auto: aggiornamento automatico apps.json, icone e README"
             git pull --rebase origin main
             git push origin main
           else
-            echo "Nessun cambiamento rilevato in apps.json o nelle icone."
+            echo "Nessun cambiamento rilevato."
           fi
