@@ -8,22 +8,19 @@
       "name": "GitHub",
       "bundleIdentifier": "com.github.stormbreaker.prod",
       "developerName": "SimoGHcoder",
-      "subtitle": "",
-      "version": "1.224.0",
-      "versionDate": "2026-09-20T10:05:22Z",
-      "versionDescription": "",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/github/GithubMod.ipa",
-      "localizedDescription": "",
+      "subtitle": "GitHub release",
+      "localizedDescription": "Applicazione GitHub.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#007AFF",
-      "size": 65308773,
       "versions": [
         {
           "version": "1.224.0",
           "date": "2026-09-20T10:05:22Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/github/GithubMod.ipa",
+          "localizedDescription": "Versione 1.224.0",
           "size": 65308773,
-          "localizedDescription": ""
+          "bundleIdentifier": "com.github.stormbreaker.prod",
+          "appID": "com.github.stormbreaker.prod"
         }
       ]
     },
@@ -31,22 +28,19 @@
       "name": "AI Code Editor",
       "bundleIdentifier": "com.coddykit.aicodeeditor",
       "developerName": "SimoGHcoder",
-      "subtitle": "",
-      "version": "71.0.0",
-      "versionDate": "2026-09-20T10:15:50Z",
-      "versionDescription": "",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/AIcE/ai-code-editor-compiler.ipa",
-      "localizedDescription": "",
+      "subtitle": "AI Code Editor release",
+      "localizedDescription": "Applicazione AI Code Editor.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#007AFF",
-      "size": 27856137,
       "versions": [
         {
           "version": "71.0.0",
           "date": "2026-09-20T10:15:50Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/AIcE/ai-code-editor-compiler.ipa",
+          "localizedDescription": "Versione 71.0.0",
           "size": 27856137,
-          "localizedDescription": ""
+          "bundleIdentifier": "com.coddykit.aicodeeditor",
+          "appID": "com.coddykit.aicodeeditor"
         }
       ]
     },
@@ -54,22 +48,19 @@
       "name": "Stremio",
       "bundleIdentifier": "com.stremio.pal",
       "developerName": "SimoGHcoder",
-      "subtitle": "",
-      "version": "2.0.8",
-      "versionDate": "2026-09-17T13:34:59Z",
-      "versionDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Stremio/Stremio.ipa",
+      "subtitle": "Stremio release",
       "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#007AFF",
-      "size": 78506200,
       "versions": [
         {
           "version": "2.0.8",
           "date": "2026-09-17T13:34:59Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Stremio/Stremio.ipa",
+          "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n",
           "size": 78506200,
-          "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n"
+          "bundleIdentifier": "com.stremio.pal",
+          "appID": "com.stremio.pal"
         }
       ]
     },
@@ -77,22 +68,19 @@
       "name": "Spotify",
       "bundleIdentifier": "com.spotify.client",
       "developerName": "SimoGHcoder",
-      "subtitle": "",
-      "version": "9.1.76",
-      "versionDate": "2026-09-16T09:49:23Z",
-      "versionDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Spotify/Spotify_v9.1.76.ipa",
+      "subtitle": "Spotify release",
       "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#1DB954",
-      "size": 130249097,
       "versions": [
         {
           "version": "9.1.76",
           "date": "2026-09-16T09:49:23Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Spotify/Spotify_v9.1.76.ipa",
+          "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
           "size": 130249097,
-          "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori."
+          "bundleIdentifier": "com.spotify.client",
+          "appID": "com.spotify.client"
         }
       ]
     },
@@ -100,22 +88,19 @@
       "name": "Shapr3D",
       "bundleIdentifier": "com.shapr3d.shapr",
       "developerName": "SimoGHcoder",
-      "subtitle": "",
-      "version": "5.1015.0",
-      "versionDate": "2026-09-16T09:47:05Z",
-      "versionDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Shapr3D/Shapr3D-Pro.ipa",
+      "subtitle": "Shapr3D release",
       "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#00D2FF",
-      "size": 1163167494,
       "versions": [
         {
           "version": "5.1015.0",
           "date": "2026-09-16T09:47:05Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Shapr3D/Shapr3D-Pro.ipa",
+          "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
           "size": 1163167494,
-          "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori."
+          "bundleIdentifier": "com.shapr3d.shapr",
+          "appID": "com.shapr3d.shapr"
         }
       ]
     },
@@ -123,22 +108,19 @@
       "name": "Nuvio",
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "SimoGHcoder",
-      "subtitle": "",
-      "version": "0.4.25-beta",
-      "versionDate": "2026-09-16T09:45:31Z",
-      "versionDescription": "- b5163558 fix(home): prevent hero flash when cycling @tapframe  \r\n- 656f368c fix(pr): update workflow @tapframe  \r\n- [i18n(el): sync Greek translations with the current English strings (#1991)](https://github.com/NuvioMedia/NuvioMobile/pull/1991) @nosvasedis  \r\n- 98be8514 revert(ui): restore previous surface and chip styles @tapframe  \r\n- [i18n(vi): update latest Vietnamese strings (#1990)](https://github.com/NuvioMedia/NuvioMobile/pull/1990) @blueocean2308  \r\n- [fix(simkl): three bugs in the shared Simkl read and write paths (#1988)](https://github.com/NuvioMedia/NuvioMobile/pull/1988) @Judzim  \r\n- 99ced26a feat(player): add Infuse playback callbacks @tapframe  \r\n- [fix(ios): bundle CJK font for subtitles (#1833)](https://github.com/NuvioMedia/NuvioMobile/pull/1833) @tinyKyuu  \r\n",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.25-full-release.ipa",
+      "subtitle": "Nuvio release",
       "localizedDescription": "- b5163558 fix(home): prevent hero flash when cycling @tapframe  \r\n- 656f368c fix(pr): update workflow @tapframe  \r\n- [i18n(el): sync Greek translations with the current English strings (#1991)](https://github.com/NuvioMedia/NuvioMobile/pull/1991) @nosvasedis  \r\n- 98be8514 revert(ui): restore previous surface and chip styles @tapframe  \r\n- [i18n(vi): update latest Vietnamese strings (#1990)](https://github.com/NuvioMedia/NuvioMobile/pull/1990) @blueocean2308  \r\n- [fix(simkl): three bugs in the shared Simkl read and write paths (#1988)](https://github.com/NuvioMedia/NuvioMobile/pull/1988) @Judzim  \r\n- 99ced26a feat(player): add Infuse playback callbacks @tapframe  \r\n- [fix(ios): bundle CJK font for subtitles (#1833)](https://github.com/NuvioMedia/NuvioMobile/pull/1833) @tinyKyuu  \r\n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#007AFF",
-      "size": 65152407,
       "versions": [
         {
           "version": "0.4.25-beta",
           "date": "2026-09-16T09:45:31Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Nuvio_iOs/nuvio-0.4.25-full-release.ipa",
+          "localizedDescription": "- b5163558 fix(home): prevent hero flash when cycling @tapframe  \r\n- 656f368c fix(pr): update workflow @tapframe  \r\n- [i18n(el): sync Greek translations with the current English strings (#1991)](https://github.com/NuvioMedia/NuvioMobile/pull/1991) @nosvasedis  \r\n- 98be8514 revert(ui): restore previous surface and chip styles @tapframe  \r\n- [i18n(vi): update latest Vietnamese strings (#1990)](https://github.com/NuvioMedia/NuvioMobile/pull/1990) @blueocean2308  \r\n- [fix(simkl): three bugs in the shared Simkl read and write paths (#1988)](https://github.com/NuvioMedia/NuvioMobile/pull/1988) @Judzim  \r\n- 99ced26a feat(player): add Infuse playback callbacks @tapframe  \r\n- [fix(ios): bundle CJK font for subtitles (#1833)](https://github.com/NuvioMedia/NuvioMobile/pull/1833) @tinyKyuu  \r\n",
           "size": 65152407,
-          "localizedDescription": "- b5163558 fix(home): prevent hero flash when cycling @tapframe  \r\n- 656f368c fix(pr): update workflow @tapframe  \r\n- [i18n(el): sync Greek translations with the current English strings (#1991)](https://github.com/NuvioMedia/NuvioMobile/pull/1991) @nosvasedis  \r\n- 98be8514 revert(ui): restore previous surface and chip styles @tapframe  \r\n- [i18n(vi): update latest Vietnamese strings (#1990)](https://github.com/NuvioMedia/NuvioMobile/pull/1990) @blueocean2308  \r\n- [fix(simkl): three bugs in the shared Simkl read and write paths (#1988)](https://github.com/NuvioMedia/NuvioMobile/pull/1988) @Judzim  \r\n- 99ced26a feat(player): add Infuse playback callbacks @tapframe  \r\n- [fix(ios): bundle CJK font for subtitles (#1833)](https://github.com/NuvioMedia/NuvioMobile/pull/1833) @tinyKyuu  \r\n"
+          "bundleIdentifier": "com.nuvio.media",
+          "appID": "com.nuvio.media"
         }
       ]
     },
@@ -146,22 +128,19 @@
       "name": "calimoto",
       "bundleIdentifier": "com.calimoto.calimoto",
       "developerName": "SimoGHcoder",
-      "subtitle": "",
-      "version": "7.20.0",
-      "versionDate": "2026-09-16T09:48:58Z",
-      "versionDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
-      "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Calimoto/calimoto_Motorcycle_Navigation.ipa",
+      "subtitle": "calimoto release",
       "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#FF5500",
-      "size": 101202709,
       "versions": [
         {
           "version": "7.20.0",
           "date": "2026-09-16T09:48:58Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Calimoto/calimoto_Motorcycle_Navigation.ipa",
+          "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
           "size": 101202709,
-          "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori."
+          "bundleIdentifier": "com.calimoto.calimoto",
+          "appID": "com.calimoto.calimoto"
         }
       ]
     }
