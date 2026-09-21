@@ -29,11 +29,6 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Install System Dependencies (ImageMagick)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y imagemagick
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -52,7 +47,6 @@ jobs:
           import json
           import os
           import re
-          import subprocess
           import zipfile
           import plistlib
           import requests
@@ -75,40 +69,34 @@ jobs:
           }
 
           def fix_cgbi_png(raw_path, out_path):
-              # 1. Tenta la conversione tramite ImageMagick moderno ('magick convert')
-              try:
-                  res = subprocess.run(["magick", "convert", raw_path, out_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                  if res.returncode == 0 and os.path.exists(out_path):
-                      return True
-              except Exception:
-                  pass
-
-              # 2. Tenta con il comando legacy 'convert'
-              try:
-                  res = subprocess.run(["convert", raw_path, out_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                  if res.returncode == 0 and os.path.exists(out_path):
-                      return True
-              except Exception:
-                  pass
-              
-              # 3. Fallback nativo: correzione strutturale del chunk CgBI in IDAT per rendere il PNG leggibile
               try:
                   with open(raw_path, 'rb') as f:
-                      content = f.read()
-                  
-                  # Sostituisce l'intestazione proprietaria Apple CgBI con IDAT standard
-                  if b'CgBI' in content:
-                      content = content.replace(b'CgBI', b'IDAT')
-                  
-                  with open(out_path, 'wb') as f:
-                      f.write(content)
+                      data = f.read()
 
-                  # Verifica che Pillow riesca ad aprirlo correttamente dopo la patch
+                  # Verifica che sia un PNG valido (header PNG standard)
+                  if not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                      return False
+
+                  # I file CGBitmap di Apple contengono il chunk 'CgBI' e richiedono la normalizzazione
+                  if b'CgBI' in data:
+                      data = data.replace(b'CgBI', b'IDAT')
+
+                  with open(out_path, 'wb') as f:
+                      f.write(data)
+
+                  # Apertura e normalizzazione con Pillow per correggere l'inversione dei canali (BGRA -> RGBA)
                   with Image.open(out_path) as img:
-                      img.verify()
+                      if img.mode == 'RGBA':
+                          r, g, b, a = img.split()
+                          img = Image.merge('RGBA', (b, g, r, a))
+                      elif img.mode == 'LA':
+                          l, a = img.split()
+                          img = Image.merge('LA', (l, a))
+                      
+                      img.save(out_path, "PNG")
                   return True
               except Exception as e:
-                  print(f"Errore conversione icona {raw_path}: {e}")
+                  print(f"Errore nella decodifica dell'icona iOS {raw_path}: {e}")
                   return False
 
           def extract_ipa_data(ipa_path, bundle_out_dir):
