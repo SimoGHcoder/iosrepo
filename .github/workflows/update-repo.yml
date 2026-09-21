@@ -23,6 +23,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+          
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -68,32 +73,23 @@ jobs:
               "com.shapr3d.shapr": {"tintColor": "#00D2FF"}
           }
 
-          def fix_cgbi_png(raw_path, out_path):
+          def def fix_cgbi_png(raw_path, out_path):
               try:
-                  with open(raw_path, 'rb') as f:
-                      data = f.read()
-                  
-                  # Gestione ottimizzata delle icone iOS in formato CGBitmap (chunk CgBI)
-                  if b'CgBI' in data:
-                      data = data.replace(b'CgBI', b'IDAT')
-                  
-                  with open(out_path, 'wb') as f:
-                      f.write(data)
-
-                  # Verifica ed elaborazione finale dell'immagine con Pillow
-                  with Image.open(out_path) as img:
-                      img.load()
+                  # Usa ImageMagick che gestisce nativamente i formati PNG compressi di Apple (CGBitmap)
+                  res = subprocess.run(["convert", raw_path, out_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                  if res.returncode == 0 and os.path.exists(out_path):
+                      return True
+              except Exception:
+                  pass
+              
+              # Fallback estremo con Pillow se ImageMagick non è disponibile
+              try:
+                  with Image.open(raw_path) as img:
                       img.save(out_path, "PNG")
                   return True
               except Exception as e:
                   print(f"Errore conversione icona {raw_path}: {e}")
-                  try:
-                      with Image.open(raw_path) as img:
-                          img.save(out_path, "PNG")
-                      return True
-                  except Exception as inner_e:
-                      print(f"Fallback estremo fallito per {raw_path}: {inner_e}")
-                      return False
+                  return False
 
           def extract_ipa_data(ipa_path, bundle_out_dir):
               try:
