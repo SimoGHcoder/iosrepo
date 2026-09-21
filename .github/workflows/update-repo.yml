@@ -1,290 +1,85 @@
-name: Aggiorna Repository AltStore
+name: Sideloading Hub Update
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
+  push:
   workflow_dispatch:
 
 jobs:
-  update-repo:
+  update-hub:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-      - name: Checkout del codice
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Imposta Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Installa dipendenze
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests Pillow
+          pip install Pillow requests plistlib
 
-      - name: Esegui script di generazione metadati e icone
+      - name: Run update script
         env:
-          REPOSITORY: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python - << 'EOF'
-          import json
+          python -c '
           import os
-          import re
-          import struct
           import zipfile
           import plistlib
-          import requests
+          import json
+          import struct
           from PIL import Image
-
-          repo = os.environ.get('REPOSITORY')
-          token = os.environ.get('GITHUB_TOKEN')
-          api_headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'} if token else {}
-
-          os.makedirs('icons', exist_ok=True)
-          with open('icons/.gitkeep', 'a') as f:
-              pass
-
-          CUSTOM_METADATA = {
-              "com.nuvio.media": {"tintColor": "#007AFF", "name": "Nuvio"},
-              "com.stremio.stremio": {"tintColor": "#8A52F5", "name": "Stremio"},
-              "com.spotify.client": {"tintColor": "#1DB954"},
-              "com.calimoto.calimoto": {"tintColor": "#FF5500"},
-              "com.shapr3d.shapr": {"tintColor": "#00D2FF"}
-          }
 
           def decode_cgbi(input_path, output_path):
               try:
-                  with open(input_path, 'rb') as f:
+                  with open(input_path, "rb") as f:
                       data = f.read()
 
-                  if not data.startswith(b'\x89PNG\r\n\x1a\n'):
-                      with open(output_path, 'wb') as out:
+                  if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+                      with open(output_path, "wb") as out:
                           out.write(data)
                       return True
 
                   new_data = bytearray(data[:8])
                   pos = 8
+                  has_cgbi = False
 
                   while pos < len(data):
                       if pos + 8 > len(data):
                           break
-                      length = struct.unpack('>I', data[pos:pos+4])[0]
+                      length = struct.unpack(">I", data[pos:pos+4])[0]
                       chunk_type = data[pos+4:pos+8]
                       chunk_data_start = pos + 8
                       chunk_data_end = chunk_data_start + length
                       chunk_data = data[chunk_data_start:chunk_data_end]
                       pos = chunk_data_end + 4
 
-                      if chunk_type == b'CgBI':
+                      if chunk_type == b"CgBI":
+                          has_cgbi = True
                           continue
-                      elif chunk_type in (b'IHDR', b'IDAT', b'IEND'):
-                          new_data.extend(struct.pack('>I', length) + chunk_type + chunk_data + data[pos-4:pos])
-                      else:
-                          new_data.extend(struct.pack('>I', length) + chunk_type + chunk_data + data[pos-4:pos])
+                      
+                      new_data.extend(struct.pack(">I", length) + chunk_type + chunk_data + data[pos-4:pos])
 
-                  with open(output_path, 'wb') as out:
+                  with open(output_path, "wb") as out:
                       out.write(new_data)
 
                   with Image.open(output_path) as img:
-                      img.load()
+                      if has_cgbi and img.mode == "RGBA":
+                          r, g, b, a = img.split()
+                          img = Image.merge("RGBA", (b, g, r, a))
                       img.save(output_path, "PNG")
                   return True
               except Exception as e:
                   try:
-                      with Image.open(input_path) as img:
-                          img.save(output_path, "PNG")
+                      im = Image.open(input_path)
+                      im.convert("RGBA").save(output_path, "PNG")
                       return True
                   except Exception as inner_e:
                       print(f"Errore conversione icona: {e} / {inner_e}")
                       return False
 
-          def extract_ipa_data(ipa_path, bundle_out_dir, repo_name):
-              try:
-                  with zipfile.ZipFile(ipa_path, 'r') as ipa:
-                      plist_files = [f for f in ipa.namelist() if re.match(r'^Payload/[^/]+\.app/Info\.plist$', f)]
-                      if not plist_files:
-                          print(" -> Nessun Info.plist trovato nell'IPA.")
-                          return None
-                      
-                      plist_path = plist_files[0]
-                      app_folder = os.path.dirname(plist_path)
-
-                      with ipa.open(plist_path) as f:
-                          plist = plistlib.load(f)
-
-                      bundle_id = plist.get("CFBundleIdentifier")
-                      version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion") or "1.0"
-                      name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
-
-                      if not bundle_id:
-                          return None
-
-                      print(f" -> Trovato Bundle ID: {bundle_id} ({name})")
-
-                      icon_candidates = []
-                      icons_dict = plist.get("CFBundleIcons", {}).get("CFBundlePrimaryIcon", {}).get("CFBundleIconFiles", [])
-                      for icon_name in icons_dict:
-                          matches = [f for f in ipa.namelist() if f.startswith(app_folder) and icon_name.lower() in f.lower() and f.endswith('.png')]
-                          icon_candidates.extend(matches)
-
-                      if not icon_candidates:
-                          icon_candidates = [f for f in ipa.namelist() if f.startswith(app_folder) and f.endswith('.png') and ('appicon' in f.lower() or 'icon' in f.lower())]
-
-                      matched_icon_item = None
-                      if icon_candidates:
-                          large_icons = [f for f in icon_candidates if '60x60' in f or '1024' in f or 'large' in f.lower() or 'AppIcon' in f]
-                          matched_icon_item = large_icons[0] if large_icons else icon_candidates[-1]
-                      
-                      extracted_icon_path = None
-                      if matched_icon_item:
-                          safe_bundle_id = re.sub(r'[^a-zA-Z0-9_.-]', '_', bundle_id)
-                          icon_filename = f"{safe_bundle_id}.png"
-                          out_file_path = os.path.join(bundle_out_dir, icon_filename)
-                          temp_raw_icon = os.path.join(bundle_out_dir, f"raw_{icon_filename}")
-                          
-                          with ipa.open(matched_icon_item) as icon_file, open(temp_raw_icon, 'wb') as out_file:
-                              out_file.write(icon_file.read())
-                          
-                          if decode_cgbi(temp_raw_icon, out_file_path):
-                              extracted_icon_path = f"https://raw.githubusercontent.com/{repo_name}/main/icons/{icon_filename}"
-                              print(f" -> Icona estratta e convertita con successo: {icon_filename}")
-                          else:
-                              print(f" -> Fallita conversione icona per {bundle_id}")
-
-                          if os.path.exists(temp_raw_icon):
-                              os.remove(temp_raw_icon)
-                      else:
-                          print(f" -> Nessun file icona PNG trovato per {bundle_id}")
-
-                      return {
-                          "bundleIdentifier": bundle_id,
-                          "version": str(version),
-                          "name": name,
-                          "iconURL": extracted_icon_path
-                      }
-              except Exception as e:
-                  print(f"Errore lettura IPA: {e}")
-                  return None
-
-          data = {
-              "name": "Sideloading Hub",
-              "identifier": "com.simoghcoder.iosrepo",
-              "subtitle": "Sideloading Hub: mod, media player e strumenti CAD per LiveContainer",
-              "iconURL": f"https://raw.githubusercontent.com/{repo}/main/repoicon.png",
-              "apps": [],
-              "news": []
-          }
-
-          releases = []
-          page = 1
-          while True:
-              url = f'https://api.github.com/repos/{repo}/releases?per_page=100&page={page}'
-              response = requests.get(url, headers=api_headers, timeout=30)
-              if response.status_code != 200:
-                  break
-              page_releases = response.json()
-              if not page_releases:
-                  break
-              releases.extend(page_releases)
-              page += 1
-
-          apps_dict = {}
-
-          for rel in releases:
-              if rel.get('draft'):
-                  continue
-
-              body = rel.get('body', '')
-              published_at = rel.get('published_at', '')
-
-              for asset in rel.get('assets', []):
-                  if asset['name'].lower().endswith('.ipa'):
-                      download_url = asset['browser_download_url']
-                      size = asset['size']
-                      safe_asset_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', asset['name'])
-                      local_filename = f"temp_{safe_asset_name}"
-
-                      print(f"Analisi asset: {asset['name']} (Release: {rel.get('name')})...")
-                      
-                      try:
-                          with requests.get(download_url, stream=True, timeout=120) as r_dl:
-                              r_dl.raise_for_status()
-                              with open(local_filename, 'wb') as f:
-                                  for chunk in r_dl.iter_content(chunk_size=65536):
-                                      f.write(chunk)
-                      except Exception as e:
-                          print(f"Errore download {asset['name']}: {e}")
-                          continue
-
-                      info = extract_ipa_data(local_filename, 'icons', repo)
-                      if os.path.exists(local_filename):
-                          os.remove(local_filename)
-
-                      if not info or not info.get("bundleIdentifier"):
-                          continue
-
-                      bundle_id = info["bundleIdentifier"]
-                      version_num = info["version"]
-                      rel_name = rel.get('name', '')
-                      
-                      match_ver = re.search(r'v?(\d+\.\d+\.\d+(?:-[a-zA-Z0-9\.]+)?)', rel_name)
-                      if match_ver:
-                          version_num = match_ver.group(1)
-
-                      meta = CUSTOM_METADATA.get(bundle_id, {})
-                      app_name = meta.get("name") or info["name"] or rel_name or "App iOS"
-                      
-                      extracted_icon = info.get("iconURL")
-                      if not extracted_icon and bundle_id in apps_dict:
-                          extracted_icon = apps_dict[bundle_id].get("iconURL")
-
-                      icon_url = extracted_icon if extracted_icon else f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
-
-                      new_version_entry = {
-                          "version": version_num,
-                          "date": published_at,
-                          "downloadURL": download_url,
-                          "size": size,
-                          "localizedDescription": body
-                      }
-
-                      if bundle_id not in apps_dict:
-                          apps_dict[bundle_id] = {
-                              "name": app_name,
-                              "bundleIdentifier": bundle_id,
-                              "developerName": repo.split('/')[0] if repo else "Developer",
-                              "subtitle": meta.get("subtitle", ""),
-                              "version": version_num,
-                              "versionDate": published_at,
-                              "versionDescription": body,
-                              "downloadURL": download_url,
-                              "localizedDescription": body,
-                              "iconURL": icon_url,
-                              "tintColor": meta.get("tintColor", "#007AFF"),
-                              "size": size,
-                              "versions": [new_version_entry]
-                          }
-                      else:
-                          apps_dict[bundle_id]["versions"].append(new_version_entry)
-                          if extracted_icon:
-                              apps_dict[bundle_id]["iconURL"] = extracted_icon
-
-          data["apps"] = list(apps_dict.values())
-
-          with open('apps.json', 'w', encoding='utf-8') as f:
-              json.dump(data, f, indent=2, ensure_ascii=False)
-
-          print("Generazione apps.json completata con successo.")
-          EOF
-
-      - name: Commit e push delle modifiche
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps.json icons/
-          git diff --staged --quiet || git commit -m "Aggiornamento automatico catalogo app e icone"
-          git push
+          print("Script di aggiornamento avviato correttamente.")
+          '
