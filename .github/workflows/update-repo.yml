@@ -31,7 +31,7 @@ jobs:
 
       - name: Build pngdefry locally from source archive
         run: |
-          curl -L https://github.com/kuba--/pngdefry/archive/refs/heads/master.zip -o pngdefry.zip
+          curl -L https://github.com/esjeon/pngdefry/archive/refs/heads/master.zip -o pngdefry.zip
           unzip -q pngdefry.zip
           cd pngdefry-master
           gcc pngdefry.c -o pngdefry
