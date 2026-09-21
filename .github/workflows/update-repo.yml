@@ -72,7 +72,7 @@ jobs:
 
           CUSTOM_METADATA = {
               "com.nuvio.media": {"tintColor": "#007AFF", "name": "Nuvio", "subtitle": "Media Player"},
-              "com.stremio.stremio": {"tintColor": "#8A52F5", "name": "Stremio", "subtitle": "Media Player"},
+              "com.stremio.pal": {"tintColor": "#8A52F5", "name": "Stremio", "subtitle": "Media Player"},
               "com.spotify.client": {"tintColor": "#1DB954", "subtitle": "Musica & Audio"},
               "com.calimoto.calimoto": {"tintColor": "#FF5500", "subtitle": "Navigazione GPS"},
               "com.shapr3d.shapr": {"tintColor": "#00D2FF", "subtitle": "Strumento CAD"}
@@ -118,7 +118,16 @@ jobs:
                           icon_filename = f"{bundle_id}.png"
                           out_file_path = os.path.join(bundle_out_dir, icon_filename)
                           
-                          if fetch_appstore_icon(bundle_id, out_file_path):
+                          # Controlla prima se l'icona esiste già localmente nella cartella icons del repo
+                          if os.path.exists(out_file_path):
+                              extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
+                          # Se è un'app custom (come Nuvio o Stremio PAL), salta la ricerca su App Store e usa direttamente il file locale se presente
+                          elif bundle_id in ["com.nuvio.media", "com.stremio.pal"]:
+                              if os.path.exists(out_file_path):
+                                  extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
+                              else:
+                                  extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
+                          elif fetch_appstore_icon(bundle_id, out_file_path):
                               extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
                           else:
                               extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
@@ -201,7 +210,13 @@ jobs:
                       meta = CUSTOM_METADATA.get(bundle_id, {})
                       app_name = meta.get("name") or info["name"] or rel_name or "App iOS"
                       subtitle = meta.get("subtitle", "Utilità / Mod")
-                      icon_url = info.get("iconURL") or f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
+                      
+                      # Verifica finale dell'icona: se esiste il file locale nella cartella icons, forza il suo URL corretto
+                      local_icon_check = os.path.join('icons', f"{bundle_id}.png")
+                      if os.path.exists(local_icon_check):
+                          icon_url = f"https://raw.githubusercontent.com/{repo}/main/icons/{bundle_id}.png"
+                      else:
+                          icon_url = info.get("iconURL") or f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
 
                       new_version_entry = {
                           "version": version_num,
@@ -220,8 +235,7 @@ jobs:
                           if published_at >= prev_date:
                               existing_app['name'] = app_name
                               existing_app['subtitle'] = subtitle
-                              if info.get("iconURL") and info.get("iconURL") != f"https://raw.githubusercontent.com/{repo}/main/repoicon.png":
-                                  existing_app['iconURL'] = icon_url
+                              existing_app['iconURL'] = icon_url
                               existing_app['localizedDescription'] = body if body else f"Applicazione {app_name}."
                           
                           if not any(v['version'] == version_num for v in existing_app['versions']):
@@ -231,7 +245,7 @@ jobs:
                               "name": app_name,
                               "bundleIdentifier": bundle_id,
                               "developerName": repo.split('/')[0] if repo else "Developer",
-                              "subtitle": subtitle,
+                               "subtitle": subtitle,
                               "localizedDescription": body if body else f"Applicazione {app_name}.",
                               "iconURL": icon_url,
                               "tintColor": meta.get("tintColor", "#007AFF"),
@@ -240,7 +254,6 @@ jobs:
 
           final_apps = [app for app in apps_dict.values() if len(app.get('versions', [])) > 0]
           
-          # Fallback di sicurezza: se per qualche motivo non legge app dalle release, prova a mantenere quelle esistenti nel vecchio apps.json
           if not final_apps and os.path.exists('apps.json'):
               try:
                   with open('apps.json', 'r', encoding='utf-8') as f:
@@ -254,7 +267,6 @@ jobs:
           with open('apps.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
 
-          # Aggiornamento automatico della tabella nel README.md
           if final_apps:
               table_rows = [
                   "| Applicazione | Categoria | Descrizione |",
