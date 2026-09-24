@@ -29,7 +29,7 @@ La repository ospita e aggiorna automaticamente le seguenti categorie di applica
 | **Stremio** | Media Player | Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN dir... |
 | **Spotify** | Musica & Audio | 🚀 **Aggiornamento Disponibile** |
 | **Shapr3D** | Strumento CAD | 🚀 **Aggiornamento Disponibile** |
-| **Nuvio** | Media Player | - 4c82f9ac feat(settings): collapse tracker cards by default @tapframe   |
+| **Nuvio** | Media Player | - 0b427905 fix(mdblist): correct library sorting @tapframe   |
 | **calimoto** | Navigazione GPS | 🚀 **Aggiornamento Disponibile** |
 <!-- APPS_TABLE_END -->
 
