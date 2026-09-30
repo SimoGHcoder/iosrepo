@@ -112,7 +112,19 @@ jobs:
                           plist = plistlib.load(f)
 
                       bundle_id = plist.get("CFBundleIdentifier")
-                      version = plist.get("CFBundleShortVersionString") or plist.get("CFBundleVersion") or "1.0"
+                      short_ver = plist.get("CFBundleShortVersionString")
+                      bundle_ver = plist.get("CFBundleVersion")
+
+                      # Usa la versione completa leggendola esattamente dal plist
+                      if short_ver and bundle_ver and bundle_ver not in short_ver and len(bundle_ver) > len(short_ver):
+                          version = bundle_ver
+                      elif short_ver:
+                          version = short_ver
+                      elif bundle_ver:
+                          version = bundle_ver
+                      else:
+                          version = "1.0"
+
                       name = plist.get("CFBundleDisplayName") or plist.get("CFBundleName")
 
                       extracted_icon_path = None
@@ -232,11 +244,9 @@ jobs:
                           continue
 
                       bundle_id = info["bundleIdentifier"]
-                      version_num = info["version"]
                       
-                      match_ver = re.search(r'v?(\d+\.\d+(?:\.\d+)*(?:-[a-zA-Z0-9\.]+)?)', rel_name)
-                      if match_ver:
-                          version_num = match_ver.group(1)
+                      # Usiamo prioritariamente la versione esatta dell'IPA
+                      version_num = info["version"]
 
                       meta = CUSTOM_METADATA.get(bundle_id, {})
                       app_name = meta.get("name") or info["name"] or rel_name or "App iOS"
@@ -310,7 +320,6 @@ jobs:
                   subtitle = app.get('subtitle', 'Utilità')
                   raw_desc = app.get('localizedDescription', '')
                   
-                  # Pulizia del testo per la tabella Markdown
                   clean_desc = raw_desc.replace('\r', ' ').replace('\n', ' ').replace('**', '').strip()
                   clean_desc = re.sub(r'\s+', ' ', clean_desc)
                   
@@ -344,10 +353,10 @@ jobs:
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "github-actions[bot]"
           git add apps.json icons/ README.md
           if ! git diff --staged --quiet; then
-            git commit -m "auto: aggiornamento automatico apps.json e formattazione tabella README"
+            git commit -m "auto: correzione lettura versione esatta da IPA plist"
             git pull --rebase origin main
             git push origin main
           else
