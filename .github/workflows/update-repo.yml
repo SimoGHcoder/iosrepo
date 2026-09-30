@@ -202,7 +202,6 @@ jobs:
                       bundle_id = info["bundleIdentifier"]
                       version_num = info["version"]
                       
-                      # Regex flessibile: intercetta versioni come 1.0, 1.0.0, 8.9.12-beta
                       match_ver = re.search(r'v?(\d+\.\d+(?:\.\d+)*(?:-[a-zA-Z0-9\.]+)?)', rel_name)
                       if match_ver:
                           version_num = match_ver.group(1)
@@ -230,14 +229,11 @@ jobs:
                       if bundle_id in apps_dict:
                           existing_app = apps_dict[bundle_id]
                           
-                          # Aggiunge la versione se non è già presente
                           if not any(v['version'] == version_num for v in existing_app['versions']):
                               existing_app['versions'].append(new_version_entry)
                               
-                          # Ordina le versioni per data decrescente (la più recente per prima)
                           existing_app['versions'].sort(key=lambda x: x.get('date', ''), reverse=True)
                           
-                          # Aggiorna le info principali dell'app con quelle dell'ultima release
                           latest_ver = existing_app['versions'][0]
                           if latest_ver['version'] == version_num:
                               existing_app['name'] = app_name
@@ -253,6 +249,7 @@ jobs:
                               "localizedDescription": body if body else f"Applicazione {app_name}.",
                               "iconURL": icon_url,
                               "tintColor": meta.get("tintColor", "#007AFF"),
+                              "overwriteExisting": True,
                               "versions": [new_version_entry]
                           }
 
@@ -310,7 +307,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add apps.json icons/ README.md
           if ! git diff --staged --quiet; then
-            git commit -m "auto: aggiornamento automatico apps.json, icone e README"
+            git commit -m "auto: aggiornamento automatico apps.json con overwriteExisting, icone e README"
             git pull --rebase origin main
             git push origin main
           else
