@@ -115,10 +115,8 @@ jobs:
                       short_ver = plist.get("CFBundleShortVersionString")
                       bundle_ver = plist.get("CFBundleVersion")
 
-                      # Usa la versione completa leggendola esattamente dal plist
-                      if short_ver and bundle_ver and bundle_ver not in short_ver and len(bundle_ver) > len(short_ver):
-                          version = bundle_ver
-                      elif short_ver:
+                      # Privilegia sempre la versione commerciale con i punti (es. 9.1.84.2223)
+                      if short_ver:
                           version = short_ver
                       elif bundle_ver:
                           version = bundle_ver
