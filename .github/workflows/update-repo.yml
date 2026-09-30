@@ -1,4 +1,4 @@
-Name: iOS Repository Sync & Build
+name: iOS Repository Sync & Build
 
 on:
   release:
