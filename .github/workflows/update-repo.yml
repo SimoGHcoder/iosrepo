@@ -1,4 +1,4 @@
-name: iOS Repository Sync & Build
+Name: iOS Repository Sync & Build
 
 on:
   release:
@@ -72,6 +72,7 @@ jobs:
 
           CUSTOM_METADATA = {
               "com.nuvio.media": {"tintColor": "#007AFF", "name": "Nuvio", "subtitle": "Media Player"},
+              "com.nuvio.media.app": {"tintColor": "#007AFF", "name": "Nuvio", "subtitle": "Media Player"},
               "com.stremio.pal": {"tintColor": "#8A52F5", "name": "Stremio", "subtitle": "Media Player"},
               "com.spotify.client": {"tintColor": "#1DB954", "subtitle": "Musica & Audio"},
               "com.calimoto.calimoto": {"tintColor": "#FF5500", "subtitle": "Navigazione GPS"},
@@ -118,11 +119,9 @@ jobs:
                           icon_filename = f"{bundle_id}.png"
                           out_file_path = os.path.join(bundle_out_dir, icon_filename)
                           
-                          # Controlla prima se l'icona esiste già localmente nella cartella icons del repo
                           if os.path.exists(out_file_path):
                               extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
-                          # Se è un'app custom (come Nuvio o Stremio PAL), salta la ricerca su App Store e usa direttamente il file locale se presente
-                          elif bundle_id in ["com.nuvio.media", "com.stremio.pal"]:
+                          elif bundle_id in ["com.nuvio.media", "com.nuvio.media.app", "com.stremio.pal"]:
                               if os.path.exists(out_file_path):
                                   extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
                               else:
@@ -173,6 +172,7 @@ jobs:
 
               body = rel.get('body', '')
               published_at = rel.get('published_at', '')
+              rel_name = rel.get('name', '') or rel.get('tag_name', '')
 
               for asset in rel.get('assets', []):
                   if asset['name'].lower().endswith('.ipa'):
@@ -180,7 +180,7 @@ jobs:
                       size = asset['size']
                       local_filename = "temp_app.ipa"
 
-                      print(f"Analisi file asset: {asset['name']} (Release: {rel.get('name')})...")
+                      print(f"Analisi file asset: {asset['name']} (Release: {rel_name})...")
                       
                       try:
                           with requests.get(download_url, stream=True, timeout=120) as r_dl:
@@ -201,9 +201,9 @@ jobs:
 
                       bundle_id = info["bundleIdentifier"]
                       version_num = info["version"]
-                      rel_name = rel.get('name', '')
                       
-                      match_ver = re.search(r'v?(\d+\.\d+\.\d+(?:-[a-zA-Z0-9\.]+)?)', rel_name)
+                      # Regex flessibile: intercetta versioni come 1.0, 1.0.0, 8.9.12-beta
+                      match_ver = re.search(r'v?(\d+\.\d+(?:\.\d+)*(?:-[a-zA-Z0-9\.]+)?)', rel_name)
                       if match_ver:
                           version_num = match_ver.group(1)
 
@@ -211,7 +211,6 @@ jobs:
                       app_name = meta.get("name") or info["name"] or rel_name or "App iOS"
                       subtitle = meta.get("subtitle", "Utilità / Mod")
                       
-                      # Verifica finale dell'icona: se esiste il file locale nella cartella icons, forza il suo URL corretto
                       local_icon_check = os.path.join('icons', f"{bundle_id}.png")
                       if os.path.exists(local_icon_check):
                           icon_url = f"https://raw.githubusercontent.com/{repo}/main/icons/{bundle_id}.png"
@@ -230,22 +229,27 @@ jobs:
 
                       if bundle_id in apps_dict:
                           existing_app = apps_dict[bundle_id]
-                          prev_date = existing_app['versions'][0]['date'] if existing_app['versions'] else ""
                           
-                          if published_at >= prev_date:
+                          # Aggiunge la versione se non è già presente
+                          if not any(v['version'] == version_num for v in existing_app['versions']):
+                              existing_app['versions'].append(new_version_entry)
+                              
+                          # Ordina le versioni per data decrescente (la più recente per prima)
+                          existing_app['versions'].sort(key=lambda x: x.get('date', ''), reverse=True)
+                          
+                          # Aggiorna le info principali dell'app con quelle dell'ultima release
+                          latest_ver = existing_app['versions'][0]
+                          if latest_ver['version'] == version_num:
                               existing_app['name'] = app_name
                               existing_app['subtitle'] = subtitle
                               existing_app['iconURL'] = icon_url
                               existing_app['localizedDescription'] = body if body else f"Applicazione {app_name}."
-                          
-                          if not any(v['version'] == version_num for v in existing_app['versions']):
-                              existing_app['versions'].append(new_version_entry)
                       else:
                           apps_dict[bundle_id] = {
                               "name": app_name,
                               "bundleIdentifier": bundle_id,
                               "developerName": repo.split('/')[0] if repo else "Developer",
-                               "subtitle": subtitle,
+                              "subtitle": subtitle,
                               "localizedDescription": body if body else f"Applicazione {app_name}.",
                               "iconURL": icon_url,
                               "tintColor": meta.get("tintColor", "#007AFF"),
