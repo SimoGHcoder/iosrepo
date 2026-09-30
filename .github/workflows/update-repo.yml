@@ -121,17 +121,14 @@ jobs:
                           icon_filename = f"{bundle_id}.png"
                           out_file_path = os.path.join(bundle_out_dir, icon_filename)
                           
-                          # 1. Se l'icona esiste già nella cartella icons/, usiamo quella
                           if os.path.exists(out_file_path):
                               extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
                           else:
-                              # 2. Estrazione diretta delle icone PNG dal pacchetto .app
                               icon_candidates = [
                                   f for f in ipa.namelist() 
                                   if f.startswith(app_dir) and f.lower().endswith('.png') and 'icon' in os.path.basename(f).lower()
                               ]
                               
-                              # Ordina i candidati per privilegiare risoluzioni più alte
                               icon_candidates.sort(key=lambda x: len(x), reverse=True)
 
                               extracted_success = False
@@ -140,7 +137,6 @@ jobs:
                                   with open(raw_icon_path, "wb") as f_out:
                                       f_out.write(ipa.read(candidate))
                                   
-                                  # Converte l'ottimizzazione CgBI di Apple tramite pngdefry
                                   os.system(f"pngdefry -s _converted {raw_icon_path} > /dev/null 2>&1")
                                   converted_path = "temp_raw_icon_converted.png"
                                   
@@ -160,7 +156,6 @@ jobs:
                                   if extracted_success:
                                       break
 
-                              # 3. Fallback su App Store se l'estrazione diretta non ha trovato icone PNG
                               if extracted_success:
                                   extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
                               elif fetch_appstore_icon(bundle_id, out_file_path):
@@ -313,10 +308,18 @@ jobs:
               for app in final_apps:
                   app_name = app['name']
                   subtitle = app.get('subtitle', 'Utilità')
-                  desc = app.get('localizedDescription', '').split('\n')[0]
-                  if len(desc) > 75:
-                      desc = desc[:72] + "..."
-                  table_rows.append(f"| **{app_name}** | {subtitle} | {desc} |")
+                  raw_desc = app.get('localizedDescription', '')
+                  
+                  # Pulizia del testo per la tabella Markdown
+                  clean_desc = raw_desc.replace('\r', ' ').replace('\n', ' ').replace('**', '').strip()
+                  clean_desc = re.sub(r'\s+', ' ', clean_desc)
+                  
+                  if len(clean_desc) > 80:
+                      clean_desc = clean_desc[:77] + "..."
+                  if not clean_desc:
+                      clean_desc = f"Applicazione {app_name}."
+
+                  table_rows.append(f"| **{app_name}** | {subtitle} | {clean_desc} |")
               
               new_table_content = "\n".join(table_rows)
 
@@ -344,7 +347,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add apps.json icons/ README.md
           if ! git diff --staged --quiet; then
-            git commit -m "auto: aggiornamento automatico apps.json con overwriteExisting, icone estratte da IPA e README"
+            git commit -m "auto: aggiornamento automatico apps.json e formattazione tabella README"
             git pull --rebase origin main
             git push origin main
           else
