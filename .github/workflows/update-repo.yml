@@ -106,6 +106,8 @@ jobs:
                           return None
                       
                       plist_path = plist_files[0]
+                      app_dir = os.path.dirname(plist_path)
+                      
                       with ipa.open(plist_path) as f:
                           plist = plistlib.load(f)
 
@@ -119,17 +121,52 @@ jobs:
                           icon_filename = f"{bundle_id}.png"
                           out_file_path = os.path.join(bundle_out_dir, icon_filename)
                           
+                          # 1. Se l'icona esiste già nella cartella icons/, usiamo quella
                           if os.path.exists(out_file_path):
                               extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
-                          elif bundle_id in ["com.nuvio.media", "com.nuvio.media.app", "com.stremio.pal"]:
-                              if os.path.exists(out_file_path):
+                          else:
+                              # 2. Estrazione diretta delle icone PNG dal pacchetto .app
+                              icon_candidates = [
+                                  f for f in ipa.namelist() 
+                                  if f.startswith(app_dir) and f.lower().endswith('.png') and 'icon' in os.path.basename(f).lower()
+                              ]
+                              
+                              # Ordina i candidati per privilegiare risoluzioni più alte
+                              icon_candidates.sort(key=lambda x: len(x), reverse=True)
+
+                              extracted_success = False
+                              for candidate in icon_candidates:
+                                  raw_icon_path = "temp_raw_icon.png"
+                                  with open(raw_icon_path, "wb") as f_out:
+                                      f_out.write(ipa.read(candidate))
+                                  
+                                  # Converte l'ottimizzazione CgBI di Apple tramite pngdefry
+                                  os.system(f"pngdefry -s _converted {raw_icon_path} > /dev/null 2>&1")
+                                  converted_path = "temp_raw_icon_converted.png"
+                                  
+                                  target_icon = converted_path if os.path.exists(converted_path) else raw_icon_path
+                                  
+                                  try:
+                                      with Image.open(target_icon) as img:
+                                          img.convert("RGBA").save(out_file_path, "PNG")
+                                          extracted_success = True
+                                  except Exception:
+                                      pass
+
+                                  for tmp in [raw_icon_path, converted_path]:
+                                      if os.path.exists(tmp):
+                                          os.remove(tmp)
+
+                                  if extracted_success:
+                                      break
+
+                              # 3. Fallback su App Store se l'estrazione diretta non ha trovato icone PNG
+                              if extracted_success:
+                                  extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
+                              elif fetch_appstore_icon(bundle_id, out_file_path):
                                   extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
                               else:
                                   extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
-                          elif fetch_appstore_icon(bundle_id, out_file_path):
-                              extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/icons/{icon_filename}"
-                          else:
-                              extracted_icon_path = f"https://raw.githubusercontent.com/{repo}/main/repoicon.png"
 
                       return {
                           "bundleIdentifier": bundle_id,
@@ -307,7 +344,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add apps.json icons/ README.md
           if ! git diff --staged --quiet; then
-            git commit -m "auto: aggiornamento automatico apps.json con overwriteExisting, icone e README"
+            git commit -m "auto: aggiornamento automatico apps.json con overwriteExisting, icone estratte da IPA e README"
             git pull --rebase origin main
             git push origin main
           else
