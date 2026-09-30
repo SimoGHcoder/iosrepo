@@ -1,4 +1,4 @@
-Name: Nuvio IPA Sync
+name: Nuvio IPA Sync
 
 on:
   schedule:
