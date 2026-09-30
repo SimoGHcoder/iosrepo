@@ -5,56 +5,13 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
-      "name": "GitHub",
-      "bundleIdentifier": "com.github.stormbreaker.prod",
-      "developerName": "SimoGHcoder",
-      "subtitle": "Utilità / Mod",
-      "localizedDescription": "Applicazione GitHub.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.github.stormbreaker.prod.png",
-      "tintColor": "#007AFF",
-      "overwriteExisting": true,
-      "versions": [
-        {
-          "version": "1.224.0",
-          "date": "2026-09-20T10:05:22Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/github/GithubMod.ipa",
-          "localizedDescription": "Versione 1.224.0",
-          "size": 65308773,
-          "bundleIdentifier": "com.github.stormbreaker.prod",
-          "appID": "com.github.stormbreaker.prod"
-        }
-      ]
-    },
-    {
-      "name": "AI Code Editor",
-      "bundleIdentifier": "com.coddykit.aicodeeditor",
-      "developerName": "SimoGHcoder",
-      "subtitle": "Utilità / Mod",
-      "localizedDescription": "Applicazione AI Code Editor.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.coddykit.aicodeeditor.png",
-      "tintColor": "#007AFF",
-      "overwriteExisting": true,
-      "versions": [
-        {
-          "version": "71.0.0",
-          "date": "2026-09-20T10:15:50Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/AIcE/ai-code-editor-compiler.ipa",
-          "localizedDescription": "Versione 71.0.0",
-          "size": 27856137,
-          "bundleIdentifier": "com.coddykit.aicodeeditor",
-          "appID": "com.coddykit.aicodeeditor"
-        }
-      ]
-    },
-    {
       "name": "Stremio",
       "bundleIdentifier": "com.stremio.pal",
-      "developerName": "SimoGHcoder",
-      "subtitle": "Media Player",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Stremio release",
       "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.0.8 (2.0.8b23)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.0.8b23/ios/stremio_iOS.ipa)\n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
-      "tintColor": "#8A52F5",
-      "overwriteExisting": true,
+      "tintColor": "#007AFF",
       "versions": [
         {
           "version": "2.0.8",
@@ -70,12 +27,11 @@
     {
       "name": "Spotify",
       "bundleIdentifier": "com.spotify.client",
-      "developerName": "SimoGHcoder",
-      "subtitle": "Musica & Audio",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Spotify release",
       "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.spotify.client.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#1DB954",
-      "overwriteExisting": true,
       "versions": [
         {
           "version": "9.1.76",
@@ -91,12 +47,11 @@
     {
       "name": "Shapr3D",
       "bundleIdentifier": "com.shapr3d.shapr",
-      "developerName": "SimoGHcoder",
-      "subtitle": "Strumento CAD",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Shapr3D release",
       "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.shapr3d.shapr.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#00D2FF",
-      "overwriteExisting": true,
       "versions": [
         {
           "version": "5.1015.0",
@@ -112,12 +67,11 @@
     {
       "name": "Nuvio",
       "bundleIdentifier": "com.nuvio.media",
-      "developerName": "SimoGHcoder",
-      "subtitle": "Media Player",
+      "developerName": "Sideloading Hub",
+      "subtitle": "Nuvio release",
       "localizedDescription": "- 80860602 fix(player): ignore short clips for tracking @tapframe  \n- cd4572e2 fix(ios): update quickjs to 1.0.15 @tapframe  \n- 9980d643 fix(player): reduce buffer durations @tapframe  \n- 75296263 fix(details): keep custom posters when returning to a title @tapframe  \n- 4bdcfa3a fix(settings): use shared chip on detail page @tapframe  \n- 2b8be69c fix(details): replay watched series from first episode @tapframe  \n- c69b643a fix(player): resume restored player from current position @tapframe  \n- c3920d40 fix(i18n): align episode labels and metadata with tv @tapframe  \n- 24c7c89c fix(streams): prevent rotation during binge group lookup @tapframe  \n- a1a43416 fix(profiles): center pin dialog content @tapframe  \n- [Plugin timeout (#2091)](https://github.com/NuvioMedia/NuvioMobile/pull/2091) @paregi12  \n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#007AFF",
-      "overwriteExisting": true,
       "versions": [
         {
           "version": "0.5.4-beta",
@@ -133,12 +87,11 @@
     {
       "name": "calimoto",
       "bundleIdentifier": "com.calimoto.calimoto",
-      "developerName": "SimoGHcoder",
-      "subtitle": "Navigazione GPS",
+      "developerName": "Sideloading Hub",
+      "subtitle": "calimoto release",
       "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.calimoto.calimoto.png",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
       "tintColor": "#FF5500",
-      "overwriteExisting": true,
       "versions": [
         {
           "version": "7.20.0",
