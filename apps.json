@@ -5,6 +5,27 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
+      "name": "CapCut",
+      "bundleIdentifier": "com.lemon.lvoverseas",
+      "developerName": "SimoGHcoder",
+      "subtitle": "Utilità / Mod",
+      "localizedDescription": "Applicazione CapCut.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.lemon.lvoverseas.png",
+      "tintColor": "#007AFF",
+      "overwriteExisting": true,
+      "versions": [
+        {
+          "version": "12.6.0",
+          "date": "2026-10-02T09:13:22Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Capcut/CapCut.ipa",
+          "localizedDescription": "Versione 12.6.0",
+          "size": 146829317,
+          "bundleIdentifier": "com.lemon.lvoverseas",
+          "appID": "com.lemon.lvoverseas"
+        }
+      ]
+    },
+    {
       "name": "Nuvio",
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "SimoGHcoder",

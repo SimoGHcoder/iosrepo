@@ -24,6 +24,7 @@ La repository ospita e aggiorna automaticamente le seguenti categorie di applica
 <!-- APPS_TABLE_START -->
 | Applicazione | Categoria | Descrizione |
 | :--- | :--- | :--- |
+| **CapCut** | Utilità / Mod | Applicazione CapCut. |
 | **Nuvio** | Media Player | - [feat(i18n): add Bengali (বাংলা) language support and UI localization (#211... |
 | **Stremio** | Media Player | Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.... |
 | **Spotify** | Musica & Audio | 🚀 Aggiornamento Disponibile • 🔄 Versione aggiornata all'ultima build stabile.... |
