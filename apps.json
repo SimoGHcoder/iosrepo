@@ -5,36 +5,24 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
-      "name": "CapCut",
-      "bundleIdentifier": "com.lemon.lvoverseas",
-      "developerName": "SimoGHcoder",
-      "subtitle": "Utilità / Mod",
-      "localizedDescription": "Applicazione CapCut.",
-      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.lemon.lvoverseas.png",
-      "tintColor": "#007AFF",
-      "overwriteExisting": true,
-      "versions": [
-        {
-          "version": "12.6.0",
-          "date": "2026-10-02T09:13:22Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Capcut/CapCut.ipa",
-          "localizedDescription": "Versione 12.6.0",
-          "size": 146829317,
-          "bundleIdentifier": "com.lemon.lvoverseas",
-          "appID": "com.lemon.lvoverseas"
-        }
-      ]
-    },
-    {
       "name": "Nuvio",
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "SimoGHcoder",
       "subtitle": "Media Player",
-      "localizedDescription": "- [feat(i18n): add Bengali (বাংলা) language support and UI localization (#2113)](https://github.com/NuvioMedia/NuvioMobile/pull/2113) @TanvirSdq  \n- [i18n(el): sync Greek translations and remove remaining English loanwords (#2132)](https://github.com/NuvioMedia/NuvioMobile/pull/2132) @nosvasedis  \n- [Landscape clearlogo toggle, Simkl type hint, TMDB source priority, folder TMDB ID resolution (#2084)](https://github.com/NuvioMedia/NuvioMobile/pull/2084) @skoruppa  \n- [fix(UI): Fix hero section sometimes shifting (#2128)](https://github.com/NuvioMedia/NuvioMobile/pull/2128) @ThEgIGN  \n- [fix(player): show the swipe-to-seek preview in the new player layout (#2122)](https://github.com/NuvioMedia/NuvioMobile/pull/2122) @deejay189393  \n- 6aa42153 fix(debrid): select requested episode files @tapframe  \n- [i18n(vi): update latest Vietnamese strings (#2096)](https://github.com/NuvioMedia/NuvioMobile/pull/2096) @blueocean2308  \n- [Translation improvements and adjustments for Slovak language (#2104)](https://github.com/NuvioMedia/NuvioMobile/pull/2104) @mmsw91  \n- [fix(mdblist): show newest library additions first (#2103)](https://github.com/NuvioMedia/NuvioMobile/pull/2103) @halibiram  \n",
+      "localizedDescription": "- 312f7399 feat(details): use desktop hero layout on tablets @tapframe  \n- b3d7c5b6 feat(settings): show restart prompt when layout direction changes @tapframe  \n- a984b390 fix(ios): declare supported localizations @tapframe  \n- f0f980b3 fix(player): auto-play next episode on end after dismissing prompt @tapframe  \n- [i18n(vi): update latest Vietnamese strings (#2146)](https://github.com/NuvioMedia/NuvioMobile/pull/2146) @blueocean2308  \n- [Preload next episode sources (#2140)](https://github.com/NuvioMedia/NuvioMobile/pull/2140) @skoruppa  \n- [Fix mising poster fallback in Catalog Screen (#2139)](https://github.com/NuvioMedia/NuvioMobile/pull/2139) @skoruppa  \n- [fix(player): backport automatic skip notifications from Desktop (#2137)](https://github.com/NuvioMedia/NuvioMobile/pull/2137) @Laskco  \n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
       "tintColor": "#007AFF",
       "overwriteExisting": true,
       "versions": [
+        {
+          "version": "0.5.6",
+          "date": "2026-10-03T03:31:05Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio-v0.5.6-beta/nuvio-0.5.6-beta.ipa",
+          "localizedDescription": "- 312f7399 feat(details): use desktop hero layout on tablets @tapframe  \n- b3d7c5b6 feat(settings): show restart prompt when layout direction changes @tapframe  \n- a984b390 fix(ios): declare supported localizations @tapframe  \n- f0f980b3 fix(player): auto-play next episode on end after dismissing prompt @tapframe  \n- [i18n(vi): update latest Vietnamese strings (#2146)](https://github.com/NuvioMedia/NuvioMobile/pull/2146) @blueocean2308  \n- [Preload next episode sources (#2140)](https://github.com/NuvioMedia/NuvioMobile/pull/2140) @skoruppa  \n- [Fix mising poster fallback in Catalog Screen (#2139)](https://github.com/NuvioMedia/NuvioMobile/pull/2139) @skoruppa  \n- [fix(player): backport automatic skip notifications from Desktop (#2137)](https://github.com/NuvioMedia/NuvioMobile/pull/2137) @Laskco  \n",
+          "size": 66690752,
+          "bundleIdentifier": "com.nuvio.media",
+          "appID": "com.nuvio.media"
+        },
         {
           "version": "0.5.5",
           "date": "2026-10-01T03:48:27Z",
@@ -52,6 +40,27 @@
           "size": 66389579,
           "bundleIdentifier": "com.nuvio.media",
           "appID": "com.nuvio.media"
+        }
+      ]
+    },
+    {
+      "name": "CapCut",
+      "bundleIdentifier": "com.lemon.lvoverseas",
+      "developerName": "SimoGHcoder",
+      "subtitle": "Utilità / Mod",
+      "localizedDescription": "Applicazione CapCut.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.lemon.lvoverseas.png",
+      "tintColor": "#007AFF",
+      "overwriteExisting": true,
+      "versions": [
+        {
+          "version": "12.6.0",
+          "date": "2026-10-02T09:13:22Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Capcut/CapCut.ipa",
+          "localizedDescription": "Versione 12.6.0",
+          "size": 146829317,
+          "bundleIdentifier": "com.lemon.lvoverseas",
+          "appID": "com.lemon.lvoverseas"
         }
       ]
     },
