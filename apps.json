@@ -5,6 +5,27 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
+      "name": "Instagram",
+      "bundleIdentifier": "com.burbn.instagram",
+      "developerName": "SimoGHcoder",
+      "subtitle": "Utilità / Mod",
+      "localizedDescription": "Applicazione Instagram.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.burbn.instagram.png",
+      "tintColor": "#007AFF",
+      "overwriteExisting": true,
+      "versions": [
+        {
+          "version": "433.0.0",
+          "date": "2026-10-04T10:04:57Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Ig/Instagram_IGFormat.ipa",
+          "localizedDescription": "Versione 433.0.0",
+          "size": 282563167,
+          "bundleIdentifier": "com.burbn.instagram",
+          "appID": "com.burbn.instagram"
+        }
+      ]
+    },
+    {
       "name": "Nuvio",
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "SimoGHcoder",
