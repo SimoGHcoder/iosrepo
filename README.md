@@ -24,7 +24,7 @@ La repository ospita e aggiorna automaticamente le seguenti categorie di applica
 <!-- APPS_TABLE_START -->
 | Applicazione | Categoria | Descrizione |
 | :--- | :--- | :--- |
-| **Nuvio** | Media Player | - c2127769 fix(p2p): correct torrent cache path and usage @tapframe - [feat(p... |
+| **Nuvio** | Media Player | - [i18n: Add Croatian (hr) translation (#2169)](https://github.com/NuvioMedia... |
 | **Instagram** | Utilità / Mod | Applicazione Instagram. |
 | **CapCut** | Utilità / Mod | Applicazione CapCut. |
 | **Stremio** | Media Player | Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.... |
