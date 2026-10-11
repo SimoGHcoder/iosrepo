@@ -24,7 +24,7 @@ La repository ospita e aggiorna automaticamente le seguenti categorie di applica
 <!-- APPS_TABLE_START -->
 | Applicazione | Categoria | Descrizione |
 | :--- | :--- | :--- |
-| **Nuvio** | Media Player | - [i18n: Add Croatian (hr) translation (#2169)](https://github.com/NuvioMedia... |
+| **Nuvio** | Media Player | - 1bb2b10e feat(servers): sync libraries that mix movies and shows @tapframe ... |
 | **Instagram** | Utilità / Mod | Applicazione Instagram. |
 | **CapCut** | Utilità / Mod | Applicazione CapCut. |
 | **Stremio** | Media Player | Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.... |

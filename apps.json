@@ -9,11 +9,20 @@
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "SimoGHcoder",
       "subtitle": "Media Player",
-      "localizedDescription": "- [i18n: Add Croatian (hr) translation (#2169)](https://github.com/NuvioMedia/NuvioMobile/pull/2169) @Anarchydr  \r\n- [feat(mdblist): sort library lists by release date (#2196)](https://github.com/NuvioMedia/NuvioMobile/pull/2196) @kernexshadow  \r\n- [Reset next episode preload flag on episode transition (#2193)](https://github.com/NuvioMedia/NuvioMobile/pull/2193) @skoruppa  \r\n- [fix(UI): fix hero content shifting on horizontal and tablet layouts (#2190)](https://github.com/NuvioMedia/NuvioMobile/pull/2190) @ThEgIGN  \r\n- [feat(servers): add experimental Jellyfin and Emby support (#2081)](https://github.com/NuvioMedia/NuvioMobile/pull/2081) @tapframe  \r\n- [fix(streams): play streams that only have a ytId (#2115)](https://github.com/NuvioMedia/NuvioMobile/pull/2115) @deejay189393  \r\n",
+      "localizedDescription": "- 1bb2b10e feat(servers): sync libraries that mix movies and shows @tapframe  \r\n- 6f98691d fix(servers): mark playback info requests as playback @tapframe  \r\n- e05178c8 feat(servers): show libraries that mix movies and shows @tapframe  \r\n- de69f9a9 fix(servers): open libraries that need a genre on their first one @tapframe  \r\n- c2ed4c5e fix(servers): skip versions that cannot play @tapframe  \r\n- 5a24beb0 fix(servers): search each server once per type @tapframe  \r\n- [i18n(vi): update strings.xml and add strings_mdblist.xml + strings_servers.xml (#2216)](https://github.com/NuvioMedia/NuvioMobile/pull/2216) @blueocean2308  \r\n- [Fix TorBox Cloud loading for large libraries (#2215)](https://github.com/NuvioMedia/NuvioMobile/pull/2215) @Laskco  \r\n- [Defer custom poster URL resolution to UI layer (#2207)](https://github.com/NuvioMedia/NuvioMobile/pull/2207) @skoruppa  \r\n- [fix(i18n): comprehensive update to Bengali localization (missing strings & UI fit) (#2204)](https://github.com/NuvioMedia/NuvioMobile/pull/2204) @TanvirSdq  \r\n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
       "tintColor": "#007AFF",
       "overwriteExisting": true,
       "versions": [
+        {
+          "version": "0.5.9",
+          "date": "2026-10-11T03:37:01Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio-v0.5.9-beta/nuvio-0.5.9-beta.ipa",
+          "localizedDescription": "- 1bb2b10e feat(servers): sync libraries that mix movies and shows @tapframe  \r\n- 6f98691d fix(servers): mark playback info requests as playback @tapframe  \r\n- e05178c8 feat(servers): show libraries that mix movies and shows @tapframe  \r\n- de69f9a9 fix(servers): open libraries that need a genre on their first one @tapframe  \r\n- c2ed4c5e fix(servers): skip versions that cannot play @tapframe  \r\n- 5a24beb0 fix(servers): search each server once per type @tapframe  \r\n- [i18n(vi): update strings.xml and add strings_mdblist.xml + strings_servers.xml (#2216)](https://github.com/NuvioMedia/NuvioMobile/pull/2216) @blueocean2308  \r\n- [Fix TorBox Cloud loading for large libraries (#2215)](https://github.com/NuvioMedia/NuvioMobile/pull/2215) @Laskco  \r\n- [Defer custom poster URL resolution to UI layer (#2207)](https://github.com/NuvioMedia/NuvioMobile/pull/2207) @skoruppa  \r\n- [fix(i18n): comprehensive update to Bengali localization (missing strings & UI fit) (#2204)](https://github.com/NuvioMedia/NuvioMobile/pull/2204) @TanvirSdq  \r\n",
+          "size": 67606241,
+          "bundleIdentifier": "com.nuvio.media",
+          "appID": "com.nuvio.media"
+        },
         {
           "version": "0.5.8",
           "date": "2026-10-09T04:17:01Z",
