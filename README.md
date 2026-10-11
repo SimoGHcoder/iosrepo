@@ -25,8 +25,6 @@ La repository ospita e aggiorna automaticamente le seguenti categorie di applica
 | Applicazione | Categoria | Descrizione |
 | :--- | :--- | :--- |
 | **Nuvio** | Media Player | - 1bb2b10e feat(servers): sync libraries that mix movies and shows @tapframe ... |
-| **Instagram** | Utilità / Mod | Applicazione Instagram. |
-| **CapCut** | Utilità / Mod | Applicazione CapCut. |
 | **Stremio** | Media Player | Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.... |
 | **Spotify** | Musica & Audio | 🚀 Aggiornamento Disponibile • 🔄 Versione aggiornata all'ultima build stabile.... |
 | **Shapr3D** | Strumento CAD | 🚀 Aggiornamento Disponibile • 🔄 Versione aggiornata all'ultima build stabile.... |
