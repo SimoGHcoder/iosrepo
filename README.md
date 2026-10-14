@@ -24,7 +24,7 @@ La repository ospita e aggiorna automaticamente le seguenti categorie di applica
 <!-- APPS_TABLE_START -->
 | Applicazione | Categoria | Descrizione |
 | :--- | :--- | :--- |
-| **Nuvio** | Media Player | - 1bb2b10e feat(servers): sync libraries that mix movies and shows @tapframe ... |
+| **Nuvio** | Media Player | - [feat(ios): add native PiP with existing MPV VideoToolbox frames (#2248)](h... |
 | **Stremio** | Media Player | Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.... |
 | **Spotify** | Musica & Audio | 🚀 Aggiornamento Disponibile • 🔄 Versione aggiornata all'ultima build stabile.... |
 | **Shapr3D** | Strumento CAD | 🚀 Aggiornamento Disponibile • 🔄 Versione aggiornata all'ultima build stabile.... |

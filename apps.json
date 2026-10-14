@@ -9,11 +9,20 @@
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "SimoGHcoder",
       "subtitle": "Media Player",
-      "localizedDescription": "- 1bb2b10e feat(servers): sync libraries that mix movies and shows @tapframe  \r\n- 6f98691d fix(servers): mark playback info requests as playback @tapframe  \r\n- e05178c8 feat(servers): show libraries that mix movies and shows @tapframe  \r\n- de69f9a9 fix(servers): open libraries that need a genre on their first one @tapframe  \r\n- c2ed4c5e fix(servers): skip versions that cannot play @tapframe  \r\n- 5a24beb0 fix(servers): search each server once per type @tapframe  \r\n- [i18n(vi): update strings.xml and add strings_mdblist.xml + strings_servers.xml (#2216)](https://github.com/NuvioMedia/NuvioMobile/pull/2216) @blueocean2308  \r\n- [Fix TorBox Cloud loading for large libraries (#2215)](https://github.com/NuvioMedia/NuvioMobile/pull/2215) @Laskco  \r\n- [Defer custom poster URL resolution to UI layer (#2207)](https://github.com/NuvioMedia/NuvioMobile/pull/2207) @skoruppa  \r\n- [fix(i18n): comprehensive update to Bengali localization (missing strings & UI fit) (#2204)](https://github.com/NuvioMedia/NuvioMobile/pull/2204) @TanvirSdq  \r\n",
+      "localizedDescription": "- [feat(ios): add native PiP with existing MPV VideoToolbox frames (#2248)](https://github.com/NuvioMedia/NuvioMobile/pull/2248) @WhiteGiso  \r\n- [Fix dismissed shows staying hidden after marking episodes watched (#2244)](https://github.com/NuvioMedia/NuvioMobile/pull/2244) @Laskco  \r\n- [Add non-AI Subtitle AutoSync for mobile add-on subtitles (#2143)](https://github.com/NuvioMedia/NuvioMobile/pull/2143) @DavidVamaiotu  \r\n- [fix(i18n): localize generic Episode N titles like TV (#2241)](https://github.com/NuvioMedia/NuvioMobile/pull/2241) @blueocean2308  \r\n- [ fix next episode card timing and prefetch with heuristic post-credits (#2238)](https://github.com/NuvioMedia/NuvioMobile/pull/2238) @skoruppa  \r\n- [Optimize custom poster URL resolving performance (#2239)](https://github.com/NuvioMedia/NuvioMobile/pull/2239) @halibiram  \r\n- [fix: In Poster Card Style settings screen one toggle get bigger then other and pushed out of the screen safe area. (#2219)](https://github.com/NuvioMedia/NuvioMobile/pull/2219) @AdityasahuX07  \r\n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
       "tintColor": "#007AFF",
       "overwriteExisting": true,
       "versions": [
+        {
+          "version": "0.5.10",
+          "date": "2026-10-14T03:16:54Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio-v0.5.10-beta/nuvio-0.5.10-beta.ipa",
+          "localizedDescription": "- [feat(ios): add native PiP with existing MPV VideoToolbox frames (#2248)](https://github.com/NuvioMedia/NuvioMobile/pull/2248) @WhiteGiso  \r\n- [Fix dismissed shows staying hidden after marking episodes watched (#2244)](https://github.com/NuvioMedia/NuvioMobile/pull/2244) @Laskco  \r\n- [Add non-AI Subtitle AutoSync for mobile add-on subtitles (#2143)](https://github.com/NuvioMedia/NuvioMobile/pull/2143) @DavidVamaiotu  \r\n- [fix(i18n): localize generic Episode N titles like TV (#2241)](https://github.com/NuvioMedia/NuvioMobile/pull/2241) @blueocean2308  \r\n- [ fix next episode card timing and prefetch with heuristic post-credits (#2238)](https://github.com/NuvioMedia/NuvioMobile/pull/2238) @skoruppa  \r\n- [Optimize custom poster URL resolving performance (#2239)](https://github.com/NuvioMedia/NuvioMobile/pull/2239) @halibiram  \r\n- [fix: In Poster Card Style settings screen one toggle get bigger then other and pushed out of the screen safe area. (#2219)](https://github.com/NuvioMedia/NuvioMobile/pull/2219) @AdityasahuX07  \r\n",
+          "size": 67643251,
+          "bundleIdentifier": "com.nuvio.media",
+          "appID": "com.nuvio.media"
+        },
         {
           "version": "0.5.9",
           "date": "2026-10-11T03:37:01Z",
