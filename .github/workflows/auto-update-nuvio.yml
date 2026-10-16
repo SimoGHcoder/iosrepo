@@ -30,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MY_REPO: ${{ github.repository }}
-          OFFICIAL_NUVIO_REPO: "NuvioMedia/NuvioMobile"
+          OFFICIAL_NUVIO_REPO: "albyalex96/NuvioMobile-V2"
         run: |
           python - << 'EOF'
           import os
