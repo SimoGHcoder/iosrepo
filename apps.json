@@ -9,38 +9,11 @@
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "SimoGHcoder",
       "subtitle": "Media Player",
-      "localizedDescription": "- [i18n: Add Croatian (hr) translation (#2169)](https://github.com/NuvioMedia/NuvioMobile/pull/2169) @Anarchydr  \r\n- [feat(mdblist): sort library lists by release date (#2196)](https://github.com/NuvioMedia/NuvioMobile/pull/2196) @kernexshadow  \r\n- [Reset next episode preload flag on episode transition (#2193)](https://github.com/NuvioMedia/NuvioMobile/pull/2193) @skoruppa  \r\n- [fix(UI): fix hero content shifting on horizontal and tablet layouts (#2190)](https://github.com/NuvioMedia/NuvioMobile/pull/2190) @ThEgIGN  \r\n- [feat(servers): add experimental Jellyfin and Emby support (#2081)](https://github.com/NuvioMedia/NuvioMobile/pull/2081) @tapframe  \r\n- [fix(streams): play streams that only have a ytId (#2115)](https://github.com/NuvioMedia/NuvioMobile/pull/2115) @deejay189393  \r\n",
+      "localizedDescription": "- [feat(i18n): add Bengali (বাংলা) language support and UI localization (#2113)](https://github.com/NuvioMedia/NuvioMobile/pull/2113) @TanvirSdq  \n- [i18n(el): sync Greek translations and remove remaining English loanwords (#2132)](https://github.com/NuvioMedia/NuvioMobile/pull/2132) @nosvasedis  \n- [Landscape clearlogo toggle, Simkl type hint, TMDB source priority, folder TMDB ID resolution (#2084)](https://github.com/NuvioMedia/NuvioMobile/pull/2084) @skoruppa  \n- [fix(UI): Fix hero section sometimes shifting (#2128)](https://github.com/NuvioMedia/NuvioMobile/pull/2128) @ThEgIGN  \n- [fix(player): show the swipe-to-seek preview in the new player layout (#2122)](https://github.com/NuvioMedia/NuvioMobile/pull/2122) @deejay189393  \n- 6aa42153 fix(debrid): select requested episode files @tapframe  \n- [i18n(vi): update latest Vietnamese strings (#2096)](https://github.com/NuvioMedia/NuvioMobile/pull/2096) @blueocean2308  \n- [Translation improvements and adjustments for Slovak language (#2104)](https://github.com/NuvioMedia/NuvioMobile/pull/2104) @mmsw91  \n- [fix(mdblist): show newest library additions first (#2103)](https://github.com/NuvioMedia/NuvioMobile/pull/2103) @halibiram  \n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.nuvio.media.png",
       "tintColor": "#007AFF",
       "overwriteExisting": true,
       "versions": [
-        {
-          "version": "0.5.8",
-          "date": "2026-10-09T04:17:01Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio-v0.5.8-beta/nuvio-0.5.8-beta.ipa",
-          "localizedDescription": "- [i18n: Add Croatian (hr) translation (#2169)](https://github.com/NuvioMedia/NuvioMobile/pull/2169) @Anarchydr  \r\n- [feat(mdblist): sort library lists by release date (#2196)](https://github.com/NuvioMedia/NuvioMobile/pull/2196) @kernexshadow  \r\n- [Reset next episode preload flag on episode transition (#2193)](https://github.com/NuvioMedia/NuvioMobile/pull/2193) @skoruppa  \r\n- [fix(UI): fix hero content shifting on horizontal and tablet layouts (#2190)](https://github.com/NuvioMedia/NuvioMobile/pull/2190) @ThEgIGN  \r\n- [feat(servers): add experimental Jellyfin and Emby support (#2081)](https://github.com/NuvioMedia/NuvioMobile/pull/2081) @tapframe  \r\n- [fix(streams): play streams that only have a ytId (#2115)](https://github.com/NuvioMedia/NuvioMobile/pull/2115) @deejay189393  \r\n",
-          "size": 67558904,
-          "bundleIdentifier": "com.nuvio.media",
-          "appID": "com.nuvio.media"
-        },
-        {
-          "version": "0.5.7",
-          "date": "2026-10-07T03:58:31Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio-v0.5.7-beta/nuvio-0.5.7-beta.ipa",
-          "localizedDescription": "- c2127769 fix(p2p): correct torrent cache path and usage @tapframe  \r\n- [feat(player): add ExoPlayer native memory, VOD cache, and buffer setting (#2178)](https://github.com/NuvioMedia/NuvioMobile/pull/2178) @halibiram  \r\n- e22baece feat(details): add letterbox zoom to hero trailer @tapframe  \r\n- [feat(mdblist): choose which lists appear in the library (#2171)](https://github.com/NuvioMedia/NuvioMobile/pull/2171) @kernexshadow  \r\n- 53ac5e53 fix(player): follow system brightness when touch gestures are off @tapframe  \r\n- 459add64 feat(streams): match tv refresh spin in streams and player panels @tapframe  \r\n- d3786272 feat(player): add switch player and stream info actions @tapframe  \r\n- 909dd7dc feat(streams): spin refresh button until addons finish loading @tapframe  \r\n- [fix custom poster pattern URL validation and decoding (#2153)](https://github.com/NuvioMedia/NuvioMobile/pull/2153) @skoruppa  \r\n",
-          "size": 66836754,
-          "bundleIdentifier": "com.nuvio.media",
-          "appID": "com.nuvio.media"
-        },
-        {
-          "version": "0.5.6",
-          "date": "2026-10-03T03:31:05Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/nuvio-v0.5.6-beta/nuvio-0.5.6-beta.ipa",
-          "localizedDescription": "- 312f7399 feat(details): use desktop hero layout on tablets @tapframe  \n- b3d7c5b6 feat(settings): show restart prompt when layout direction changes @tapframe  \n- a984b390 fix(ios): declare supported localizations @tapframe  \n- f0f980b3 fix(player): auto-play next episode on end after dismissing prompt @tapframe  \n- [i18n(vi): update latest Vietnamese strings (#2146)](https://github.com/NuvioMedia/NuvioMobile/pull/2146) @blueocean2308  \n- [Preload next episode sources (#2140)](https://github.com/NuvioMedia/NuvioMobile/pull/2140) @skoruppa  \n- [Fix mising poster fallback in Catalog Screen (#2139)](https://github.com/NuvioMedia/NuvioMobile/pull/2139) @skoruppa  \n- [fix(player): backport automatic skip notifications from Desktop (#2137)](https://github.com/NuvioMedia/NuvioMobile/pull/2137) @Laskco  \n",
-          "size": 66690752,
-          "bundleIdentifier": "com.nuvio.media",
-          "appID": "com.nuvio.media"
-        },
         {
           "version": "0.5.5",
           "date": "2026-10-01T03:48:27Z",
@@ -93,11 +66,11 @@
       "overwriteExisting": true,
       "versions": [
         {
-          "version": "9.1.84",
+          "version": "9.1.90",
           "date": "2026-09-16T09:49:23Z",
-          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Spotify/Spotify_9.1.84.2223.ipa",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Spotify/_AIMODS__Spotify_v9.1.90.ipa",
           "localizedDescription": "🚀 **Aggiornamento Disponibile**\r\n\r\n• 🔄 **Versione aggiornata** all'ultima build stabile.\r\n• ⚡ **Ottimizzazioni** di performance e stabilità generale.\r\n• 🛠️ **Bug fix** e risoluzione di problemi minori.",
-          "size": 136932214,
+          "size": 138403391,
           "bundleIdentifier": "com.spotify.client",
           "appID": "com.spotify.client"
         }
