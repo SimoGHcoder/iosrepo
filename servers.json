@@ -2,7 +2,7 @@
   "servers": [
     {
       "name": "NerdHub Anisette Locale",
-      "address": "http://192.168.1.64:6969"
+      "address": "http://nerd-hub.duckdns.org:26969"
     }
   ]
 }
