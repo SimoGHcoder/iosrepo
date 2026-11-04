@@ -84,17 +84,17 @@
       "bundleIdentifier": "com.stremio.pal",
       "developerName": "SimoGHcoder",
       "subtitle": "Media Player",
-      "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.1.0 (2.1.0b24)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.1.0b24/ios/stremio_iOS.ipa)\n",
+      "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.1.1 (2.1.1b25)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.1.1b25/ios/stremio_iOS.ipa)\n",
       "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.stremio.pal.png",
       "tintColor": "#8A52F5",
       "overwriteExisting": true,
       "versions": [
         {
-          "version": "2.1.0",
+          "version": "2.1.1",
           "date": "2026-09-17T13:34:59Z",
           "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Stremio/Stremio.ipa",
-          "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.1.0 (2.1.0b24)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.1.0b24/ios/stremio_iOS.ipa)\n",
-          "size": 84705521,
+          "localizedDescription": "Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.\n\n- **Ultima Versione Sincronizzata:** 2.1.1 (2.1.1b25)\n- **Sorgente:** [Stremio CDN Direct](https://dl.strem.io/apple/2.1.1b25/ios/stremio_iOS.ipa)\n",
+          "size": 84752072,
           "bundleIdentifier": "com.stremio.pal",
           "appID": "com.stremio.pal"
         }
