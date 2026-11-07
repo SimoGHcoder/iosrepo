@@ -24,7 +24,7 @@ La repository ospita e aggiorna automaticamente le seguenti categorie di applica
 <!-- APPS_TABLE_START -->
 | Applicazione | Categoria | Descrizione |
 | :--- | :--- | :--- |
-| **Nuvio** | Media Player | - fix(ios): stop the skip ahead after Control Centre / Notification Centre (#... |
+| **Nuvio** | Media Player | - fix(details): restore glass floating header in cinematic mode after upstrea... |
 | **Stremio** | Media Player | Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.... |
 | **Spotify** | Musica & Audio | 🚀 Aggiornamento Disponibile • 🔄 Versione aggiornata all'ultima build stabile.... |
 | **Shapr3D** | Strumento CAD | 🚀 Aggiornamento Disponibile • 🔄 Versione aggiornata all'ultima build stabile.... |
