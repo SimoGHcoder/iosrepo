@@ -5,6 +5,27 @@
   "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/repoicon.png",
   "apps": [
     {
+      "name": "DeepSeek",
+      "bundleIdentifier": "com.deepseek.chat",
+      "developerName": "SimoGHcoder",
+      "subtitle": "Utilità / Mod",
+      "localizedDescription": "Applicazione DeepSeek.",
+      "iconURL": "https://raw.githubusercontent.com/SimoGHcoder/iosrepo/main/icons/com.deepseek.chat.png",
+      "tintColor": "#007AFF",
+      "overwriteExisting": true,
+      "versions": [
+        {
+          "version": "1.7.7",
+          "date": "2026-11-15T10:36:16Z",
+          "downloadURL": "https://github.com/SimoGHcoder/iosrepo/releases/download/Deepseek/DeepSeek-ipaomtk.com.ipa",
+          "localizedDescription": "Versione 1.7.7",
+          "size": 17895510,
+          "bundleIdentifier": "com.deepseek.chat",
+          "appID": "com.deepseek.chat"
+        }
+      ]
+    },
+    {
       "name": "Nuvio",
       "bundleIdentifier": "com.nuvio.media",
       "developerName": "SimoGHcoder",
