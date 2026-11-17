@@ -24,7 +24,7 @@ La repository ospita e aggiorna automaticamente le seguenti categorie di applica
 <!-- APPS_TABLE_START -->
 | Applicazione | Categoria | Descrizione |
 | :--- | :--- | :--- |
-| **Nuvio** | Media Player | - fix(app): log the mapped network condition after the upstream merge @luqman... |
+| **Nuvio** | Media Player | # Nuvio Enhanced 1.0.0 Thank you to everyone who has contributed to the proje... |
 | **Stremio** | Media Player | Download automatico dell'IPA ufficiale di Stremio estratto dalla CDN diretta.... |
 | **Spotify** | Musica & Audio | 🚀 Aggiornamento Disponibile • 🔄 Versione aggiornata all'ultima build stabile.... |
 | **Shapr3D** | Strumento CAD | 🚀 Aggiornamento Disponibile • 🔄 Versione aggiornata all'ultima build stabile.... |
